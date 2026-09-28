@@ -1,0 +1,1591 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mahjong Scorebook</title>
+<meta name="description" content="Keep mahjong scores for Hong Kong, Singapore, Riichi, Taiwanese and Chinese Official rules. Photograph the winning hand and it reads the tiles.">
+<meta name="theme-color" content="#1D5C47">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Scorebook">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@500;600&family=Young+Serif&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@700&display=swap&text=__KAI_TEXT__">
+<script>window.API_URL = '__API_URL__'; window.BUILD = '__BUILD__';</script>
+<style>
+:root{
+  --ground:#EDF1EC;--paper:#FBFCF9;--paper-2:#F2F5F0;--ink:#17231E;--ink-2:#3A4942;--muted:#5E6E67;
+  --line:#D5DDD7;--line-2:#BFCBC3;--accent:#1D5C47;--accent-ink:#FFFFFF;--accent-soft:#D9E9E0;
+  --felt:#1F5A45;--felt-deep:#153F31;--felt-ink:#ECF5F0;--felt-muted:#A7C6B7;--plate:rgba(6,26,19,.34);
+  --felt-gain:#A4E6C2;--felt-loss:#FFB6A9;
+  --gain:#15784A;--loss:#BE3A2C;--gold:#C8962F;
+  --bone:#F6F0DF;--bone-hi:#FFFDF6;--bone-edge:#DCD2B8;--tile-back:#2D7A5B;
+  --scrim:rgba(8,18,13,.48);
+  --shadow:0 1px 2px rgba(20,35,28,.08),0 8px 22px rgba(20,35,28,.07);
+  --f-ui:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --f-display:"Young Serif",Georgia,"Times New Roman",serif;
+  --f-cjk:"LXGW WenKai TC","Kaiti TC","STKaiti","KaiTi","BiauKai","Noto Serif CJK TC","Noto Sans CJK TC","PingFang TC","Microsoft JhengHei",serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+  --ground:#0D1411;--paper:#141E1A;--paper-2:#1A2621;--ink:#E5EDE8;--ink-2:#C1CFC8;--muted:#8EA197;
+  --line:#24322C;--line-2:#34463D;--accent:#5CC39B;--accent-ink:#0A1913;--accent-soft:#1B3A2E;
+  --felt:#15402F;--felt-deep:#0B2A1F;--felt-ink:#E6F2EC;--felt-muted:#8DB6A3;--plate:rgba(0,0,0,.30);
+  --felt-gain:#8FE0B5;--felt-loss:#FFA497;
+  --gain:#63D199;--loss:#F2796B;--gold:#E2B559;
+  --bone:#E8E1CD;--bone-hi:#F3EDDC;--bone-edge:#B9AE90;--tile-back:#2A6B51;
+  --scrim:rgba(0,0,0,.6);--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 22px rgba(0,0,0,.35);}}
+:root[data-theme="dark"]{color-scheme:dark;
+  --ground:#0D1411;--paper:#141E1A;--paper-2:#1A2621;--ink:#E5EDE8;--ink-2:#C1CFC8;--muted:#8EA197;
+  --line:#24322C;--line-2:#34463D;--accent:#5CC39B;--accent-ink:#0A1913;--accent-soft:#1B3A2E;
+  --felt:#15402F;--felt-deep:#0B2A1F;--felt-ink:#E6F2EC;--felt-muted:#8DB6A3;--plate:rgba(0,0,0,.30);
+  --felt-gain:#8FE0B5;--felt-loss:#FFA497;
+  --gain:#63D199;--loss:#F2796B;--gold:#E2B559;
+  --bone:#E8E1CD;--bone-hi:#F3EDDC;--bone-edge:#B9AE90;--tile-back:#2A6B51;
+  --scrim:rgba(0,0,0,.6);--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 22px rgba(0,0,0,.35);}
+
+*,*::before,*::after{box-sizing:border-box}
+html,body{background:var(--ground)}
+body{margin:0;color:var(--ink);font-family:var(--f-ui);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{margin:0;font-weight:400;text-wrap:balance}
+p{margin:0}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.k{font-family:var(--f-cjk);font-weight:700}
+.muted{color:var(--muted)}
+.wrap{max-width:680px;margin:0 auto;padding-inline:16px;padding-block:8px 132px}
+.stack{display:grid;gap:12px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.boot{min-height:60vh;display:grid;place-items:center;color:var(--muted);padding-inline:16px;text-align:center}
+
+/* buttons, chips, controls */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 16px;border-radius:12px;border:1px solid var(--line-2);background:var(--paper);color:var(--ink);font-weight:700;font-size:15px;text-decoration:none;line-height:1.2}
+.btn svg{width:18px;height:18px;flex:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.big{min-height:52px;font-size:17px;padding-inline:22px;border-radius:14px}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.small{min-height:36px;padding:6px 12px;font-size:14px;border-radius:10px}
+.btn.danger{color:var(--loss)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.block{width:100%}
+.iconbtn{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:12px;border:0;background:transparent;color:var(--ink)}
+.iconbtn svg{width:22px;height:22px}
+.link{border:0;background:none;padding:0;color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:3px;font-size:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 12px;border-radius:999px;border:1px solid var(--line-2);background:var(--paper);font-weight:700;font-size:15px;max-width:100%}
+.chip .cw{font-family:var(--f-cjk);font-weight:700;color:var(--muted);font-size:14px}
+.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.chip[aria-pressed="true"] .cw{color:var(--accent)}
+.chip:disabled{opacity:.4}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);background:var(--paper-2);border:1px solid var(--line);border-radius:13px;padding:3px;gap:3px}
+.seg button{min-height:44px;border:0;border-radius:10px;background:transparent;font-weight:700;font-size:15px;padding:6px 8px;color:var(--ink-2)}
+.seg button .cw{font-family:var(--f-cjk);font-weight:700;margin-left:6px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--paper);box-shadow:var(--shadow);color:var(--ink)}
+.seg button[aria-pressed="true"] .cw{color:var(--accent)}
+.field{display:grid;gap:6px}
+.field>label,.flabel{font-weight:700;font-size:14px;color:var(--ink-2)}
+.input,.select{width:100%;min-height:46px;padding:10px 12px;border-radius:11px;border:1px solid var(--line-2);background:var(--paper);color:var(--ink);font-size:16px}
+.select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:34px}
+.input:focus,.select:focus{outline:2px solid var(--accent);outline-offset:0;border-color:var(--accent)}
+.stepper{display:inline-flex;align-items:center;border:1px solid var(--line-2);border-radius:11px;background:var(--paper);overflow:hidden}
+.stepper button{width:40px;height:40px;border:0;background:transparent;font-size:20px;line-height:1;color:var(--ink)}
+.stepper button:disabled{opacity:.35}
+.stepper .sv{min-width:44px;text-align:center;font-family:var(--f-num);font-weight:600}
+.switch{position:relative;width:48px;height:28px;border-radius:99px;border:1px solid var(--line-2);background:var(--paper-2);flex:none;padding:0}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--muted);transition:transform .15s ease,background .15s ease}
+.switch[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
+.switch[aria-checked="true"]::after{transform:translateX(20px);background:var(--accent-ink)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
+.toggle-row .tl{display:grid;gap:2px}
+.toggle-row .tl small{color:var(--muted);font-size:13px}
+
+/* top bar and dock */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--ground);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:680px;margin:0 auto;padding:6px 8px;display:flex;align-items:center;gap:4px;min-height:56px}
+.topbar .ttl{flex:1;min-width:0;text-align:center;display:grid;line-height:1.2}
+.topbar .ttl b{font-family:var(--f-display);font-weight:400;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar .ttl span{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.backbtn{display:inline-flex;align-items:center;gap:2px;border:0;background:none;min-height:44px;padding:0 8px;font-weight:700;color:var(--accent);font-size:15px}
+.backbtn svg{width:20px;height:20px}
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,var(--ground) 72%,rgba(0,0,0,0))}
+.dock-in{max-width:680px;margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:10px}
+
+/* home */
+.hero{padding-block:28px 22px;display:grid;gap:14px;justify-items:start}
+.brand{display:flex;align-items:center;gap:14px}
+.seal{display:grid;place-items:center;width:52px;height:52px;border-radius:9px;background:#C43B2C;color:#FFF3E8;font-family:var(--f-cjk);font-weight:700;font-size:19px;line-height:1.02;writing-mode:vertical-rl;transform:rotate(-5deg);box-shadow:inset 0 0 0 2px rgba(255,243,232,.55),inset 0 0 0 4px #C43B2C,inset 0 0 0 5px rgba(255,243,232,.35)}
+.hero h1{font-family:var(--f-display);font-size:34px;line-height:1.05}
+.hero .lede{color:var(--ink-2);max-width:48ch;font-size:16.5px}
+.rules-strip{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;color:var(--muted)}
+.rules-strip span b{font-family:var(--f-cjk);font-weight:700;color:var(--ink-2);margin-left:4px}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;margin:26px 0 10px}
+.section-head h2{font-family:var(--f-display);font-size:22px}
+.gcard{display:grid;gap:10px;width:100%;text-align:left;padding:14px;border-radius:16px;border:1px solid var(--line);background:var(--paper);box-shadow:var(--shadow);color:var(--ink)}
+.gcard .gtop{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.gcard .gname{font-weight:700;font-size:16px}
+.gcard .gmeta{font-size:13px;color:var(--muted)}
+.gscores{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.gscores div{display:grid;gap:1px;min-width:0}
+.gscores span{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gscores b{font-family:var(--f-num);font-weight:600;font-size:15px}
+.store-note{margin-top:28px;font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
+.dot.ok{background:var(--gain)}.dot.warn{background:var(--gold)}.dot.bad{background:var(--loss)}
+.example-note{font-size:14px;color:var(--muted)}
+
+/* the table */
+.table{border-radius:24px;padding:9px;background:var(--felt-deep);box-shadow:inset 0 0 0 1px rgba(255,255,255,.05),0 12px 30px rgba(10,30,22,.18)}
+.felt{position:relative;border-radius:17px;padding:12px;color:var(--felt-ink);
+  background:var(--felt);
+  background:radial-gradient(120% 90% at 50% 42%,color-mix(in srgb,var(--felt) 86%,#ffffff) 0%,var(--felt) 58%,var(--felt-deep) 100%);
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(70px,.72fr) minmax(0,1fr);grid-template-rows:auto minmax(96px,1fr) auto;gap:8px;min-height:300px}
+.felt::before{content:"";position:absolute;inset:0;border-radius:17px;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07),inset 0 0 40px rgba(0,0,0,.18)}
+.seat{min-width:0;display:flex}
+.seat.top{grid-column:1/4;grid-row:1;justify-content:center}
+.seat.bottom{grid-column:1/4;grid-row:3;justify-content:center}
+.seat.left{grid-column:1;grid-row:2;align-items:center}
+.seat.right{grid-column:3;grid-row:2;align-items:center;justify-content:flex-end}
+.plate{position:relative;width:100%;max-width:176px;min-width:0;padding:8px 10px 9px;border-radius:13px;background:var(--plate);border:1px solid rgba(255,255,255,.1);display:grid;gap:3px}
+.plate .ph{display:flex;align-items:center;gap:7px;min-width:0}
+.plate .pn{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--felt-ink);min-width:0}
+.plate .ps{font-family:var(--f-num);font-weight:600;font-size:20px;line-height:1.1;white-space:nowrap}
+.table.is-riichi .plate .ps{font-size:17px}
+.plate .pm{font-family:var(--f-num);font-size:12px;color:var(--felt-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plate .ps.pos{color:var(--felt-gain)}.plate .ps.neg{color:var(--felt-loss)}
+.plate.is-dealer{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+.dealer-mark{position:absolute;top:-9px;right:-7px;width:24px;height:24px;border-radius:50%;background:var(--gold);color:#2A1C05;display:grid;place-items:center;font-family:var(--f-cjk);font-weight:700;font-size:14px;box-shadow:0 2px 4px rgba(0,0,0,.3)}
+.center{grid-column:2;grid-row:2;display:grid;place-items:center;align-content:center;text-align:center;gap:4px}
+.center .rw{font-family:var(--f-cjk);font-weight:700;font-size:46px;line-height:1;color:var(--felt-ink);text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.center .rl{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--felt-muted)}
+.sticks{display:flex;gap:10px;justify-content:center;font-family:var(--f-num);font-size:12px;color:var(--felt-ink)}
+.stick{display:inline-flex;align-items:center;gap:4px}
+.stick i{display:inline-block;width:18px;height:5px;border-radius:3px;background:#F4EFE2;position:relative}
+.stick i::after{content:"";position:absolute;left:50%;top:50%;width:3px;height:3px;border-radius:50%;background:#C43B2C;transform:translate(-50%,-50%)}
+.stick.honba i::after{background:#222;box-shadow:-5px 0 0 #222,5px 0 0 #222}
+.table.compact .felt{min-height:0;padding:10px;gap:6px}
+.table.compact .plate .ps{font-size:16px}
+.table.compact .center .rw{font-size:34px}
+
+/* banners */
+.banner{margin:14px 0;padding:12px 14px;border-radius:14px;background:var(--paper);border:1px solid var(--line);display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.banner p{font-size:14.5px;color:var(--ink-2);flex:1 1 220px}
+.banner.gold{border-color:var(--gold)}
+
+/* ledger */
+.ledger{margin-top:22px}
+.ledger h2{font-family:var(--f-display);font-size:21px}
+.lhead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:4px}
+.lrow{border-bottom:1px solid var(--line)}
+.lsum{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px;width:100%;padding:13px 0;background:none;border:0;text-align:left;color:var(--ink);align-items:start}
+.lno{font-family:var(--f-num);font-size:12.5px;color:var(--muted);padding-top:2px;min-width:28px}
+.lmain{display:grid;gap:4px;min-width:0}
+.lwho{font-weight:700;font-size:15.5px}
+.lwho em{font-style:normal;font-weight:400;color:var(--muted)}
+.lpats{font-size:13.5px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lval{font-family:var(--f-num);font-size:13px;font-weight:600;color:var(--accent);text-align:right;white-space:nowrap;padding-top:2px}
+.ldeltas{grid-column:2/4;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;font-family:var(--f-num);font-size:12.5px}
+.ldeltas span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ldeltas small{font-family:var(--f-ui);color:var(--muted);margin-right:3px}
+.pos{color:var(--gain)}.neg{color:var(--loss)}.zero{color:var(--muted)}
+.ldetail{padding:0 0 14px 40px;display:grid;gap:10px}
+.ltiles{display:flex;flex-wrap:wrap;gap:3px 3px;align-items:flex-end}
+.ltiles .gap{width:8px}
+.empty{padding:22px 0;color:var(--muted);font-size:15px}
+
+/* tiles */
+.tile{--tw:34px;position:relative;display:inline-block;width:var(--tw);aspect-ratio:30/40;padding:0;border:1px solid var(--bone-edge);border-radius:5px;background:linear-gradient(180deg,var(--bone-hi),var(--bone));box-shadow:0 2px 0 var(--tile-back),0 3px 5px rgba(0,0,0,.16);vertical-align:bottom;flex:none;transition:transform .12s ease}
+.tile svg{display:block;width:100%;height:100%}
+.tile.t-lg{--tw:42px;border-radius:6px}
+.tile.t-sm{--tw:25px;border-radius:4px;box-shadow:0 1.5px 0 var(--tile-back),0 2px 3px rgba(0,0,0,.14)}
+.tile.t-xs{--tw:19px;border-radius:3px;box-shadow:0 1px 0 var(--tile-back)}
+button.tile:active{transform:translateY(1px)}
+.tile[aria-pressed="true"]{transform:translateY(-5px);box-shadow:0 2px 0 var(--tile-back),0 0 0 2px var(--accent)}
+.tile.is-win{box-shadow:0 2px 0 var(--tile-back),0 0 0 2px var(--gold)}
+.tile.is-back{background:linear-gradient(180deg,#3E8C6C,var(--tile-back));border-color:#23654B}
+.tile .tb{position:absolute;top:-7px;right:-7px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--ink);color:var(--ground);font-family:var(--f-num);font-size:11px;line-height:17px;text-align:center}
+.tile:disabled{opacity:.35;cursor:not-allowed}
+.tf-k{font-family:var(--f-cjk);font-weight:700}
+.tf-idx{font-family:var(--f-ui);font-weight:700}
+
+/* sheets */
+.scrim{position:fixed;inset:0;z-index:40;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center;padding-top:env(safe-area-inset-top,0px);animation:fade .16s ease}
+.sheet{width:100%;max-width:640px;max-height:calc(100% - 10px);background:var(--ground);border-radius:20px 20px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -12px 40px rgba(0,0,0,.28);animation:rise .2s ease}
+.sheet.tall{height:calc(100% - 10px)}
+.sheet-head{display:flex;align-items:center;gap:8px;padding:10px 8px 10px 16px;border-bottom:1px solid var(--line);background:var(--paper)}
+.sheet-head .st{flex:1;min-width:0;display:grid;line-height:1.25}
+.sheet-head .st b{font-family:var(--f-display);font-weight:400;font-size:19px}
+.sheet-head .st span{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sheet-body{flex:1;overflow-y:auto;padding:0 16px 28px;overscroll-behavior:contain}
+.sheet-foot{border-top:1px solid var(--line);background:var(--paper);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
+.sec{padding:18px 0;border-bottom:1px solid var(--line);display:grid;gap:10px}
+.sec:last-child{border-bottom:0}
+.sec>h3,.sec-h{font-family:var(--f-ui);font-size:12.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0}
+.hint{font-size:13.5px;color:var(--muted)}
+.err{font-size:14px;color:var(--loss);font-weight:700}
+.warn{font-size:14px;color:var(--ink-2);background:var(--paper-2);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+@keyframes rise{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.menu{display:grid}
+.menu button{display:flex;align-items:center;gap:12px;min-height:54px;padding:8px 4px;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;font-weight:700;font-size:16px;color:var(--ink)}
+.menu button svg{width:20px;height:20px;color:var(--muted)}
+.menu button small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+.menu button.danger{color:var(--loss)}
+
+/* hand editor */
+.handbox{border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:12px;display:grid;gap:12px}
+.zone{display:grid;gap:6px}
+.zone-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13px;color:var(--muted);font-weight:700}
+.zone-tiles{display:flex;flex-wrap:wrap;gap:8px 4px;align-items:flex-end;min-height:48px;padding:6px 0 4px}
+.zone-tiles .wingap{width:10px}
+.meld{display:inline-flex;gap:2px;align-items:flex-end;padding:4px 5px 4px;border-radius:9px;background:var(--paper-2);border:1px dashed var(--line-2)}
+.meld .mx{border:0;background:none;color:var(--muted);font-size:18px;width:26px;height:30px;padding:0}
+.meldtag{font-size:11px;font-weight:700;color:var(--muted);align-self:center;margin-right:3px;writing-mode:vertical-rl;letter-spacing:.06em;text-transform:uppercase}
+.selbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:14px}
+.modebar{display:flex;flex-wrap:wrap;gap:6px}
+.modebar .chip{min-height:36px;font-size:14px;white-space:nowrap}
+.tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;background:var(--paper-2);border-radius:12px;padding:3px;border:1px solid var(--line)}
+.tabs button{min-height:40px;border:0;border-radius:9px;background:transparent;display:grid;place-items:center;gap:0;line-height:1.1;padding:4px 2px}
+.tabs button b{font-family:var(--f-cjk);font-weight:700;font-size:17px}
+.tabs button span{font-size:11px;color:var(--muted);font-weight:700}
+.tabs button[aria-pressed="true"]{background:var(--paper);box-shadow:var(--shadow)}
+.palette{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px 4px;padding-top:4px}
+.palette.p7{grid-template-columns:repeat(7,minmax(0,1fr))}
+.palette.p4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.palette .tile{width:100%;max-width:44px;justify-self:center}
+.counter{font-family:var(--f-num);font-size:13px;font-weight:600}
+.counter.ok{color:var(--gain)}
+.scanrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.scanstate{display:flex;gap:12px;align-items:center}
+.thumb{width:64px;height:64px;border-radius:10px;object-fit:cover;border:1px solid var(--line);flex:none;background:var(--paper-2);padding:0}
+.thumb img{width:100%;height:100%;object-fit:cover;border-radius:9px;display:block}
+.spinner{width:18px;height:18px;border-radius:50%;border:2.5px solid var(--line-2);border-top-color:var(--accent);animation:spin .8s linear infinite;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.photo-view{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.88);display:grid;place-items:center;padding:16px}
+.photo-view img{max-width:100%;max-height:100%;border-radius:8px}
+
+/* scoring receipt */
+.receipt{display:grid}
+.rrow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px;padding:9px 0;border-bottom:1px dashed var(--line)}
+.rrow:last-child{border-bottom:0}
+.rname{display:grid;gap:1px;min-width:0}
+.rname .zh{font-weight:700;font-size:15.5px}
+.rname .en{font-size:13.5px;color:var(--ink-2)}
+.rname .tag{justify-self:start;font-size:11.5px;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:1px 7px;border-radius:6px;margin-top:3px}
+.rname .sub{font-size:12.5px;color:var(--muted)}
+.rval{font-family:var(--f-num);font-weight:600;font-size:15px;text-align:right;min-width:34px}
+.rrow.is-excl .zh,.rrow.is-excl .rval{text-decoration:line-through;color:var(--muted)}
+.rx{width:36px;height:36px;border-radius:10px;border:0;background:transparent;color:var(--muted);font-size:20px;line-height:1;padding:0}
+.rrow .stepper button{width:32px;height:34px}
+.rrow .stepper .sv{min-width:26px}
+.addlist{border:1px solid var(--line);border-radius:14px;background:var(--paper);overflow:hidden}
+.addlist>summary{list-style:none;cursor:pointer;min-height:48px;padding:12px 14px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.addlist>summary::-webkit-details-marker{display:none}
+.addlist>summary::after{content:"+";font-size:20px;color:var(--muted)}
+.addlist[open]>summary::after{content:"–"}
+.addbody{padding:0 14px 12px;display:grid;gap:4px}
+.addgrp{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:12px 0 2px}
+.addrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;min-height:44px;padding:6px 2px;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;color:var(--ink)}
+.addrow:last-child{border-bottom:0}
+.addrow .plus{width:26px;height:26px;border-radius:8px;border:1px solid var(--line-2);display:grid;place-items:center;color:var(--accent);font-weight:700}
+.addrow .nm{display:grid;min-width:0}
+.addrow .nm b{font-weight:700;font-size:15px}
+.addrow .nm span{font-size:13px;color:var(--muted)}
+.addrow .v{font-family:var(--f-num);font-size:14px;color:var(--ink-2)}
+.fuchips .chip{min-height:36px;padding:4px 11px;font-family:var(--f-num);font-weight:600}
+
+/* summary footer */
+.sumrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sumv{display:grid;gap:2px;min-width:0}
+.sumv b{font-family:var(--f-display);font-weight:400;font-size:22px;line-height:1.15}
+.sumv span{font-size:13px;color:var(--muted)}
+.pays{display:flex;flex-wrap:wrap;gap:3px 14px;font-family:var(--f-num);font-size:13px;margin-top:8px}
+.pays small{font-family:var(--f-ui);color:var(--muted);margin-right:3px}
+
+/* setup */
+.rgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.rcard{display:grid;gap:3px;text-align:left;padding:12px;border-radius:14px;border:1px solid var(--line-2);background:var(--paper);color:var(--ink);min-height:92px;align-content:start}
+.rcard b{font-weight:700;font-size:15.5px}
+.rcard .kn{font-family:var(--f-cjk);font-weight:700;color:var(--muted);font-size:15px}
+.rcard span{font-size:13px;color:var(--muted)}
+.rcard[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}
+.rcard[aria-pressed="true"] .kn{color:var(--accent)}
+.pgrid{display:grid;gap:8px}
+.prow{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
+.settings{display:grid;gap:14px}
+.vtable{display:grid}
+.vrow{display:grid;grid-template-columns:minmax(0,1fr) 96px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.vrow .input,.vrow .select{min-height:40px;padding:6px 10px}
+.vrow .nm b{font-weight:700}
+.vrow .nm span{display:block;font-size:13px;color:var(--muted)}
+.stand{display:grid}
+.srow{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.srank{font-family:var(--f-display);font-size:20px;color:var(--muted)}
+.srow .snm{font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.srow .sval{text-align:right;font-family:var(--f-num);font-weight:600}
+.srow .sval small{display:block;font-weight:500;color:var(--muted);font-size:12.5px}
+.copybox{width:100%;min-height:150px;font-family:var(--f-num);font-size:13px;padding:10px;border-radius:10px;border:1px solid var(--line-2);background:var(--paper)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(90px + env(safe-area-inset-bottom,0px));z-index:70;background:var(--ink);color:var(--ground);padding:8px 8px 8px 16px;border-radius:12px;display:flex;gap:10px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:calc(100% - 32px);font-weight:700;font-size:14.5px}
+.toast button{border:0;background:rgba(255,255,255,.14);color:inherit;font-weight:700;border-radius:8px;min-height:36px;padding:0 12px}
+/* account & settlement */
+.acct{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;font-size:14px;color:var(--muted)}
+.acct b{color:var(--ink-2)}
+.pinbox{letter-spacing:.18em;font-family:var(--f-num)}
+.settle{display:grid;gap:8px}
+.trow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--paper);border:1px solid var(--line)}
+.trow .tw{font-weight:700;font-size:15px}
+.trow .tw em{font-style:normal;font-weight:400;color:var(--muted);margin:0 6px}
+.trow .ta{font-family:var(--f-num);font-weight:600;white-space:nowrap}
+.tips{font-size:13.5px;color:var(--muted);padding-left:18px;margin:0;display:grid;gap:2px}
+.hidden-input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+@media (min-width:720px){.hero h1{font-size:40px}.felt{min-height:340px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"><div class="boot">Loading the scorebook…</div></div>
+
+<script>
+/*__VENDOR__*/
+</script>
+<script>
+/*__ENGINE__*/
+</script>
+<script>
+(function () {
+  'use strict';
+  var root = document.getElementById('app');
+  if (!window.preact || !window.preactHooks || !window.htm || !window.MJ) {
+    root.innerHTML = '<div class="boot">The scorebook could not load its interface. Check your connection and open it again.</div>';
+    return;
+  }
+  const { h, render } = preact;
+  const { useState, useEffect, useMemo, useRef } = preactHooks;
+  const html = htm.bind(h);
+  const RULES = MJ.RULES;
+
+  /* ------------------------------------------------ helpers */
+  const clone = (o) => JSON.parse(JSON.stringify(o));
+  const nf = (() => { try { return new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 }); } catch (e) { return { format: String }; } })();
+  const fmt = (n) => nf.format(Math.round((+n || 0) * 100) / 100);
+  const signed = (n) => (n > 0.004 ? '+' : n < -0.004 ? '−' : '') + fmt(Math.abs(n));
+  const cls = (n) => (n > 0.004 ? 'pos' : n < -0.004 ? 'neg' : 'zero');
+  const pname = (g, p) => ((g.players[p] && g.players[p].name) || 'Player ' + (p + 1));
+  const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const WZ = MJ.WINDS_ZH;
+  function moneyFor(g, pts) {
+    const m = g.money || {};
+    if (!+m.per) return '';
+    const v = g.ruleset === 'riichi' ? (pts / 1000) * m.per : pts * m.per;
+    return (v > 0.004 ? '+' : v < -0.004 ? '−' : '') + (m.symbol ? m.symbol + ' ' : '') + fmt(Math.abs(v));
+  }
+  function ago(ts) {
+    const s = Math.max(0, (Date.now() - ts) / 1000);
+    if (s < 60) return 'just now';
+    if (s < 3600) return Math.floor(s / 60) + ' min ago';
+    if (s < 86400) return Math.floor(s / 3600) + ' h ago';
+    try { return new Date(ts).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return ''; }
+  }
+  function howWords(R) {
+    return ({
+      hk: ['自摸', '出銃'], sg: ['自摸', '放炮'], tw: ['自摸', '放槍'], riichi: ['ツモ', 'ロン'], mcr: ['自摸', '点和'], custom: ['', ''],
+    })[R.id];
+  }
+  function patLabel(R, p, selfDraw) {
+    if (p.id === 'lastTile') {
+      const zh = selfDraw ? { hk: '海底撈月', tw: '海底撈月', sg: '海底捞月' } : { hk: '河底撈魚', tw: '河底撈魚', sg: '河底捞鱼' };
+      return { zh: zh[R.id] || p.zh, en: selfDraw ? 'Self-drawn last tile' : 'Won on the last discard' };
+    }
+    return { zh: p.zh, en: p.en };
+  }
+  function groupsOf(R) {
+    const seen = [];
+    for (const p of R.patterns) if (!seen.includes(p.g)) seen.push(p.g);
+    if (R.id === 'mcr') seen.sort((a, b) => +b.slice(1) - +a.slice(1));
+    return seen;
+  }
+  const groupName = (g) => MJ.GROUPS[g] || (g[0] === 'f' ? g.slice(1) + ' fan' : g);
+  function valueText(R, p, V, menzen) {
+    if (R.id === 'riichi') {
+      if (p.yakuman) return 'Yakuman';
+      const hv = menzen ? p.v : p.open;
+      return hv == null ? 'closed only' : hv + ' han';
+    }
+    const v = V[p.id];
+    if (v === 'L') return 'Limit';
+    return v + ' ' + R.unit;
+  }
+
+  /* ------------------------------------------------ icons */
+  const I = {
+    back: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>`,
+    more: html`<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>`,
+    close: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>`,
+    camera: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg>`,
+    image: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 16l5-5 4 4 3-3 4 4"/><circle cx="15.5" cy="9" r="1.4"/></svg>`,
+    tiles: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3.5" y="5" width="7" height="10" rx="1.5"/><rect x="13.5" y="5" width="7" height="10" rx="1.5"/><path d="M4 18.5h16"/></svg>`,
+    rules: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 5h14M5 12h14M5 19h9"/></svg>`,
+    coins: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="7" rx="7" ry="3"/><path d="M5 7v5c0 1.7 3.1 3 7 3s7-1.3 7-3V7M5 12v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5"/></svg>`,
+    people: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6"/><circle cx="17" cy="9" r="2.6"/><path d="M16 14.6c2.2 0 3.8 1.3 4.5 3.9"/></svg>`,
+    flag: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 21V4h11l-2 4 2 4H5"/></svg>`,
+    trash: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>`,
+    undo: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7L4 12l5 5"/><path d="M4 12h10a6 6 0 010 12h-2" transform="translate(0 -6)"/></svg>`,
+    plus: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>`,
+  };
+
+  /* ------------------------------------------------ tile faces */
+  const NUM_ZH = ['一', '二', '三', '四', '五', '六', '七', '八', '九'];
+  const TC = { r: '#C43B2C', g: '#1E7B4C', b: '#2B5CA8', n: '#1C2A4A' };
+  const DOTS = {
+    2: [[15, 12, 'g'], [15, 28, 'b']],
+    3: [[8.5, 10, 'b'], [15, 20, 'r'], [21.5, 30, 'g']],
+    4: [[9.5, 12, 'b'], [20.5, 12, 'g'], [9.5, 28, 'g'], [20.5, 28, 'b']],
+    5: [[9, 10.5, 'b'], [21, 10.5, 'g'], [15, 20, 'r'], [9, 29.5, 'g'], [21, 29.5, 'b']],
+    6: [[10, 9, 'g'], [20, 9, 'g'], [10, 20, 'r'], [20, 20, 'r'], [10, 31, 'r'], [20, 31, 'r']],
+    7: [[8, 7.5, 'g'], [15, 11, 'g'], [22, 14.5, 'g'], [10, 23, 'r'], [20, 23, 'r'], [10, 32, 'r'], [20, 32, 'r']],
+    8: [[10, 7, 'b'], [20, 7, 'b'], [10, 15.7, 'b'], [20, 15.7, 'b'], [10, 24.3, 'b'], [20, 24.3, 'b'], [10, 33, 'b'], [20, 33, 'b']],
+    9: [[8, 9, 'b'], [15, 9, 'b'], [22, 9, 'b'], [8, 20, 'r'], [15, 20, 'r'], [22, 20, 'r'], [8, 31, 'g'], [15, 31, 'g'], [22, 31, 'g']],
+  };
+  const DOT_R = { 2: 5.6, 3: 4.7, 4: 4.8, 5: 4.3, 6: 4, 7: 3.6, 8: 3.4, 9: 3.4 };
+  const STICKS = {
+    2: [[15, 12, 'g'], [15, 28, 'g']],
+    3: [[15, 11, 'g'], [9, 29, 'g'], [21, 29, 'g']],
+    4: [[9.5, 12, 'g'], [20.5, 12, 'b'], [9.5, 28, 'b'], [20.5, 28, 'g']],
+    5: [[8.5, 12, 'g'], [21.5, 12, 'b'], [15, 20, 'r'], [8.5, 28, 'b'], [21.5, 28, 'g']],
+    6: [[8, 12, 'g'], [15, 12, 'g'], [22, 12, 'g'], [8, 28, 'b'], [15, 28, 'b'], [22, 28, 'b']],
+    7: [[15, 8, 'r'], [8, 20, 'g'], [15, 20, 'g'], [22, 20, 'g'], [8, 32, 'g'], [15, 32, 'g'], [22, 32, 'g']],
+    8: [[6.5, 12, 'g'], [12, 12, 'g'], [18, 12, 'g'], [23.5, 12, 'g'], [6.5, 28, 'b'], [12, 28, 'b'], [18, 28, 'b'], [23.5, 28, 'b']],
+    9: [[8, 9, 'g'], [15, 9, 'r'], [22, 9, 'g'], [8, 20, 'g'], [15, 20, 'r'], [22, 20, 'g'], [8, 31, 'g'], [15, 31, 'r'], [22, 31, 'g']],
+  };
+  const STICK_H = { 2: 12.5, 3: 11, 4: 12, 5: 11, 6: 12, 7: 8.8, 8: 12, 9: 8.8 };
+  const BONUS_FACE = {
+    F: { g: ['梅', '蘭', '菊', '竹'], c: ['#C43B5A', '#7A4BB0', '#C8891C', '#1E7B4C'] },
+    S: { g: ['春', '夏', '秋', '冬'], c: ['#1E7B4C', '#C43B2C', '#C8891C', '#2B5CA8'] },
+    A: { g: ['貓', '鼠', '雞', '蚣'], c: ['#8A5A2B', '#6B6B6B', '#C43B2C', '#5B3A1E'] },
+  };
+  function face(code) {
+    if (MJ.isBonus(code)) {
+      const f = BONUS_FACE[code[0]], n = +code[1];
+      return html`<svg viewBox="0 0 30 40" aria-hidden="true"><text x="4.2" y="8.6" font-size="6.8" class="tf-idx" fill="#7B725E">${n}</text><text x="15" y="28.5" font-size="17" text-anchor="middle" class="tf-k" fill=${f.c[n - 1]}>${f.g[n - 1]}</text></svg>`;
+    }
+    const n = +code[0], s = code[1];
+    if (s === 'm') {
+      return html`<svg viewBox="0 0 30 40" aria-hidden="true"><text x="15" y="17" font-size="13.5" text-anchor="middle" class="tf-k" fill=${TC.n}>${NUM_ZH[n - 1]}</text><text x="15" y="35" font-size="14.5" text-anchor="middle" class="tf-k" fill=${TC.r}>萬</text></svg>`;
+    }
+    if (s === 'z') {
+      if (n === 5) return html`<svg viewBox="0 0 30 40" aria-hidden="true"><rect x="6.5" y="7.5" width="17" height="25" rx="2.2" fill="none" stroke=${TC.b} stroke-width="2.2"/><rect x="9.5" y="10.5" width="11" height="19" rx="1" fill="none" stroke=${TC.b} stroke-width="0.9"/></svg>`;
+      const glyph = ['東', '南', '西', '北', '', '發', '中'][n - 1];
+      const col = n === 6 ? TC.g : n === 7 ? TC.r : TC.n;
+      return html`<svg viewBox="0 0 30 40" aria-hidden="true"><text x="15" y="27.5" font-size="19" text-anchor="middle" class="tf-k" fill=${col}>${glyph}</text></svg>`;
+    }
+    if (s === 'p') {
+      if (n === 1) return html`<svg viewBox="0 0 30 40" aria-hidden="true"><circle cx="15" cy="20" r="10" fill=${TC.g}/><circle cx="15" cy="20" r="7.2" fill="#F7F1E1"/><circle cx="15" cy="20" r="5.8" fill=${TC.r}/><circle cx="15" cy="20" r="2.4" fill="#F7F1E1"/><circle cx="15" cy="20" r="1.2" fill=${TC.b}/></svg>`;
+      const r = DOT_R[n];
+      return html`<svg viewBox="0 0 30 40" aria-hidden="true">${DOTS[n].map(([x, y, c]) => html`<circle cx=${x} cy=${y} r=${r} fill=${TC[c]}/><circle cx=${x} cy=${y} r=${r * 0.46} fill="none" stroke="#FFF8EA" stroke-width="0.9"/>`)}<text x="2.6" y="7.4" font-size="6" class="tf-idx" fill="#8B826E">${n}</text></svg>`;
+    }
+    if (n === 1) {
+      return html`<svg viewBox="0 0 30 40" aria-hidden="true"><path d="M9 27 C8 20 11 15 15 15 C19 15 22 19 21 26 Z" fill=${TC.g}/><circle cx="15.5" cy="11.5" r="4.2" fill=${TC.r}/><circle cx="16.8" cy="10.8" r="1" fill="#FFF8EA"/><path d="M19.2 11.8 L23 12.8 L19.3 13.6 Z" fill="#C8891C"/><path d="M10.5 26 L7 34 L15 29 L23 34 L19.5 26 Z" fill=${TC.b}/></svg>`;
+    }
+    const hgt = STICK_H[n], w = n === 8 ? 3.2 : 3.6;
+    return html`<svg viewBox="0 0 30 40" aria-hidden="true">${STICKS[n].map(([x, y, c]) => html`<rect x=${x - w / 2} y=${y - hgt / 2} width=${w} height=${hgt} rx="1.6" fill=${TC[c]}/><line x1=${x - w / 2} x2=${x + w / 2} y1=${y} y2=${y} stroke="#FFF8EA" stroke-width="0.8"/>`)}<text x="2.6" y="7.4" font-size="6" class="tf-idx" fill="#8B826E">${n}</text></svg>`;
+  }
+  function Tile({ code, size, onClick, pressed, win, badge, back, disabled, label }) {
+    const c = 'tile' + (size ? ' t-' + size : '') + (win ? ' is-win' : '') + (back ? ' is-back' : '');
+    const inner = [back ? null : face(code), badge != null ? html`<span class="tb">${badge}</span>` : null];
+    const aria = label || (back ? 'Face-down tile' : MJ.tileName(code));
+    if (onClick) return html`<button type="button" class=${c} onClick=${onClick} aria-label=${aria} aria-pressed=${pressed ? 'true' : undefined} disabled=${disabled}>${inner}</button>`;
+    return html`<span class=${c} role="img" aria-label=${aria}>${inner}</span>`;
+  }
+  function MeldTiles({ m, size }) {
+    const i = MJ.ix(m.tile);
+    let codes;
+    if (m.type === 'chi') codes = [MJ.cd(i), MJ.cd(i + 1), MJ.cd(i + 2)];
+    else if (m.type === 'pon') codes = [m.tile, m.tile, m.tile];
+    else codes = [m.tile, m.tile, m.tile, m.tile];
+    return codes.map((c, k) => html`<${Tile} code=${c} size=${size} back=${m.type === 'kan' && m.concealed && (k === 0 || k === 3)} />`);
+  }
+  function HandView({ tiles, size }) {
+    if (!tiles) return null;
+    const rest = MJ.sortTiles(tiles.hand);
+    const wi = tiles.win ? rest.lastIndexOf(tiles.win) : -1;
+    if (wi > -1) rest.splice(wi, 1);
+    return html`<div class="ltiles">
+      ${rest.map((c) => html`<${Tile} code=${c} size=${size} />`)}
+      ${tiles.win ? html`<span class="gap"></span><${Tile} code=${tiles.win} size=${size} win=${true} label=${'Winning tile: ' + MJ.tileName(tiles.win)} />` : null}
+      ${tiles.melds.map((m) => html`<span class="gap"></span><${MeldTiles} m=${m} size=${size} />`)}
+      ${tiles.bonus.length ? html`<span class="gap"></span>${MJ.sortTiles(tiles.bonus).map((c) => html`<${Tile} code=${c} size=${size} />`)}` : null}
+    </div>`;
+  }
+
+  /* ------------------------------------------------ api */
+  const API_URL = String(window.API_URL || '').replace(/\/$/, '');
+  const API = {
+    token: lsGet('mjsb.token') || null,
+    setToken(t) { this.token = t; if (t) lsSet('mjsb.token', t); else { try { localStorage.removeItem('mjsb.token'); } catch (e) {} } },
+    async call(fn, args, opts) {
+      let res;
+      try {
+        res = await fetch(API_URL + '/rpc', { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ fn, args: args || {}, token: this.token }), signal: opts && opts.signal });
+      } catch (e) {
+        if (e && e.name === 'AbortError') throw Object.assign(new Error('Cancelled'), { code: 'cancelled' });
+        throw Object.assign(new Error('No connection'), { code: 'offline' });
+      }
+      let j = null;
+      try { j = await res.json(); } catch (e) { throw Object.assign(new Error('Unreadable reply from the server'), { code: 'bad_reply', status: res.status }); }
+      if (!res.ok || (j && j.error)) {
+        const code = (j && j.error) || ('http_' + res.status);
+        if (code === 'signin_required' && this.token) { this.setToken(null); Store.sessionLost(); }
+        throw Object.assign(new Error((j && j.message) || 'The request failed'), { code, status: res.status });
+      }
+      return j;
+    },
+  };
+
+  /* ------------------------------------------------ storage: this device + the cloud */
+  const LS_KEY = 'mjsb.games.v1', LS_SYNC = 'mjsb.sync.v1';
+  const Store = {
+    games: {}, mode: 'memory', ready: false, error: '', note: '', subs: new Set(),
+    user: null, userId: null, synced: {}, lastSync: 0, pending: {}, inflight: {}, again: {}, timers: {}, syncing: false, scans: null, canScan: true,
+    emit() { this.subs.forEach((f) => f()); },
+    sub(f) { this.subs.add(f); return () => this.subs.delete(f); },
+    list() { return Object.values(this.games).sort((a, b) => b.updatedAt - a.updatedAt); },
+    get(id) { return this.games[id] || null; },
+    pendingCount() { return Object.keys(this.pending).length; },
+    loadLocal() {
+      try {
+        const raw = localStorage.getItem(LS_KEY);
+        (raw ? JSON.parse(raw) : []).forEach((g) => { if (g && g.id && RULES[g.ruleset]) this.games[g.id] = g; });
+        const sy = JSON.parse(lsGet(LS_SYNC) || '{}');
+        this.synced = sy.games || {}; this.lastSync = +sy.until || 0; this.userId = sy.user || null;
+        this.mode = 'local';
+      } catch (e) { this.mode = 'memory'; }
+    },
+    writeLocal() {
+      try {
+        localStorage.setItem(LS_KEY, JSON.stringify(Object.values(this.games)));
+        lsSet(LS_SYNC, JSON.stringify({ games: this.synced, until: this.lastSync, user: this.user ? this.user.id : this.userId }));
+        if (this.mode === 'memory') this.mode = 'local';
+      } catch (e) { if (this.mode === 'local') this.mode = 'memory'; }
+    },
+    save(g) { g.updatedAt = Date.now(); this.games[g.id] = g; this.writeLocal(); this.emit(); this.push(g.id); },
+    remove(id) {
+      delete this.games[id]; delete this.pending[id]; delete this.synced[id];
+      this.writeLocal(); this.emit();
+      if (this.user) API.call('deleteGame', { id }).catch((e) => this.fail(e));
+    },
+    dirty(id) { const g = this.games[id]; return !!g && this.synced[id] !== g.updatedAt; },
+    // Upload one game, coalescing rapid saves. Last write wins by updatedAt; a newer copy from another device replaces ours.
+    push(id) {
+      if (!this.user) return;
+      this.pending[id] = true;
+      clearTimeout(this.timers[id]);
+      this.timers[id] = setTimeout(() => this.flush(id), 400);
+    },
+    async flush(id) {
+      delete this.timers[id];
+      if (this.inflight[id]) { this.again[id] = true; return; }
+      const g = this.games[id];
+      if (!g || !this.user) { delete this.pending[id]; this.emit(); return; }
+      this.inflight[id] = true;
+      try {
+        const r = await API.call('saveGame', { game: g });
+        if (r && r.conflict && r.game) {
+          this.games[id] = r.game; this.synced[id] = r.game.updatedAt; delete this.pending[id];
+          this.note = 'This game was updated on another device, so the newer copy is shown.';
+        } else {
+          this.synced[id] = g.updatedAt;
+          if (this.games[id] === g || this.games[id].updatedAt === g.updatedAt) delete this.pending[id];
+        }
+        this.error = '';
+        this.writeLocal();
+      } catch (e) { this.fail(e); }
+      this.inflight[id] = false;
+      if (this.again[id]) { delete this.again[id]; this.timers[id] = setTimeout(() => this.flush(id), 50); }
+      this.emit();
+    },
+    retryPending() { Object.keys(this.pending).forEach((id) => { if (!this.timers[id] && !this.inflight[id]) this.push(id); }); },
+    fail(e) {
+      const code = e && e.code;
+      if (code === 'signin_required' || code === 'cancelled') return;
+      this.error = code === 'offline' ? 'No connection. Changes are kept on this device and will be saved to your account when you are back online.'
+        : code === 'too_big' ? 'This game is too large to save to your account. Export it and start a new one.'
+        : 'Couldn’t reach your account just now. Changes are kept on this device.';
+      this.emit();
+    },
+    sessionLost() { this.user = null; this.pending = {}; this.error = 'Your sign-in expired. Sign in again to keep saving to your account.'; this.emit(); },
+    async signIn(name, pin, create) {
+      const r = await API.call(create ? 'signup' : 'signin', { name, pin });
+      API.setToken(r.token);
+      this.setUser(r.user);
+      await this.sync();
+    },
+    setUser(u) {
+      if (!u) { this.user = null; return; }
+      if (this.userId && this.userId !== u.id) { this.synced = {}; this.lastSync = 0; }
+      this.user = u; this.userId = u.id; this.error = '';
+      this.writeLocal();
+    },
+    async signOut() {
+      try { await API.call('signout'); } catch (e) { /* the token is dropped anyway */ }
+      API.setToken(null);
+      // Cloud copies leave this device; anything not yet uploaded stays.
+      Object.keys(this.games).forEach((id) => { if (this.synced[id] !== undefined && !this.dirty(id)) delete this.games[id]; });
+      this.user = null; this.userId = null; this.synced = {}; this.lastSync = 0; this.pending = {}; this.scans = null;
+      this.writeLocal(); this.emit();
+    },
+    async sync() {
+      if (!this.user || this.syncing) return;
+      this.syncing = true; this.emit();
+      try {
+        const r = await API.call('listGames', { since: this.lastSync });
+        for (const g of r.games || []) {
+          if (!g || !g.id || !RULES[g.ruleset]) continue;
+          const local = this.games[g.id];
+          if (!local || !this.dirty(g.id) || (local.updatedAt || 0) <= (g.updatedAt || 0)) { this.games[g.id] = g; this.synced[g.id] = g.updatedAt; delete this.pending[g.id]; }
+        }
+        for (const id of r.deleted || []) { if (this.games[id] && this.synced[id] !== undefined) { delete this.games[id]; delete this.synced[id]; delete this.pending[id]; } }
+        this.lastSync = Math.max(this.lastSync, +r.until || 0);
+        this.error = '';
+        this.writeLocal();
+        Object.values(this.games).forEach((g) => { if (this.dirty(g.id)) this.push(g.id); });
+      } catch (e) { this.fail(e); }
+      this.syncing = false;
+      this.emit();
+    },
+    async refreshMe() {
+      if (!API.token) return;
+      try {
+        const r = await API.call('me');
+        this.setUser(r.user); this.scans = r.scans; this.canScan = r.canScan !== false;
+        await this.sync();
+      } catch (e) { if (e.code !== 'signin_required') this.fail(e); }
+    },
+    bumpScans() { if (this.scans) { this.scans.today += 1; this.emit(); } },
+  };
+  async function boot() {
+    Store.loadLocal();
+    Store.ready = true; Store.emit();
+    await Store.refreshMe();
+    window.addEventListener('online', () => { Store.retryPending(); Store.sync(); });
+    setInterval(() => { if (Store.pendingCount()) Store.retryPending(); }, 45000);
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && Store.user) Store.sync(); });
+  }
+  function storeLine() {
+    if (Store.error) return { dot: 'bad', text: Store.error };
+    if (Store.user) {
+      const n = Store.pendingCount();
+      if (n) return { dot: 'warn', text: 'Saving ' + n + ' game' + (n > 1 ? 's' : '') + ' to your account…' };
+      return { dot: 'ok', text: 'Games are saved to your account (' + Store.user.name + ').' };
+    }
+    if (Store.mode === 'local') return { dot: 'warn', text: 'Games are saved in this browser only. Sign in to keep them in your account and to read photos.' };
+    return { dot: 'bad', text: 'This browser can’t keep games. Download a backup before you close it.' };
+  }
+
+  /* ------------------------------------------------ files: download, share, import */
+  function downloadText(name, text, type) {
+    const blob = new Blob([text], { type: type || 'text/plain;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = name; a.rel = 'noopener';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  }
+  function canShareFiles() {
+    try { return !!(navigator.canShare && navigator.canShare({ files: [new File(['x'], 'x.txt', { type: 'text/plain' })] })); } catch (e) { return false; }
+  }
+  async function shareText(name, text, type) {
+    const file = new File([text], name, { type: type || 'text/plain' });
+    await navigator.share({ files: [file], title: name });
+  }
+  function importGamesFromFile(file, done) {
+    const rd = new FileReader();
+    rd.onerror = () => done(-1);
+    rd.onload = () => {
+      try {
+        const j = JSON.parse(rd.result);
+        const list = Array.isArray(j) ? j : j && Array.isArray(j.games) ? j.games.map((x) => (x && x.game) || x) : [j];
+        let n = 0;
+        for (const g of list) {
+          if (!g || !g.id || !RULES[g.ruleset] || !Array.isArray(g.entries) || !Array.isArray(g.players)) continue;
+          const cur = Store.get(g.id);
+          if (cur && (cur.updatedAt || 0) >= (g.updatedAt || 0)) continue;
+          delete g.example;
+          Store.save(clone(g)); n++;
+        }
+        done(n);
+      } catch (e) { done(-1); }
+    };
+    rd.readAsText(file);
+  }
+
+  /* ------------------------------------------------ example game */
+  function exampleGame() {
+    const g = MJ.newGame({ ruleset: 'hk', players: [{ name: 'Ah Mei' }, { name: 'Budi' }, { name: 'Chris' }, { name: 'Dewi' }], money: { per: 1000, symbol: 'Rp' } });
+    g.example = true; g.name = 'Example game';
+    const T = (s, win, melds, bonus) => ({ hand: MJ.parse(s), melds: melds || [], win, bonus: bonus || [] });
+    const hands = [
+      { outcome: 'win', winner: 1, how: 'discard', discarder: 3, tiles: T('123456m77z', '7z', [{ type: 'pon', tile: '5z' }, { type: 'pon', tile: '6z' }], ['F2']) },
+      { outcome: 'win', winner: 2, how: 'self', tiles: T('123456777p555z11z', '1z') },
+      { outcome: 'draw' },
+      { outcome: 'win', winner: 0, how: 'discard', discarder: 1, tiles: T('123456789m234m55m', '5m') },
+      { outcome: 'win', winner: 3, how: 'discard', discarder: 2, tiles: T('222m444p888s99p', '9p', [{ type: 'pon', tile: '7z' }]) },
+    ];
+    let t = Date.now() - 45 * 60 * 1000;
+    hands.forEach((i) => { const e = MJ.recordHand(g, i); t += 8 * 60 * 1000; e.at = t; });
+    g.createdAt = Date.now() - 50 * 60 * 1000;
+    return g;
+  }
+
+  /* ------------------------------------------------ small components */
+  function Seg({ options, value, onChange, label }) {
+    return html`<div class="seg" role="group" aria-label=${label}>${options.map(([v, text, cw]) => html`<button type="button" aria-pressed=${value === v ? 'true' : 'false'} onClick=${() => onChange(v)}>${text}${cw ? html`<span class="cw">${cw}</span>` : null}</button>`)}</div>`;
+  }
+  function Switch({ on, onChange, label }) {
+    return html`<button type="button" class="switch" role="switch" aria-checked=${on ? 'true' : 'false'} aria-label=${label} onClick=${() => onChange(!on)}></button>`;
+  }
+  function Stepper({ value, min, max, onChange, label, step }) {
+    const st = step || 1;
+    return html`<span class="stepper" role="group" aria-label=${label}>
+      <button type="button" aria-label=${'Less ' + label} disabled=${value <= min} onClick=${() => onChange(Math.max(min, value - st))}>−</button>
+      <span class="sv" aria-live="polite">${value}</span>
+      <button type="button" aria-label=${'More ' + label} disabled=${value >= max} onClick=${() => onChange(Math.min(max, value + st))}>+</button>
+    </span>`;
+  }
+  function PlayerChips({ game, value, onPick, exclude, multi }) {
+    return html`<div class="chips">${[0, 1, 2, 3].map((p) => {
+      const on = multi ? (value || []).includes(p) : value === p;
+      const seat = MJ.seatOf(game, p);
+      return html`<button type="button" class="chip" aria-pressed=${on ? 'true' : 'false'} disabled=${exclude != null && exclude === p} onClick=${() => onPick(p)}><span class="cw">${WZ[seat]}</span>${pname(game, p)}</button>`;
+    })}</div>`;
+  }
+  function Sheet({ title, sub, onClose, children, foot, tall }) {
+    const ref = useRef(null);
+    useEffect(() => {
+      const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+      document.addEventListener('keydown', onKey);
+      const prev = document.body.style.overflow; document.body.style.overflow = 'hidden';
+      if (ref.current) ref.current.focus();
+      return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prev; };
+    }, []);
+    return html`<div class="scrim" onClick=${(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div class=${'sheet' + (tall ? ' tall' : '')} role="dialog" aria-modal="true" aria-label=${title} tabindex="-1" ref=${ref}>
+        <div class="sheet-head"><div class="st"><b>${title}</b>${sub ? html`<span>${sub}</span>` : null}</div><button type="button" class="iconbtn" aria-label="Close" onClick=${onClose}>${I.close}</button></div>
+        <div class="sheet-body">${children}</div>
+        ${foot ? html`<div class="sheet-foot">${foot}</div>` : null}
+      </div>
+    </div>`;
+  }
+  function Confirm({ title, body, action, danger, onYes, onNo }) {
+    return html`<${Sheet} title=${title} onClose=${onNo} foot=${html`<div class="row" style=${{ justifyContent: 'flex-end' }}><button type="button" class="btn" onClick=${onNo}>Cancel</button><button type="button" class=${'btn ' + (danger ? 'danger' : 'primary')} onClick=${onYes}>${action}</button></div>`}>
+      <div class="sec"><p>${body}</p></div>
+    <//>`;
+  }
+
+  /* ------------------------------------------------ table */
+  function TableHero({ game, compact }) {
+    const t = MJ.totals(game), st = game.state;
+    const riichi = game.ruleset === 'riichi';
+    const start = riichi ? +game.settings.startPoints || 0 : 0;
+    const plate = (p) => {
+      const seat = MJ.seatOf(game, p), dealer = st.dealer === p;
+      const net = t[p] - start;
+      const m = moneyFor(game, net);
+      return html`<div class=${'plate' + (dealer ? ' is-dealer' : '')}>
+        ${dealer ? html`<span class="dealer-mark" title="Dealer" aria-label="Dealer">莊</span>` : null}
+        <span class="ph"><${Tile} code=${(seat + 1) + 'z'} size="xs" label=${MJ.WINDS[seat] + ' seat'} /><span class="pn">${pname(game, p)}</span></span>
+        <span class=${'ps ' + (riichi ? '' : cls(net))}>${riichi ? fmt(t[p]) : signed(t[p])}</span>
+        ${m ? html`<span class="pm">${m}</span>` : null}
+      </div>`;
+    };
+    return html`<div class=${'table' + (compact ? ' compact' : '') + (riichi ? ' is-riichi' : '')}>
+      <div class="felt">
+        <div class="seat top">${plate(2)}</div>
+        <div class="seat left">${plate(3)}</div>
+        <div class="center">
+          <span class="rw" aria-hidden="true">${WZ[st.round % 4]}</span>
+          <span class="rl">${MJ.roundLabel(game)}</span>
+          ${riichi ? html`<span class="sticks"><span class="stick honba" title="Honba"><i></i>${st.honba || 0}</span><span class="stick" title="Riichi sticks on the table"><i></i>${Math.round((st.pot || 0) / 1000)}</span></span>` : null}
+        </div>
+        <div class="seat right">${plate(1)}</div>
+        <div class="seat bottom">${plate(0)}</div>
+      </div>
+    </div>`;
+  }
+
+  /* ------------------------------------------------ ledger */
+  function entryWho(game, e) {
+    if (e.kind === 'side') return html`${e.label}`;
+    if (e.outcome === 'draw') return html`Draw${e.draw && e.draw.abortive ? ' (abortive)' : ''}`;
+    const w = pname(game, e.winner);
+    if (e.how === 'self') return html`${w} <em>self-drew</em>`;
+    return html`${w} <em>won off</em> ${pname(game, e.discarder)}`;
+  }
+  function Ledger({ game }) {
+    const [open, setOpen] = useState(null);
+    const R = RULES[game.ruleset];
+    const rows = game.entries.map((e, i) => ({ e, i })).reverse();
+    let handNo = 0;
+    const numbers = game.entries.map((e) => (e.kind === 'hand' ? ++handNo : null));
+    return html`<section class="ledger" aria-label="Hands played">
+      <div class="lhead"><h2>Hands</h2><span class="muted" style=${{ fontSize: '13px' }}>${handNo ? handNo + ' played' : ''}</span></div>
+      ${rows.length ? rows.map(({ e, i }) => {
+        const isOpen = open === e.id;
+        return html`<div class="lrow" key=${e.id}>
+          <button type="button" class="lsum" aria-expanded=${isOpen ? 'true' : 'false'} onClick=${() => setOpen(isOpen ? null : e.id)}>
+            <span class="lno">${numbers[i] ? '#' + numbers[i] : '·'}</span>
+            <span class="lmain">
+              <span class="lwho">${entryWho(game, e)}</span>
+              ${e.kind === 'hand' && e.outcome === 'win' ? html`<span class="lpats">${e.patterns.length ? e.patterns.join(' · ') : (e.label || '—')}</span>` : html`<span class="lpats">${e.kind === 'hand' ? MJ.roundLabel(game, e.before) : ''}</span>`}
+            </span>
+            <span class="lval">${e.kind === 'hand' && e.outcome === 'win' ? e.text.split(' · ')[0] : ''}</span>
+            <span class="ldeltas">${e.deltas.map((d, p) => html`<span class=${cls(d)}><small>${pname(game, p).slice(0, 6)}</small>${signed(d)}</span>`)}</span>
+          </button>
+          ${isOpen ? html`<div class="ldetail">
+            ${e.kind === 'hand' ? html`<p class="hint">${MJ.roundLabel(game, e.before)} · dealer ${pname(game, e.before.dealer)} · ${new Date(e.at).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</p>` : null}
+            ${e.tiles ? html`<${HandView} tiles=${e.tiles} size="sm" />` : null}
+            ${e.kind === 'hand' && e.outcome === 'win' ? html`<p style=${{ fontSize: '14px' }}><b>${e.text}</b>${e.liable != null ? ' · ' + pname(game, e.liable) + ' paid for everyone' : ''}</p>` : null}
+          </div>` : null}
+        </div>`;
+      }) : html`<p class="empty">No hands yet. Tap <b>Record hand</b> after each hand.</p>`}
+    </section>`;
+  }
+
+  /* ------------------------------------------------ tile editor */
+  const TABS = [['m', '萬', 'Chars'], ['p', '筒', 'Dots'], ['s', '索', 'Bamboo'], ['z', '字', 'Honours'], ['b', '花', 'Bonus']];
+  function TileEditor({ R, tiles, onChange }) {
+    const [mode, setMode] = useState('tile');
+    const [tab, setTab] = useState('m');
+    const [sel, setSel] = useState(null);
+    const bonusSet = R.id === 'riichi' ? [] : R.id === 'sg' ? ['F', 'S', 'A'] : ['F', 'S'];
+    const tabs = TABS.filter(([k]) => k !== 'b' || bonusSet.length);
+    const check = MJ.checkHand(tiles, R.handSize);
+    const used = {};
+    tiles.hand.forEach((c) => (used[c] = (used[c] || 0) + 1));
+    tiles.melds.forEach((m) => { const i = MJ.ix(m.tile); const add = (c) => (used[c] = (used[c] || 0) + 1); if (m.type === 'chi') [0, 1, 2].forEach((k) => add(MJ.cd(i + k))); else for (let k = 0; k < (m.type === 'kan' ? 4 : 3); k++) add(m.tile); });
+    function add(code) {
+      setSel(null);
+      if (MJ.isBonus(code)) { if (!tiles.bonus.includes(code)) onChange(Object.assign({}, tiles, { bonus: tiles.bonus.concat(code) })); return; }
+      if (mode === 'tile') { onChange(Object.assign({}, tiles, { hand: tiles.hand.concat(code), win: code })); return; }
+      const i = MJ.ix(code);
+      if (mode === 'chi' && (i >= 27 || i % 9 > 6)) return;
+      const meld = mode === 'chi' ? { type: 'chi', tile: code } : mode === 'pon' ? { type: 'pon', tile: code } : { type: 'kan', tile: code, concealed: mode === 'ckan' };
+      onChange(Object.assign({}, tiles, { melds: tiles.melds.concat(meld) }));
+      setMode('tile');
+    }
+    const sorted = MJ.sortTiles(tiles.hand);
+    const wi = tiles.win ? sorted.lastIndexOf(tiles.win) : -1;
+    const display = sorted.map((c, i) => ({ c, i })).filter((x) => x.i !== wi);
+    function removeAt(c) {
+      const hand = tiles.hand.slice(); const k = hand.lastIndexOf(c); if (k > -1) hand.splice(k, 1);
+      let win = tiles.win;
+      if (win && !hand.includes(win)) win = hand.length ? hand[hand.length - 1] : null;
+      onChange(Object.assign({}, tiles, { hand, win })); setSel(null);
+    }
+    const palette = () => {
+      if (tab === 'b') {
+        const codes = [];
+        bonusSet.forEach((k) => [1, 2, 3, 4].forEach((n) => codes.push(k + n)));
+        return html`<div class="palette p4">${codes.map((c) => html`<${Tile} code=${c} onClick=${() => add(c)} disabled=${tiles.bonus.includes(c)} />`)}</div>`;
+      }
+      const n = tab === 'z' ? 7 : 9;
+      const codes = []; for (let k = 1; k <= n; k++) codes.push(k + tab);
+      return html`<div class=${'palette' + (tab === 'z' ? ' p7' : '')}>${codes.map((c) => {
+        const u = used[c] || 0;
+        const i = MJ.ix(c);
+        const need = mode === 'pon' ? 3 : mode === 'kan' || mode === 'ckan' ? 4 : 1;
+        const blocked = mode === 'chi' ? i >= 27 || i % 9 > 6 || [0, 1, 2].some((k) => (used[MJ.cd(i + k)] || 0) >= 4) : u + need > 4;
+        return html`<${Tile} code=${c} onClick=${() => add(c)} badge=${u || null} disabled=${blocked} />`;
+      })}</div>`;
+    };
+    const modes = [['tile', 'Tile'], ['chi', 'Chow'], ['pon', 'Pung'], ['kan', 'Kong'], ['ckan', 'Hidden kong']];
+    return html`<div class="handbox">
+      <div class="zone">
+        <div class="zone-h"><span>In hand</span><span class=${'counter' + (check.ok ? ' ok' : '')}>${check.have} of ${check.expected}</span></div>
+        <div class="zone-tiles">
+          ${display.map(({ c, i }) => html`<${Tile} code=${c} pressed=${sel === i} onClick=${() => setSel(sel === i ? null : i)} />`)}
+          ${tiles.win ? html`<span class="wingap"></span><${Tile} code=${tiles.win} win=${true} pressed=${sel === 'w'} onClick=${() => setSel(sel === 'w' ? null : 'w')} label=${'Winning tile: ' + MJ.tileName(tiles.win)} />` : null}
+          ${!tiles.hand.length ? html`<span class="hint">Tap tiles below. The last tile you add is marked as the winning tile.</span>` : null}
+        </div>
+        ${sel != null ? html`<div class="selbar">
+          ${sel !== 'w' ? html`<button type="button" class="btn small" onClick=${() => { onChange(Object.assign({}, tiles, { win: sorted[sel] })); setSel(null); }}>Make winning tile</button>` : html`<span class="hint">Winning tile</span>`}
+          <button type="button" class="btn small danger" onClick=${() => removeAt(sel === 'w' ? tiles.win : sorted[sel])}>Remove</button>
+        </div>` : null}
+      </div>
+      ${tiles.melds.length || mode !== 'tile' ? html`<div class="zone">
+        <div class="zone-h"><span>Melds (chow, pung, kong)</span></div>
+        <div class="zone-tiles">${tiles.melds.map((m, k) => html`<span class="meld"><${MeldTiles} m=${m} size="sm" /><button type="button" class="mx" aria-label="Remove meld" onClick=${() => onChange(Object.assign({}, tiles, { melds: tiles.melds.filter((_, j) => j !== k) }))}>×</button></span>`)}
+          ${!tiles.melds.length ? html`<span class="hint">${mode === 'chi' ? 'Tap the lowest tile of the chow.' : 'Tap the tile for this set.'}</span>` : null}
+        </div>
+      </div>` : null}
+      ${bonusSet.length ? html`<div class="zone">
+        <div class="zone-h"><span>Flowers${R.id === 'sg' ? ' and animals' : ''}</span>${tiles.bonus.length ? '' : html`<span>none</span>`}</div>
+        ${tiles.bonus.length ? html`<div class="zone-tiles">${MJ.sortTiles(tiles.bonus).map((c) => html`<${Tile} code=${c} size="sm" onClick=${() => onChange(Object.assign({}, tiles, { bonus: tiles.bonus.filter((b) => b !== c) }))} label=${'Remove ' + MJ.tileName(c)} />`)}</div>` : null}
+      </div>` : null}
+      ${check.problems.length ? html`<p class="warn">${check.problems[0]}</p>` : null}
+      <div class="modebar" role="group" aria-label="Add as">${modes.map(([k, t]) => html`<button type="button" class="chip" aria-pressed=${mode === k ? 'true' : 'false'} onClick=${() => setMode(mode === k && k !== 'tile' ? 'tile' : k)}>${t}</button>`)}</div>
+      <div class="tabs" role="tablist">${tabs.map(([k, g, t]) => html`<button type="button" role="tab" aria-selected=${tab === k ? 'true' : 'false'} aria-pressed=${tab === k ? 'true' : 'false'} onClick=${() => setTab(k)}><b>${g}</b><span>${t}</span></button>`)}</div>
+      ${palette()}
+      <div class="row" style=${{ justifyContent: 'space-between' }}>
+        <span class="hint">${mode === 'tile' ? 'Adding single tiles to the hand' : mode === 'chi' ? 'Adding an exposed chow' : mode === 'pon' ? 'Adding an exposed pung' : mode === 'kan' ? 'Adding an exposed kong' : 'Adding a concealed kong'}</span>
+        <button type="button" class="link" onClick=${() => onChange(MJ.emptyHand())}>Clear all</button>
+      </div>
+    </div>`;
+  }
+
+  /* ------------------------------------------------ photo scan */
+  function scanError(e) {
+    const code = e && e.code;
+    if (code === 'signin_required') return 'Sign in to read photos.';
+    if (code === 'not_configured') return 'Photo reading isn’t switched on for this server yet. Tap the tiles in instead.';
+    if (code === 'rate_limited') return (e && e.message) || 'Too many scans just now. Wait a minute, then try again.';
+    if (code === 'image_rejected') return 'That photo couldn’t be opened. Try a JPEG taken with the camera.';
+    if (code === 'offline') return 'No connection. Photo reading needs the internet.';
+    if (code === 'refused' || code === 'empty_completion' || code === 'invalid_json') return 'The tiles couldn’t be read from that photo. Try a closer, straight-on shot in good light.';
+    return (e && e.message) || 'The scan didn’t finish. Try again.';
+  }
+  // Shrink the photo to what the reader can use (1568 px on the long edge) and return it as base64 JPEG.
+  async function prepImage(file, max) {
+    max = max || 1568;
+    let bmp = null;
+    try { bmp = await createImageBitmap(file, { imageOrientation: 'from-image' }); }
+    catch (e) { try { bmp = await createImageBitmap(file); } catch (e2) { bmp = null; } }
+    let src = bmp, w, h, url = null;
+    if (bmp) { w = bmp.width; h = bmp.height; }
+    else {
+      url = URL.createObjectURL(file);
+      src = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(Object.assign(new Error('bad image'), { code: 'image_rejected' })); im.src = url; });
+      w = src.naturalWidth; h = src.naturalHeight;
+    }
+    if (!w || !h) throw Object.assign(new Error('bad image'), { code: 'image_rejected' });
+    const scale = Math.min(1, max / Math.max(w, h));
+    const cv = document.createElement('canvas');
+    cv.width = Math.max(1, Math.round(w * scale)); cv.height = Math.max(1, Math.round(h * scale));
+    cv.getContext('2d').drawImage(src, 0, 0, cv.width, cv.height);
+    if (bmp && bmp.close) bmp.close();
+    if (url) URL.revokeObjectURL(url);
+    const dataUrl = cv.toDataURL('image/jpeg', 0.86);
+    return { b64: dataUrl.slice(dataUrl.indexOf(',') + 1), type: 'image/jpeg', w: cv.width, h: cv.height };
+  }
+
+  /* ------------------------------------------------ record a hand */
+  function freshDraft() {
+    return { outcome: 'win', winner: null, how: 'discard', discarder: null, tiles: null, manual: {}, liable: null,
+      riichi: { declared: [], dora: 0, fu: 30, closed: true }, draw: { tenpai: [], abortive: false }, value: '', label: '' };
+  }
+  function cleanInput(R, d) {
+    const x = clone(d);
+    if (x.tiles && !x.tiles.hand.length && !x.tiles.melds.length) x.tiles = null;
+    if (R.id !== 'riichi') delete x.riichi;
+    if (R.id !== 'custom') { delete x.value; delete x.label; } else x.value = +x.value || 0;
+    if (x.outcome === 'draw') { x.winner = null; x.discarder = null; x.tiles = null; x.manual = {}; x.liable = null; }
+    if (x.how === 'self') x.discarder = null;
+    return x;
+  }
+  function RecordSheet({ game, onClose, onSaved, onSignIn }) {
+    const R = RULES[game.ruleset];
+    const st = game.state;
+    const [d, setD] = useState(freshDraft);
+    const [scan, setScan] = useState(null);
+    const [viewPhoto, setViewPhoto] = useState(false);
+    const [q, setQ] = useState('');
+    const camRef = useRef(null), picRef = useRef(null), ctlRef = useRef(null);
+    const res = useMemo(() => MJ.evaluate(game, d), [game, d]);
+    const up = (patch) => setD((prev) => Object.assign({}, prev, typeof patch === 'function' ? patch(prev) : patch));
+    const riichi = R.id === 'riichi';
+    const win = d.outcome === 'win';
+    const selfDraw = d.how === 'self';
+    const words = howWords(R);
+    const V = MJ.valuesOf(game);
+    const menzen = res.det ? res.det.menzen : d.riichi.closed !== false;
+    useEffect(() => () => { if (ctlRef.current) ctlRef.current.abort(); if (scan && scan.url) URL.revokeObjectURL(scan.url); }, []);
+
+    const setCount = (id, n) => up((prev) => ({ manual: Object.assign({}, prev.manual, { [id]: n }) }));
+    const setRiichi = (patch) => up((prev) => ({ riichi: Object.assign({}, prev.riichi, patch) }));
+    const toggleIn = (list, p) => (list.includes(p) ? list.filter((x) => x !== p) : list.concat(p).sort());
+
+    async function runScan(file, tier) {
+      if (!file) return;
+      if (ctlRef.current) ctlRef.current.abort();
+      const ctl = new AbortController(); ctlRef.current = ctl;
+      const url = scan && scan.file === file ? scan.url : URL.createObjectURL(file);
+      if (scan && scan.url && scan.url !== url) URL.revokeObjectURL(scan.url);
+      if (!Store.user) { setScan({ status: 'error', url, file, msg: 'Sign in to read photos.', signin: true }); return; }
+      setScan({ status: 'reading', url, file, tier });
+      try {
+        const img = await prepImage(file);
+        const r = await API.call('scan', { image: img.b64, mediaType: img.type, ruleset: R.id, tier: tier === 'complex' ? 'careful' : 'default', gameId: game.id }, { signal: ctl.signal });
+        const parsed = MJ.parseScan(r.result, R);
+        up((prev) => ({ tiles: parsed.tiles, scanId: r.scanId, riichi: riichi && parsed.redFives ? Object.assign({}, prev.riichi, { dora: (prev.riichi.dora || 0) + parsed.redFives }) : prev.riichi }));
+        setScan({ status: 'done', url, file, tier, unsure: parsed.unsure, note: parsed.note, redFives: parsed.redFives, ms: r.ms });
+        Store.bumpScans();
+      } catch (e) {
+        if (e && e.code === 'cancelled') { setScan({ status: 'idle', url, file }); return; }
+        setScan({ status: 'error', url, file, msg: scanError(e), signin: e && e.code === 'signin_required' });
+      }
+    }
+    const onPick = (e) => { const f = e.target.files && e.target.files[0]; e.target.value = ''; if (f) runScan(f, 'default'); };
+    const canScan = Store.canScan !== false;
+
+    /* receipt rows */
+    const rows = [];
+    if (win) {
+      for (const p of R.patterns) {
+        const n = res.counts[p.id] || 0;
+        if (!n) continue;
+        if (riichi && p.id === 'riichi') { rows.push({ p, n, fixed: 'from Riichi declared' }); continue; }
+        rows.push({ p, n, fixed: p.src === 'how' ? 'from Self-draw above' : null });
+      }
+    }
+    const addable = R.patterns.filter((p) => !(res.counts[p.id] > 0) && !(p.src === 'how') && !(riichi && p.id === 'riichi'));
+    const ql = q.trim().toLowerCase();
+    const matches = (p) => !ql || p.en.toLowerCase().includes(ql) || (p.zh || '').includes(q.trim());
+
+    const pays = res.deltas || [0, 0, 0, 0];
+    const summary = () => {
+      if (!win) {
+        const any = pays.some((x) => Math.abs(x) > 0.004);
+        return html`<div class="sumv"><b>Draw</b><span>${any ? 'Tenpai payments and riichi sticks below' : 'No payments'}</span></div>`;
+      }
+      if (!res.valid) return html`<div class="sumv"><b>${res.text || 'Not ready'}</b><span class="err">${res.reason}</span></div>`;
+      return html`<div class="sumv"><b>${res.text}</b><span>${res.detail || ''}</span></div>`;
+    };
+    const canSave = !win || res.valid;
+    function save() {
+      if (!canSave) return;
+      const g = clone(game);
+      const input = cleanInput(R, d);
+      let entry;
+      try { entry = MJ.recordHand(g, input); } catch (e) { return; }
+      if (d.scanId && input.tiles) {
+        entry.scanId = d.scanId;
+        API.call('scanFinal', { scanId: d.scanId, tiles: input.tiles }).catch(() => {});
+      }
+      onSaved(g);
+    }
+
+    const foot = html`<div class="sumrow">${summary()}<button type="button" class="btn primary big" disabled=${!canSave} onClick=${save}>Save hand</button></div>
+      ${(!win || res.valid) && pays.some((x) => Math.abs(x) > 0.004) ? html`<div class="pays">${pays.map((x, p) => html`<span class=${cls(x)}><small>${pname(game, p)}</small>${signed(x)}</span>`)}</div>` : null}`;
+
+    return html`<${Sheet} tall=${true} title="Record a hand" sub=${MJ.roundLabel(game) + ' · dealer ' + pname(game, st.dealer)} onClose=${onClose} foot=${foot}>
+      <div class="sec">
+        <${Seg} label="Result" value=${d.outcome} onChange=${(v) => up({ outcome: v })} options=${[['win', 'Someone won'], ['draw', 'Draw', '流局']]} />
+      </div>
+      ${riichi ? html`<div class="sec"><h3>Riichi declared this hand</h3>
+        <${PlayerChips} game=${game} multi=${true} value=${d.riichi.declared} onPick=${(p) => setRiichi({ declared: toggleIn(d.riichi.declared, p) })} />
+        <p class="hint">Each declarer puts 1,000 on the table. The winner collects every stick there.</p></div>` : null}
+      ${win ? html`
+        <div class="sec"><h3>Who won</h3>
+          <${PlayerChips} game=${game} value=${d.winner} onPick=${(p) => up((prev) => ({ winner: p, discarder: prev.discarder === p ? null : prev.discarder }))} />
+        </div>
+        <div class="sec"><h3>How</h3>
+          <${Seg} label="How it was won" value=${d.how} onChange=${(v) => up({ how: v })} options=${[['self', 'Self-draw', words[0]], ['discard', 'Discard', words[1]]]} />
+          ${!selfDraw ? html`<p class="flabel" style=${{ marginTop: '4px' }}>Who discarded the winning tile?</p>
+            <${PlayerChips} game=${game} value=${d.discarder} exclude=${d.winner} onPick=${(p) => up({ discarder: p })} />` : null}
+        </div>
+        ${R.valueEntry ? html`<div class="sec"><h3>Hand value</h3>
+          <div class="field"><label for="cv">Points for this hand</label><input id="cv" class="input num" inputmode="decimal" value=${d.value} onInput=${(e) => up({ value: e.target.value })} placeholder="e.g. 8" /></div>
+          <div class="field"><label for="cl">What was it? (optional)</label><input id="cl" class="input" value=${d.label} onInput=${(e) => up({ label: e.target.value.slice(0, 60) })} placeholder="e.g. 清一色 pure one suit" /></div>
+        </div>` : html`
+        <div class="sec"><h3>The winning hand</h3>
+          ${R.manualOnly ? html`<p class="hint">Chinese Official has 81 fan with many “not counted with” rules, so tick the fan yourself below. Tiles help you check.</p>` : null}
+          ${canScan ? html`<div class="scanrow">
+              <button type="button" class="btn" onClick=${() => camRef.current && camRef.current.click()}>${I.camera}Take photo</button>
+              <button type="button" class="btn" onClick=${() => picRef.current && picRef.current.click()}>${I.image}From photos</button>
+            </div>
+            <input ref=${camRef} type="file" accept="image/*" capture="environment" class="hidden-input" tabindex="-1" onChange=${onPick} />
+            <input ref=${picRef} type="file" accept="image/*" class="hidden-input" tabindex="-1" onChange=${onPick} />` : null}
+          ${scan ? html`<div class="scanstate">
+              <button type="button" class="thumb" aria-label="View photo" onClick=${() => setViewPhoto(true)}><img src=${scan.url} alt="Photo of the hand" /></button>
+              <div class="stack" style=${{ gap: '6px' }}>
+                ${scan.status === 'reading' ? html`<div class="row"><span class="spinner" aria-hidden="true"></span><span>Reading the tiles${scan.tier === 'complex' ? ' carefully' : ''}…</span><button type="button" class="link" onClick=${() => ctlRef.current && ctlRef.current.abort()}>Stop</button></div>` : null}
+                ${scan.status === 'done' ? html`<p><b>Tiles filled in${scan.ms ? ' in ' + (scan.ms / 1000).toFixed(1) + ' s' : ''}.</b> Check them against the photo and tap any tile to fix it.</p>` : null}
+                ${scan.status === 'error' ? html`<p class="err">${scan.msg}</p>` : null}
+                ${scan.status === 'error' && scan.signin && onSignIn ? html`<button type="button" class="btn small primary" style=${{ justifySelf: 'start' }} onClick=${onSignIn}>Sign in</button>` : null}
+                ${scan.status !== 'reading' && !(scan.status === 'error' && scan.signin) && canScan ? html`<button type="button" class="link" style=${{ justifySelf: 'start' }} onClick=${() => runScan(scan.file, 'complex')}>Read again, more carefully</button>` : null}
+              </div>
+            </div>
+            ${scan.status === 'done' && scan.unsure && scan.unsure.length ? html`<p class="warn">Double-check: ${scan.unsure.join('; ')}</p>` : null}
+            ${scan.status === 'done' && scan.redFives ? html`<p class="hint">${scan.redFives} red five${scan.redFives > 1 ? 's' : ''} spotted and added to dora.</p>` : null}` : null}
+          ${!scan && canScan ? html`<ul class="tips"><li>Lay the hand face up in one row, melds and flowers a little apart.</li><li>Fill the frame, straight on, in good light. Photos are kept 60 days to improve reading.</li></ul>` : null}
+          ${!canScan ? html`<p class="hint">Photo reading isn’t switched on for this server yet. Tap the tiles in instead.</p>` : null}
+          ${d.tiles ? html`<${TileEditor} R=${R} tiles=${d.tiles} onChange=${(t) => up({ tiles: t })} />
+            ${res.tileNote ? html`<p class="warn">${res.tileNote}</p>` : null}
+            <button type="button" class="link" style=${{ justifySelf: 'start' }} onClick=${() => up({ tiles: null })}>Don’t use tiles, just tick patterns</button>`
+          : html`<button type="button" class="btn" onClick=${() => up({ tiles: MJ.emptyHand() })}>${I.tiles}Tap in the tiles</button>
+            <p class="hint">${R.detect ? 'Enter tiles to have the patterns picked for you, or tick them yourself below.' : 'Tick the fan yourself below.'}</p>`}
+        </div>`}
+        ${riichi ? html`<div class="sec"><h3>Dora and fu</h3>
+          <div class="toggle-row"><span class="tl"><b>Dora</b><small>Dora, ura-dora and red fives together</small></span><${Stepper} label="dora" value=${d.riichi.dora || 0} min=${0} max=${20} onChange=${(v) => setRiichi({ dora: v })} /></div>
+          ${res.det && res.det.fu ? html`<p class="hint">Fu from the tiles: <b class="num">${res.det.fu}</b></p>` : html`
+            <div class="toggle-row"><span class="tl"><b>Closed hand</b><small>No chi, pon or open kan</small></span><${Switch} on=${d.riichi.closed !== false} onChange=${(v) => setRiichi({ closed: v })} label="Closed hand" /></div>
+            <p class="flabel">Fu</p>
+            <div class="chips fuchips">${[20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110].map((f) => html`<button type="button" class="chip" aria-pressed=${(+d.riichi.fu || 30) === f ? 'true' : 'false'} onClick=${() => setRiichi({ fu: f })}>${f}</button>`)}</div>
+            <p class="hint">Seven pairs is always 25 fu and pinfu is 20 on a self-draw, whatever you pick.</p>`}
+        </div>` : null}
+        ${!R.valueEntry ? html`<div class="sec"><h3>Scoring</h3>
+          ${rows.length ? html`<div class="receipt">${rows.map(({ p, n, fixed }) => {
+            const lab = patLabel(R, p, selfDraw);
+            const exBy = res.by[p.id];
+            const auto = !fixed && (res.auto[p.id] || 0) > 0 && !(p.id in d.manual);
+            const val = R.id === 'riichi' ? valueText(R, p, V, menzen) : V[p.id] === 'L' ? 'Limit' : (+V[p.id] || 0) * n;
+            return html`<div class=${'rrow' + (exBy ? ' is-excl' : '')} key=${p.id}>
+              <div class="rname"><span class="zh">${lab.zh}</span><span class="en">${lab.en}${n > 1 && p.max <= 1 ? ' ×' + n : ''}</span>
+                ${exBy ? html`<span class="sub">Not counted with ${(R.patterns.find((x) => x.id === exBy) || {}).zh}</span>` : fixed ? html`<span class="sub">${fixed}</span>` : auto ? html`<span class="tag">from the tiles</span>` : null}
+              </div>
+              ${p.max > 1 && !fixed ? html`<${Stepper} label=${p.en} value=${n} min=${0} max=${p.max} onChange=${(v) => setCount(p.id, v)} />` : html`<span></span>`}
+              <span style=${{ display: 'flex', alignItems: 'center', gap: '2px' }}><span class="rval">${val}</span>${fixed ? null : html`<button type="button" class="rx" aria-label=${'Remove ' + p.en} onClick=${() => setCount(p.id, 0)}>×</button>`}</span>
+            </div>`;
+          })}
+          ${riichi && (d.riichi.dora || 0) > 0 && res.valid && !res.ym ? html`<div class="rrow"><div class="rname"><span class="zh">ドラ</span><span class="en">Dora</span></div><span></span><span class="rval">${d.riichi.dora} han</span></div>` : null}
+          </div>` : html`<p class="hint">Nothing counted yet. ${d.tiles ? 'Finish the tiles or add patterns below.' : 'Add the patterns in this hand below.'}</p>`}
+          ${Object.keys(d.manual).length ? html`<button type="button" class="link" style=${{ justifySelf: 'start' }} onClick=${() => up({ manual: {} })}>Undo my pattern changes</button>` : null}
+          <details class="addlist" open=${!d.tiles}>
+            <summary>Add a pattern</summary>
+            <div class="addbody">
+              ${R.patterns.length > 35 ? html`<input class="input" type="search" placeholder="Search patterns" value=${q} onInput=${(e) => setQ(e.target.value)} aria-label="Search patterns" />` : null}
+              ${groupsOf(R).map((g) => {
+                const list = addable.filter((p) => p.g === g && matches(p));
+                if (!list.length) return null;
+                return html`<div class="addgrp">${groupName(g)}</div>${list.map((p) => {
+                  const lab = patLabel(R, p, selfDraw);
+                  return html`<button type="button" class="addrow" key=${p.id} onClick=${() => setCount(p.id, 1)}><span class="plus" aria-hidden="true">+</span><span class="nm"><b>${lab.zh}</b><span>${lab.en}${p.note ? ' — ' + p.note : ''}</span></span><span class="v">${valueText(R, p, V, menzen)}</span></button>`;
+                })}`;
+              })}
+            </div>
+          </details>
+        </div>` : null}
+        ${R.id !== 'riichi' && R.id !== 'mcr' ? html`<div class="sec"><details><summary class="flabel" style=${{ cursor: 'pointer', minHeight: '32px' }}>One player pays for everyone (包)</summary>
+          <p class="hint" style=${{ margin: '8px 0' }}>Use when a player is liable, for example they fed the tile that completed a limit hand.</p>
+          <div class="chips">
+            <button type="button" class="chip" aria-pressed=${d.liable == null ? 'true' : 'false'} onClick=${() => up({ liable: null })}>Nobody</button>
+            ${[0, 1, 2, 3].filter((p) => p !== d.winner).map((p) => html`<button type="button" class="chip" aria-pressed=${d.liable === p ? 'true' : 'false'} onClick=${() => up({ liable: p })}>${pname(game, p)}</button>`)}
+          </div></details></div>` : null}
+      ` : html`
+        <div class="sec">${riichi ? html`<h3>Who was tenpai?</h3>
+          <${PlayerChips} game=${game} multi=${true} value=${d.draw.tenpai} onPick=${(p) => up((prev) => ({ draw: Object.assign({}, prev.draw, { tenpai: toggleIn(prev.draw.tenpai, p) }) }))} />
+          <div class="toggle-row"><span class="tl"><b>Abortive draw</b><small>No tenpai payments; dealer stays</small></span><${Switch} on=${d.draw.abortive} onChange=${(v) => up((prev) => ({ draw: Object.assign({}, prev.draw, { abortive: v }) }))} label="Abortive draw" /></div>`
+          : html`<p>No one won. Nothing is paid.</p><p class="hint">${R.id === 'mcr' ? 'The dealer passes to the next seat.' : R.id === 'tw' || game.settings.keepOnDraw ? 'The dealer stays for the next hand.' : 'The dealer passes to the next seat.'}</p>`}</div>`}
+      ${viewPhoto && scan ? html`<div class="photo-view" role="dialog" aria-label="Photo" onClick=${() => setViewPhoto(false)}><img src=${scan.url} alt="Photo of the hand" /></div>` : null}
+    <//>`;
+  }
+
+  /* ------------------------------------------------ payout / adjustment */
+  function PayoutSheet({ game, onClose, onSaved }) {
+    const R = RULES[game.ruleset];
+    const [mode, setMode] = useState('each');
+    const [who, setWho] = useState(null);
+    const [other, setOther] = useState(null);
+    const [amt, setAmt] = useState('');
+    const [label, setLabel] = useState('');
+    const a = Math.max(0, +amt || 0);
+    const deltas = [0, 0, 0, 0];
+    if (who != null && a > 0) {
+      if (mode === 'each') [0, 1, 2, 3].forEach((p) => { if (p !== who) { deltas[p] -= a; deltas[who] += a; } });
+      else if (mode === 'all') [0, 1, 2, 3].forEach((p) => { if (p !== who) { deltas[p] += a; deltas[who] -= a; } });
+      else if (other != null && other !== who) { deltas[who] += a; deltas[other] -= a; }
+    }
+    const ok = deltas.some((x) => x !== 0);
+    const unit = game.ruleset === 'riichi' ? 'points' : 'pts';
+    function save() {
+      if (!ok) return;
+      const g = clone(game);
+      const txt = label.trim() || (mode === 'each' ? pname(game, who) + ' collects ' + fmt(a) + ' from each' : mode === 'all' ? pname(game, who) + ' pays ' + fmt(a) + ' to each' : pname(game, other) + ' pays ' + pname(game, who));
+      MJ.recordSide(g, deltas, txt);
+      onSaved(g);
+    }
+    return html`<${Sheet} title="Payout or adjustment" sub="Kong money, bites, penalties, corrections" onClose=${onClose}
+      foot=${html`<div class="sumrow"><div class="pays" style=${{ marginTop: 0 }}>${ok ? deltas.map((x, p) => html`<span class=${cls(x)}><small>${pname(game, p)}</small>${signed(x)}</span>`) : html`<span class="muted">Pick a player and an amount</span>`}</div><button type="button" class="btn primary" disabled=${!ok} onClick=${save}>Save</button></div>`}>
+      ${R.instant ? html`<div class="sec"><h3>Instant payouts</h3><div class="chips">${R.instant.map((x) => html`<button type="button" class="chip" onClick=${() => { setMode('each'); setAmt(String(x.each)); setLabel(x.en + (x.zh ? ' ' + x.zh : '')); }}>${x.zh ? html`<span class="cw">${x.zh}</span>` : null}${x.en} · ${x.each}</button>`)}</div><p class="hint">Each other player pays the winner of the bonus. Amounts are editable below.</p></div>` : null}
+      <div class="sec"><h3>Type</h3>
+        <${Seg} label="Payment type" value=${mode} onChange=${setMode} options=${[['each', 'Everyone pays one'], ['all', 'One pays everyone'], ['one', 'One pays one']]} />
+      </div>
+      <div class="sec"><h3>${mode === 'each' ? 'Who collects' : mode === 'all' ? 'Who pays' : 'Who receives'}</h3>
+        <${PlayerChips} game=${game} value=${who} onPick=${setWho} />
+        ${mode === 'one' ? html`<p class="flabel">Who pays</p><${PlayerChips} game=${game} value=${other} exclude=${who} onPick=${setOther} />` : null}
+      </div>
+      <div class="sec">
+        <div class="field"><label for="pa">Amount ${mode === 'one' ? '' : 'per player'} (${unit})</label><input id="pa" class="input num" inputmode="decimal" value=${amt} onInput=${(e) => setAmt(e.target.value)} placeholder="e.g. 2" /></div>
+        <div class="field"><label for="pl">Note (optional)</label><input id="pl" class="input" value=${label} onInput=${(e) => setLabel(e.target.value.slice(0, 60))} placeholder="e.g. 詐糊 false win" /></div>
+      </div>
+    <//>`;
+  }
+
+  /* ------------------------------------------------ settings controls */
+  function SettingControl({ s, value, onChange }) {
+    if (s.type === 'bool') return html`<div class="toggle-row"><span class="tl"><b>${s.label}</b></span><${Switch} on=${!!value} onChange=${onChange} label=${s.label} /></div>`;
+    if (s.type === 'select') return html`<div class="field"><label for=${'s-' + s.key}>${s.label}</label><select id=${'s-' + s.key} class="select" value=${value} onChange=${(e) => onChange(e.target.value)}>${s.options.map(([v, t]) => html`<option value=${v}>${t}</option>`)}</select></div>`;
+    const step = s.step || 1;
+    const big = s.max > 100;
+    return html`<div class="toggle-row"><span class="tl"><b>${s.label}${s.zh ? html` <span class="k muted">${s.zh}</span>` : null}</b></span>
+      ${big ? html`<input id=${'s-' + s.key} class="input num" style=${{ width: '130px' }} inputmode="numeric" value=${value} onInput=${(e) => { const v = parseInt(e.target.value.replace(/[^0-9]/g, ''), 10); onChange(isNaN(v) ? s.min : Math.min(s.max, v)); }} aria-label=${s.label} />`
+        : html`<${Stepper} label=${s.label} value=${+value} min=${s.min} max=${s.max} step=${step} onChange=${onChange} />`}
+    </div>`;
+  }
+
+  /* ------------------------------------------------ setup */
+  function Setup({ onCancel, onCreate }) {
+    const [rs, setRs] = useState('hk');
+    const [names, setNames] = useState(['', '', '', '']);
+    const [settings, setSettings] = useState({});
+    const [per, setPer] = useState('');
+    const [sym, setSym] = useState('Rp');
+    const R = RULES[rs];
+    const S = Object.assign({}, MJ.newGame({ ruleset: rs, players: [{}, {}, {}, {}] }).settings, settings);
+    function create() {
+      const g = MJ.newGame({ ruleset: rs, players: names.map((n, i) => ({ name: n.trim() || 'Player ' + (i + 1) })), settings: S, money: { per: +per || 0, symbol: sym.trim() } });
+      onCreate(g);
+    }
+    return html`<div class="topbar"><div class="topbar-in"><button type="button" class="backbtn" onClick=${onCancel}>${I.back}Back</button><div class="ttl"><b>New game</b></div><span style=${{ width: '64px' }}></span></div></div>
+      <main class="wrap">
+        <div class="sec"><h3>Rules</h3>
+          <div class="rgrid">${MJ.ORDER.map((id) => { const r = RULES[id]; return html`<button type="button" class="rcard" aria-pressed=${rs === id ? 'true' : 'false'} onClick=${() => { setRs(id); setSettings({}); }}><b>${r.name}</b><span class="kn">${r.native}</span><span>${r.blurb}</span></button>`; })}</div>
+        </div>
+        <div class="sec"><h3>Players</h3>
+          <p class="hint">Enter them in turn order, starting with the first dealer. Seats stay fixed; the dealer marker moves.</p>
+          <div class="pgrid">${[0, 1, 2, 3].map((i) => html`<div class="prow"><${Tile} code=${(i + 1) + 'z'} size="sm" label=${MJ.WINDS[i] + ' seat'} /><input id=${'pn' + i} class="input" value=${names[i]} placeholder=${i === 0 ? 'First dealer' : 'Player ' + (i + 1)} maxlength="24" onInput=${(e) => { const n = names.slice(); n[i] = e.target.value; setNames(n); }} aria-label=${'Player ' + (i + 1) + ' name'} /></div>`)}</div>
+        </div>
+        <div class="sec"><h3>${R.name} settings</h3>
+          <div class="settings">${R.settings.map((s) => html`<${SettingControl} s=${s} value=${S[s.key]} onChange=${(v) => setSettings(Object.assign({}, settings, { [s.key]: v }))} />`)}</div>
+          ${R.id === 'hk' || R.id === 'sg' || R.id === 'tw' ? html`<p class="hint">Pattern values can be changed per game from the game menu.</p>` : null}
+        </div>
+        <div class="sec"><h3>Stakes (optional)</h3>
+          <div class="row" style=${{ alignItems: 'end' }}>
+            <div class="field" style=${{ flex: '0 0 96px' }}><label for="sym">Currency</label><input id="sym" class="input" value=${sym} maxlength="4" onInput=${(e) => setSym(e.target.value)} /></div>
+            <div class="field" style=${{ flex: '1 1 160px' }}><label for="per">${rs === 'riichi' ? 'Money per 1,000 points' : 'Money per point'}</label><input id="per" class="input num" inputmode="decimal" value=${per} placeholder="Optional" onInput=${(e) => setPer(e.target.value)} /></div>
+          </div>
+        </div>
+        <div class="sec"><button type="button" class="btn primary big block" onClick=${create}>Start game</button></div>
+      </main>`;
+  }
+
+  /* ------------------------------------------------ rules & values */
+  function RulesSheet({ game, onClose, onSaved }) {
+    const R = RULES[game.ruleset];
+    const [S, setS] = useState(Object.assign({}, game.settings));
+    const [vals, setVals] = useState(Object.assign({}, game.values || {}));
+    const V = Object.assign({}, MJ.valuesOf(Object.assign({}, game, { values: {} })), R.fixedValues ? {} : vals);
+    function save() { const g = clone(game); g.settings = S; g.values = vals; onSaved(g); }
+    return html`<${Sheet} tall=${true} title="Rules and values" sub=${R.name + ' · changes apply to new hands'} onClose=${onClose}
+      foot=${html`<div class="row" style=${{ justifyContent: 'flex-end' }}><button type="button" class="btn" onClick=${onClose}>Cancel</button><button type="button" class="btn primary" onClick=${save}>Save rules</button></div>`}>
+      <div class="sec"><h3>Settings</h3><div class="settings">${R.settings.map((s) => html`<${SettingControl} s=${s} value=${S[s.key]} onChange=${(v) => setS(Object.assign({}, S, { [s.key]: v }))} />`)}</div></div>
+      ${R.patterns.length ? html`<div class="sec"><h3>${R.fixedValues ? 'Values' : 'Values (edit to match your table)'}</h3>
+        <div class="vtable">${groupsOf(R).map((gk) => html`<div class="addgrp">${groupName(gk)}</div>${R.patterns.filter((p) => p.g === gk).map((p) => {
+          const cur = V[p.id];
+          const control = R.fixedValues ? html`<span class="num" style=${{ textAlign: 'right' }}>${valueText(R, p, V, true)}</span>`
+            : p.v === 'L' || cur === 'L' ? html`<select class="select" value=${cur === 'L' ? 'L' : String(cur)} onChange=${(e) => setVals(Object.assign({}, vals, { [p.id]: e.target.value === 'L' ? 'L' : +e.target.value }))} aria-label=${p.en}>${['L'].concat(Array.from({ length: 14 }, (_, i) => String(i))).map((o) => html`<option value=${o}>${o === 'L' ? 'Limit' : o}</option>`)}</select>`
+            : html`<input class="input num" inputmode="numeric" value=${cur} aria-label=${p.en} onInput=${(e) => { const v = parseInt(e.target.value, 10); setVals(Object.assign({}, vals, { [p.id]: isNaN(v) ? 0 : Math.max(0, Math.min(99, v)) })); }} />`;
+          return html`<div class="vrow"><span class="nm"><b>${p.zh}</b><span>${p.en}${p.note ? ' — ' + p.note : ''}</span></span>${control}</div>`;
+        })}`)}</div>
+        ${!R.fixedValues ? html`<button type="button" class="link" onClick=${() => setVals({})}>Reset values to defaults</button>` : null}
+      </div>` : null}
+    <//>`;
+  }
+
+  /* ------------------------------------------------ names */
+  function NamesSheet({ game, onClose, onSaved }) {
+    const [names, setNames] = useState(game.players.map((p) => p.name));
+    return html`<${Sheet} title="Player names" onClose=${onClose} foot=${html`<div class="row" style=${{ justifyContent: 'flex-end' }}><button type="button" class="btn" onClick=${onClose}>Cancel</button><button type="button" class="btn primary" onClick=${() => { const g = clone(game); g.players = names.map((n, i) => ({ name: n.trim() || 'Player ' + (i + 1) })); onSaved(g); }}>Save</button></div>`}>
+      <div class="sec pgrid">${names.map((n, i) => html`<div class="prow"><span class="k muted" style=${{ width: '24px', textAlign: 'center' }}>${i + 1}</span><input class="input" value=${n} maxlength="24" aria-label=${'Player ' + (i + 1)} onInput=${(e) => { const x = names.slice(); x[i] = e.target.value; setNames(x); }} /></div>`)}</div>
+    <//>`;
+  }
+
+  /* ------------------------------------------------ standings & export */
+  function csvOf(game) {
+    const R = RULES[game.ruleset];
+    const esc = (s) => { s = String(s == null ? '' : s); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+    const head = ['#', 'Round', 'Result', 'Winner', 'How', 'Discarder', 'Value', 'Patterns'].concat(game.players.map((p, i) => pname(game, i)));
+    const lines = [head.map(esc).join(',')];
+    let n = 0;
+    for (const e of game.entries) {
+      if (e.kind === 'side') { lines.push([''].concat(['', 'Payout', '', '', '', '', e.label]).concat(e.deltas).map(esc).join(',')); continue; }
+      n++;
+      lines.push([n, MJ.roundLabel(game, e.before), e.outcome, e.winner != null ? pname(game, e.winner) : '', e.how || '', e.discarder != null ? pname(game, e.discarder) : '', e.outcome === 'win' ? e.text : '', (e.patterns || []).join(' + ')].concat(e.deltas).map(esc).join(','));
+    }
+    lines.push(['', '', 'Total', '', '', '', '', ''].concat(MJ.totals(game)).map(esc).join(','));
+    return lines.join('\n');
+  }
+  function summaryText(game) {
+    const R = RULES[game.ruleset];
+    const rows = MJ.standings(game);
+    const d = new Date(game.createdAt);
+    const out = ['Mahjong · ' + R.name + ' rules · ' + d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })];
+    rows.forEach((r, i) => {
+      const riichi = game.ruleset === 'riichi';
+      const main = riichi ? fmt(r.points) + ' (' + (r.final > 0 ? '+' : '') + r.final + ')' : signed(r.points);
+      const m = riichi ? moneyFor(game, (r.final || 0) * 1000) : moneyFor(game, r.points);
+      out.push((i + 1) + '. ' + pname(game, r.p) + '  ' + main + (m ? '  ' + m : ''));
+    });
+    out.push(game.entries.filter((e) => e.kind === 'hand').length + ' hands');
+    return out.join('\n');
+  }
+  function moneyText(game, v) {
+    const m = game.money || {};
+    return (m.symbol ? m.symbol + ' ' : '') + fmt(Math.abs(v));
+  }
+  function EndSheet({ game, onClose, onSaved, onToast }) {
+    const rows = MJ.standings(game);
+    const riichi = game.ruleset === 'riichi';
+    const [copyText, setCopyText] = useState(null);
+    const share = canShareFiles();
+    async function copy() {
+      const t = summaryText(game);
+      try { await navigator.clipboard.writeText(t); onToast('Summary copied'); }
+      catch (e) { setCopyText(t); }
+    }
+    async function exportFile(name, data, type) {
+      try {
+        if (share) { await shareText(name, data, type); return; }
+        downloadText(name, data, type); onToast('Download started');
+      } catch (e) { if (!(e && e.name === 'AbortError')) { try { downloadText(name, data, type); onToast('Download started'); } catch (e2) { onToast('That export didn’t work here'); } } }
+    }
+    const stamp = new Date(game.createdAt).toISOString().slice(0, 10);
+    const hasMoney = +(game.money && game.money.per) > 0;
+    const nets = hasMoney ? MJ.moneyNets(game) : (riichi ? rows.reduce((a, r) => { a[r.p] = (r.final || 0) * 1000; return a; }, [0, 0, 0, 0]) : MJ.totals(game));
+    const transfers = MJ.settle(nets);
+    const amountText = (v) => hasMoney ? moneyText(game, v) : riichi ? fmt(v / 1000) : fmt(v) + ' pts';
+    return html`<${Sheet} title="Standings" sub=${RULES[game.ruleset].name + (game.finished ? ' · finished' : ' · in progress')} onClose=${onClose}
+      foot=${html`<div class="row" style=${{ justifyContent: 'space-between' }}>
+        <button type="button" class="btn" onClick=${() => { const g = clone(game); g.finished = !g.finished; onSaved(g); }}>${game.finished ? 'Reopen game' : 'Finish game'}</button>
+        <button type="button" class="btn primary" onClick=${copy}>Copy summary</button></div>`}>
+      <div class="sec stand">${rows.map((r, i) => html`<div class="srow"><span class="srank">${i + 1}</span><span class="snm">${pname(game, r.p)}</span>
+        <span class="sval">${riichi ? html`${(r.final > 0 ? '+' : '') + r.final}<small>${fmt(r.points)} pts</small>` : html`<span class=${cls(r.points)}>${signed(r.points)}</span>`}
+        ${riichi ? (moneyFor(game, (r.final || 0) * 1000) ? html`<small>${moneyFor(game, (r.final || 0) * 1000)}</small>` : null) : moneyFor(game, r.points) ? html`<small>${moneyFor(game, r.points)}</small>` : null}</span></div>`)}
+      ${riichi ? html`<p class="hint" style=${{ marginTop: '10px' }}>Final = (points − ${fmt(game.settings.returnPoints)}) ÷ 1,000 + uma, with the oka and any sticks left on the table to first place.</p>` : null}</div>
+      <div class="sec"><h3>Settle up</h3>
+        ${transfers.length ? html`<div class="settle">${transfers.map((t, k) => html`<div class="trow" key=${k}><span class="tw">${pname(game, t.from)}<em>pays</em>${pname(game, t.to)}</span><span class="ta">${amountText(t.amount)}</span></div>`)}</div>
+          <p class="hint">${hasMoney ? 'The fewest transfers that settle everyone at ' + moneyText(game, game.money.per) + (riichi ? ' per 1,000 points.' : ' per point.') : 'No stakes were set for this game, so this is in ' + (riichi ? 'final score units.' : 'points.') + ' Set money per point under Rules and values.'}</p>`
+        : html`<p class="hint">Nobody owes anything yet.</p>`}
+      </div>
+      ${copyText ? html`<div class="sec"><p class="hint">Copying isn’t allowed here. Select the text and copy it yourself.</p><textarea class="copybox" readonly value=${copyText} onFocus=${(e) => e.target.select()}></textarea></div>` : null}
+      <div class="sec"><h3>Export</h3><div class="row">
+        <button type="button" class="btn" onClick=${() => exportFile('mahjong-' + stamp + '.csv', csvOf(game), 'text/csv')}>Hands as CSV</button>
+        <button type="button" class="btn" onClick=${() => exportFile('mahjong-' + stamp + '.json', JSON.stringify(game, null, 1), 'application/json')}>Full backup (JSON)</button>
+      </div><p class="hint">${share ? 'Opens the share sheet, so you can save the file or send it to a friend.' : 'The file downloads to this device.'} A backup can be imported again from the home screen.</p></div>
+    <//>`;
+  }
+
+  /* ------------------------------------------------ game view */
+  function GameView({ game, onBack, commit, onDelete, onNewGame, toast, onSignIn }) {
+    const [sheet, setSheet] = useState(null);
+    const R = RULES[game.ruleset];
+    const done = MJ.gameComplete(game);
+    const last = game.entries[game.entries.length - 1];
+    const close = () => setSheet(null);
+    const saved = (g, msg) => { commit(g); setSheet(null); if (msg) toast(msg); };
+    function undoLast() {
+      const g = clone(game); MJ.undo(g); commit(g); setSheet(null); toast('Removed the last entry');
+    }
+    return html`
+      <div class="topbar"><div class="topbar-in">
+        <button type="button" class="backbtn" onClick=${onBack}>${I.back}Games</button>
+        <div class="ttl"><b>${game.example ? 'Example game' : R.name}</b><span>${game.example ? R.name + ' rules · not saved' : MJ.roundLabel(game)}</span></div>
+        <button type="button" class="iconbtn" aria-label="Game menu" onClick=${() => setSheet('menu')}>${I.more}</button>
+      </div></div>
+      <main class="wrap">
+        ${game.example ? html`<div class="banner"><p>This is an example so you can see how it works. Hands you record here aren’t saved.</p><button type="button" class="btn small primary" onClick=${onNewGame}>Start a real game</button></div>` : null}
+        <div style=${{ marginTop: '14px' }}><${TableHero} game=${game} /></div>
+        ${done && !game.finished ? html`<div class="banner gold"><p>The last round is complete. Keep playing or see the final standings.</p><button type="button" class="btn small" onClick=${() => setSheet('end')}>Standings</button></div>` : null}
+        <${Ledger} game=${game} />
+        ${last ? html`<div class="row" style=${{ marginTop: '12px' }}><button type="button" class="btn small" onClick=${() => setSheet('undo')}>${I.undo}Undo last entry</button></div>` : null}
+      </main>
+      <div class="dock"><div class="dock-in">
+        <button type="button" class="btn primary big" onClick=${() => setSheet('record')} disabled=${game.finished}>${I.plus}Record hand</button>
+        <button type="button" class="btn big" onClick=${() => setSheet('payout')} disabled=${game.finished} aria-label="Payout or adjustment">${I.coins}</button>
+      </div></div>
+      ${sheet === 'record' ? html`<${RecordSheet} game=${game} onClose=${close} onSaved=${(g) => saved(g, 'Hand saved')} onSignIn=${onSignIn} />` : null}
+      ${sheet === 'payout' ? html`<${PayoutSheet} game=${game} onClose=${close} onSaved=${(g) => saved(g, 'Payout saved')} />` : null}
+      ${sheet === 'rules' ? html`<${RulesSheet} game=${game} onClose=${close} onSaved=${(g) => saved(g, 'Rules updated')} />` : null}
+      ${sheet === 'names' ? html`<${NamesSheet} game=${game} onClose=${close} onSaved=${(g) => saved(g, 'Names updated')} />` : null}
+      ${sheet === 'end' ? html`<${EndSheet} game=${game} onClose=${close} onSaved=${(g) => saved(g)} onToast=${toast} />` : null}
+      ${sheet === 'undo' && last ? html`<${Confirm} title="Undo last entry?" body=${'This removes ' + (last.kind === 'side' ? 'the payout “' + last.label + '”' : last.outcome === 'draw' ? 'the draw' : pname(game, last.winner) + '’s ' + last.text.split(' · ')[0] + ' hand') + ' and puts the scores and dealer back.'} action="Undo" onYes=${undoLast} onNo=${close} />` : null}
+      ${sheet === 'delete' ? html`<${Confirm} title="Delete this game?" body="The game and every hand in it will be deleted. This can’t be undone." action="Delete game" danger=${true} onYes=${onDelete} onNo=${close} />` : null}
+      ${sheet === 'menu' ? html`<${Sheet} title="Game" sub=${R.name} onClose=${close}><div class="menu">
+        <button type="button" onClick=${() => setSheet('end')}>${I.flag}<span>Standings and export<small>Final scores, copy for chat, CSV</small></span></button>
+        <button type="button" onClick=${() => setSheet('rules')}>${I.rules}<span>Rules and values<small>Minimums, limits, payouts, pattern values</small></span></button>
+        <button type="button" onClick=${() => setSheet('payout')}>${I.coins}<span>Payout or adjustment<small>Kong money, animal bites, penalties</small></span></button>
+        <button type="button" onClick=${() => setSheet('names')}>${I.people}<span>Player names</span></button>
+        ${game.example ? null : html`<button type="button" class="danger" onClick=${() => setSheet('delete')}>${I.trash}<span>Delete game</span></button>`}
+      </div><//>` : null}`;
+  }
+
+  /* ------------------------------------------------ home */
+  function GameCard({ game, onOpen }) {
+    const R = RULES[game.ruleset];
+    const t = MJ.totals(game);
+    const riichi = game.ruleset === 'riichi';
+    const hands = game.entries.filter((e) => e.kind === 'hand').length;
+    return html`<button type="button" class="gcard" onClick=${onOpen}>
+      <span class="gtop"><span class="gname">${R.name} <span class="k muted">${R.native}</span></span><span class="gmeta">${ago(game.updatedAt)}</span></span>
+      <span class="gscores">${[0, 1, 2, 3].map((p) => html`<div><span>${pname(game, p)}</span><b class=${riichi ? '' : cls(t[p])}>${riichi ? fmt(t[p]) : signed(t[p])}</b></div>`)}</span>
+      <span class="gmeta">${hands} hand${hands === 1 ? '' : 's'} · ${game.finished ? 'finished' : MJ.roundLabel(game)}</span>
+    </button>`;
+  }
+  function Home({ onNew, onOpen, example, onSignIn, onAccount, onToast }) {
+    const games = Store.list();
+    const active = games.filter((g) => !g.finished), done = games.filter((g) => g.finished);
+    const line = storeLine();
+    const impRef = useRef(null);
+    const onImport = (e) => {
+      const f = e.target.files && e.target.files[0]; e.target.value = '';
+      if (f) importGamesFromFile(f, (n) => onToast(n < 0 ? 'That file isn’t a scorebook backup' : n ? 'Imported ' + n + ' game' + (n > 1 ? 's' : '') : 'Nothing new to import'));
+    };
+    return html`<main class="wrap">
+      <header class="hero">
+        <div class="brand"><span class="seal" aria-hidden="true">麻雀</span><h1>Mahjong Scorebook</h1></div>
+        <p class="lede">Record who won, how, and with what. It works out the faan, tai or han, splits the payments and keeps the running score. Snap the winning hand and it reads the tiles for you.</p>
+        <div class="rules-strip">${MJ.ORDER.map((id) => html`<span>${RULES[id].name}<b>${RULES[id].native.replace('麻雀', '').replace('麻将', '').replace('麻將', '') || RULES[id].native}</b></span>`)}</div>
+        <div class="row">
+          <button type="button" class="btn primary big" onClick=${onNew}>${I.plus}New game</button>
+          ${Store.user ? html`<button type="button" class="btn big" onClick=${onAccount}>${I.people}${Store.user.name}</button>` : html`<button type="button" class="btn big" onClick=${onSignIn}>${I.people}Sign in</button>`}
+        </div>
+      </header>
+      ${active.length ? html`<div class="section-head"><h2>In progress</h2></div><div class="stack">${active.map((g) => html`<${GameCard} key=${g.id} game=${g} onOpen=${() => onOpen(g.id)} />`)}</div>` : null}
+      ${!active.length ? html`<div class="section-head"><h2>See it in action</h2><span class="example-note">Example · not saved</span></div>
+        <div class="stack"><${TableHero} game=${example} compact=${true} />
+        <button type="button" class="btn" onClick=${() => onOpen('example')}>Open the example game</button></div>` : null}
+      ${done.length ? html`<div class="section-head"><h2>Finished</h2></div><div class="stack">${done.map((g) => html`<${GameCard} key=${g.id} game=${g} onOpen=${() => onOpen(g.id)} />`)}</div>` : null}
+      <p class="store-note"><span class=${'dot ' + line.dot}></span>${Store.ready ? line.text : 'Checking where games are saved…'}</p>
+      <p class="acct"><button type="button" class="link" onClick=${() => impRef.current && impRef.current.click()}>Import a backup (JSON)</button><input ref=${impRef} type="file" accept=".json,application/json" class="hidden-input" tabindex="-1" onChange=${onImport} />${window.BUILD ? html`<span>· build ${window.BUILD}</span>` : null}</p>
+    </main>`;
+  }
+
+  /* ------------------------------------------------ sign in & account */
+  function SignInSheet({ onClose, onDone }) {
+    const [name, setName] = useState(lsGet('mjsb.name') || '');
+    const [pin, setPin] = useState('');
+    const [create, setCreate] = useState(false);
+    const [busy, setBusy] = useState(false);
+    const [err, setErr] = useState('');
+    const ok = name.trim().length >= 2 && /^\d{4,8}$/.test(pin);
+    async function go() {
+      if (!ok || busy) return;
+      setBusy(true); setErr('');
+      try {
+        await Store.signIn(name.trim(), pin, create);
+        lsSet('mjsb.name', name.trim());
+        onDone();
+      } catch (e) {
+        if (e.code === 'no_such_user') { setCreate(true); setErr('No account has that name yet. Tap “Create account” to start one with this name and PIN.'); }
+        else if (e.code === 'name_taken') { setCreate(false); setErr('That name already has an account. Enter its PIN to sign in.'); }
+        else setErr(e.message || 'Could not sign in.');
+      }
+      setBusy(false);
+    }
+    return html`<${Sheet} title=${create ? 'Create account' : 'Sign in'} sub="Saves games to your account and turns on photo reading" onClose=${onClose}
+      foot=${html`<div class="row" style=${{ justifyContent: 'space-between' }}>
+        <button type="button" class="link" onClick=${() => { setCreate(!create); setErr(''); }}>${create ? 'I already have an account' : 'Create a new account'}</button>
+        <button type="button" class="btn primary" disabled=${!ok || busy} onClick=${go}>${busy ? 'One moment…' : create ? 'Create account' : 'Sign in'}</button></div>`}>
+      <div class="sec">
+        <div class="field"><label for="si-name">Your name</label><input id="si-name" class="input" value=${name} maxlength="24" autocomplete="username" onInput=${(e) => setName(e.target.value)} onKeyDown=${(e) => { if (e.key === 'Enter') go(); }} placeholder="e.g. James" /></div>
+        <div class="field"><label for="si-pin">PIN (4 to 8 digits)</label><input id="si-pin" class="input num pinbox" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete=${create ? 'new-password' : 'current-password'} value=${pin} onInput=${(e) => setPin(e.target.value.replace(/\D/g, ''))} onKeyDown=${(e) => { if (e.key === 'Enter') go(); }} /></div>
+        ${err ? html`<p class="err">${err}</p>` : null}
+        <p class="hint">${create ? 'Pick a name your friends will recognise and a PIN you will remember. There is no password reset, so note the PIN somewhere safe.' : 'The name and PIN you chose when you created the account.'}</p>
+      </div>
+    <//>`;
+  }
+  function AccountSheet({ onClose, onToast }) {
+    const [mode, setMode] = useState('info');
+    const [pin, setPin] = useState(''), [pin2, setPin2] = useState('');
+    const [busy, setBusy] = useState(false), [err, setErr] = useState('');
+    const u = Store.user;
+    async function changePin() {
+      if (!/^\d{4,8}$/.test(pin) || !/^\d{4,8}$/.test(pin2) || busy) return;
+      setBusy(true); setErr('');
+      try { await API.call('changePin', { pin, newPin: pin2 }); onToast('PIN changed'); setMode('info'); setPin(''); setPin2(''); }
+      catch (e) { setErr(e.message || 'Could not change the PIN.'); }
+      setBusy(false);
+    }
+    async function signOut() { setBusy(true); await Store.signOut(); setBusy(false); onToast('Signed out'); onClose(); }
+    if (!u) return null;
+    return html`<${Sheet} title="Account" sub=${u.name} onClose=${onClose}>
+      ${mode === 'info' ? html`
+        <div class="sec">
+          <p class="acct"><b>${u.name}</b>${Store.scans ? html`<span>· ${Store.scans.today} of ${Store.scans.limit} photo reads used today</span>` : null}</p>
+          <p class="hint">Games are saved to this account and appear on any phone you sign in on. One phone keeps score; photo reading uses this account’s daily allowance.</p>
+        </div>
+        <div class="menu">
+          <button type="button" onClick=${() => setMode('pin')}>${I.rules}<span>Change PIN</span></button>
+          <button type="button" onClick=${() => setMode('out')}>${I.people}<span>Sign out<small>Your games stay in your account</small></span></button>
+        </div>` : null}
+      ${mode === 'pin' ? html`<div class="sec">
+          <div class="field"><label for="cp-old">Current PIN</label><input id="cp-old" class="input num pinbox" type="password" inputmode="numeric" maxlength="8" value=${pin} onInput=${(e) => setPin(e.target.value.replace(/\D/g, ''))} /></div>
+          <div class="field"><label for="cp-new">New PIN (4 to 8 digits)</label><input id="cp-new" class="input num pinbox" type="password" inputmode="numeric" maxlength="8" value=${pin2} onInput=${(e) => setPin2(e.target.value.replace(/\D/g, ''))} /></div>
+          ${err ? html`<p class="err">${err}</p>` : null}
+          <div class="row" style=${{ justifyContent: 'flex-end' }}><button type="button" class="btn" onClick=${() => setMode('info')}>Cancel</button><button type="button" class="btn primary" disabled=${busy} onClick=${changePin}>Save PIN</button></div>
+        </div>` : null}
+      ${mode === 'out' ? html`<div class="sec">
+          <p>Sign out of <b>${u.name}</b> on this device?</p>
+          <p class="hint">Games saved to the account are removed from this device and come back when you sign in again. Anything not yet uploaded stays here.</p>
+          <div class="row" style=${{ justifyContent: 'flex-end' }}><button type="button" class="btn" onClick=${() => setMode('info')}>Cancel</button><button type="button" class="btn danger" disabled=${busy} onClick=${signOut}>Sign out</button></div>
+        </div>` : null}
+    <//>`;
+  }
+
+  /* ------------------------------------------------ app */
+  function App() {
+    const [, force] = useState(0);
+    useEffect(() => Store.sub(() => force((x) => x + 1)), []);
+    const [view, setView] = useState('home');
+    const [gid, setGid] = useState(null);
+    const [example, setExample] = useState(exampleGame);
+    const [toastMsg, setToastMsg] = useState(null);
+    const [modal, setModal] = useState(null);
+    const [update, setUpdate] = useState(false);
+    const restored = useRef(false);
+    useEffect(() => {
+      if (restored.current || !Store.ready) return;
+      restored.current = true;
+      const last = lsGet('mjsb.last');
+      const g = last && Store.get(last);
+      if (g && !g.finished && view === 'home') { setGid(last); setView('game'); }
+    });
+    useEffect(() => { if (!toastMsg) return; const t = setTimeout(() => setToastMsg(null), 2600); return () => clearTimeout(t); }, [toastMsg]);
+    useEffect(() => { window.scrollTo(0, 0); }, [view, gid]);
+    useEffect(() => { if (Store.note) { setToastMsg(Store.note); Store.note = ''; } });
+    useEffect(() => { window.addEventListener('mjsb-update', () => setUpdate(true)); }, []);
+    const game = gid === 'example' ? example : gid ? Store.get(gid) : null;
+    const open = (id) => { setGid(id); setView('game'); if (id !== 'example') lsSet('mjsb.last', id); };
+    const commit = (g) => { if (g.example) setExample(g); else Store.save(g); };
+    const signIn = () => setModal('signin');
+    let body;
+    if (view === 'setup') body = html`<${Setup} onCancel=${() => setView(game ? 'game' : 'home')} onCreate=${(g) => { Store.save(g); open(g.id); }} />`;
+    else if (view === 'game' && game) body = html`<${GameView} key=${game.id} game=${game} onBack=${() => { setView('home'); setGid(null); }} commit=${commit}
+      onDelete=${() => { Store.remove(game.id); setView('home'); setGid(null); setToastMsg('Game deleted'); }} onNewGame=${() => setView('setup')} toast=${setToastMsg} onSignIn=${signIn} />`;
+    else body = html`<${Home} example=${example} onNew=${() => setView('setup')} onOpen=${open} onSignIn=${signIn} onAccount=${() => setModal('account')} onToast=${setToastMsg} />`;
+    return html`${body}
+      ${modal === 'signin' ? html`<${SignInSheet} onClose=${() => setModal(null)} onDone=${() => { setModal(null); setToastMsg('Signed in as ' + (Store.user ? Store.user.name : '')); }} />` : null}
+      ${modal === 'account' ? html`<${AccountSheet} onClose=${() => setModal(null)} onToast=${setToastMsg} />` : null}
+      ${update ? html`<div class="toast" role="status">A new version is ready<button type="button" onClick=${() => location.reload()}>Reload</button></div>` : toastMsg ? html`<div class="toast" role="status">${toastMsg}</div>` : null}`;
+  }
+
+  function start() {
+    root.textContent = '';
+    render(html`<${App} />`, root);
+  }
+  boot();
+  start();
+  if ('serviceWorker' in navigator && location.hostname !== '127.0.0.1' && !/^file:/.test(location.protocol)) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').then((reg) => {
+        reg.addEventListener('updatefound', () => {
+          const w = reg.installing;
+          if (!w) return;
+          w.addEventListener('statechange', () => { if (w.state === 'installed' && navigator.serviceWorker.controller) window.dispatchEvent(new Event('mjsb-update')); });
+        });
+      }).catch(() => {});
+    });
+  }
+})();
+</script>
+</body>
+</html>
