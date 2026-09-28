@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scan review — Mahjong Scorebook</title>
+<style>
+  :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+  body { margin: 0; padding: 16px; max-width: 1100px; margin-inline: auto; line-height: 1.4; }
+  h1 { font-size: 22px; margin: 0 0 12px; }
+  .bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
+  input { font: inherit; padding: 8px 10px; border: 1px solid #999; border-radius: 8px; min-width: 260px; }
+  button { font: inherit; padding: 8px 14px; border-radius: 8px; border: 1px solid #1D5C47; background: #1D5C47; color: #fff; cursor: pointer; }
+  .sum { display: flex; flex-wrap: wrap; gap: 18px; padding: 12px 14px; border: 1px solid #8884; border-radius: 10px; margin-bottom: 14px; }
+  .sum b { font-size: 20px; display: block; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 8px 6px; border-bottom: 1px solid #8884; }
+  img { max-width: 220px; max-height: 160px; border-radius: 6px; display: block; }
+  code { font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; white-space: pre-wrap; word-break: break-all; }
+  .ok { color: #15784A; font-weight: 700; } .bad { color: #BE3A2C; font-weight: 700; } .muted { color: #888; }
+  .pt { display: flex; flex-wrap: wrap; gap: 6px; } .pt span { border: 1px solid #8886; border-radius: 6px; padding: 2px 6px; font-size: 12.5px; }
+</style>
+</head>
+<body>
+<h1>Photo scan review</h1>
+<p class="muted">Loads the last scans from the API with the admin key (kept only in this browser tab). Parsed = what the reader saw; Final = what the player saved after correcting the tiles.</p>
+<div class="bar">
+  <input id="url" placeholder="API URL" value="https://mahjong-api.maxondelberthakim.workers.dev">
+  <input id="key" placeholder="Admin key" type="password">
+  <input id="limit" type="number" value="100" style="min-width:90px" title="How many scans">
+  <button id="go">Load</button>
+</div>
+<div id="out"></div>
+<script>
+const $ = (s) => document.querySelector(s);
+try { $('#url').value = localStorage.getItem('mjrev.url') || $('#url').value; } catch (e) {}
+$('#go').onclick = async () => {
+  const url = $('#url').value.replace(/\/$/, ''), key = $('#key').value.trim(), limit = +$('#limit').value || 100;
+  try { localStorage.setItem('mjrev.url', url); } catch (e) {}
+  $('#out').innerHTML = '<p>Loading…</p>';
+  let j;
+  try {
+    const r = await fetch(url + '/admin/scans', { method: 'POST', headers: { 'X-Admin-Key': key }, body: JSON.stringify({ limit }) });
+    j = await r.json();
+    if (j.error) throw new Error(j.message || j.error);
+  } catch (e) { $('#out').innerHTML = '<p class="bad">' + esc(e.message) + '</p>'; return; }
+  const s = j.summary;
+  const per = Object.entries(j.perTile || {}).filter(([, v]) => v.missed).sort((a, b) => b[1].missed - a[1].missed);
+  let h = '<div class="sum"><div><b>' + s.scans + '</b>scans loaded</div><div><b>' + s.compared + '</b>with a saved correction</div><div><b>' + s.exactHands + '</b>read perfectly</div><div><b>' + (s.tileAccuracy == null ? '—' : s.tileAccuracy + '%') + '</b>tiles right</div></div>';
+  if (per.length) h += '<p><b>Most often missed:</b></p><div class="pt">' + per.slice(0, 20).map(([t, v]) => '<span>' + esc(t) + ' · missed ' + v.missed + ' of ' + v.seen + '</span>').join('') + '</div><br>';
+  h += '<table><tr><th>When</th><th>Who</th><th>Photo</th><th>Parsed (reader)</th><th>Final (saved)</th><th>Result</th><th>Model · time</th></tr>';
+  for (const r of j.scans) {
+    const a = r.accuracy;
+    h += '<tr><td>' + new Date(r.created_at).toLocaleString() + '<br><span class="muted">' + esc(r.ruleset || '') + ' · ' + esc(r.tier || '') + '</span></td>' +
+      '<td>' + esc(r.user_name || r.user_id) + '</td>' +
+      '<td><a href="' + url + '/photo/' + r.id + '.jpg?k=' + encodeURIComponent(key) + '" target="_blank"><img loading="lazy" src="' + url + '/photo/' + r.id + '.jpg?k=' + encodeURIComponent(key) + '" alt="" onerror="this.replaceWith(document.createTextNode(\'(photo expired)\'))"></a></td>' +
+      '<td><code>' + esc(r.parsed || r.error || '') + '</code>' + (r.status !== 'ok' ? '<br><span class="bad">' + esc(r.status) + '</span>' : '') + '</td>' +
+      '<td><code>' + esc(r.final || '') + '</code>' + (r.final ? '' : '<span class="muted">not saved yet</span>') + '</td>' +
+      '<td>' + (a ? (a.exact ? '<span class="ok">exact</span>' : '<span class="bad">' + a.tilesRight + ' / ' + a.tiles + '</span>') : '<span class="muted">—</span>') + '</td>' +
+      '<td>' + esc(r.model || '') + '<br><span class="muted">' + (r.ms != null ? (r.ms / 1000).toFixed(1) + ' s' : '') + (r.in_tokens ? ' · ' + r.in_tokens + '+' + r.out_tokens + ' tok' : '') + '</span></td></tr>';
+  }
+  $('#out').innerHTML = h + '</table>';
+};
+function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
+</script>
+</body>
+</html>
