@@ -1,0 +1,22 @@
+{
+  // Mahjong Scorebook API. Deploy with: bash deploy.sh  (see DEPLOY.md)
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mahjong-api",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-09-01",
+  "workers_dev": true,
+  "observability": { "enabled": true },
+  "vars": {
+    "MODEL_DEFAULT": "claude-sonnet-5",
+    "MODEL_CAREFUL": "claude-opus-5-5",
+    "SCAN_DAILY_PER_USER": "60",
+    "SCAN_DAILY_GLOBAL": "300",
+    "SIGNUP_DAILY": "50"
+  },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "mahjong-db", "database_id": "cd360188-f6f5-437e-9796-c30c275d06cc" }
+  ],
+  "kv_namespaces": [
+    { "binding": "PHOTOS", "id": "e111d3237ed043c2878bce5050bf7b15" }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "mahjong-api",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Mahjong Scorebook backend: Cloudflare Worker + D1 + KV, photo reading through the Claude API",
+  "scripts": {
+    "dev": "wrangler dev --port 8787 --local",
+    "deploy": "wrangler deploy",
+    "schema:local": "wrangler d1 execute mahjong-db --local --file=schema.sql",
+    "schema:remote": "wrangler d1 execute mahjong-db --remote --file=schema.sql"
+  },
+  "devDependencies": {
+    "wrangler": "^4.42.0"
+  }
+}
