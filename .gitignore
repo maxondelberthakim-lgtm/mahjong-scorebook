@@ -1,0 +1,11 @@
+node_modules/
+.wrangler/
+.dev.vars
+.node/
+tests/shots/
+cloudflare/ADMIN_KEY.txt
+cloudflare/PIN_PEPPER.txt
+cloudflare/.secrets-set
+cloudflare/.vision-key-set
+src/mahjong-scorebook.html
+.DS_Store
