@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@500;600&family=Young+Serif&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@700&display=swap&text=__KAI_TEXT__">
-<script>window.API_URL = '__API_URL__'; window.BUILD = '__BUILD__';</script>
+<script>window.API_URL = '__API_URL__'; window.BUILD = '__BUILD__'; window.LITE = __LITE__;</script>
 <style>
 :root{
   --ground:#EDF1EC;--paper:#FBFCF9;--paper-2:#F2F5F0;--ink:#17231E;--ink-2:#3A4942;--muted:#5E6E67;
@@ -261,6 +261,12 @@ button.tile:active{transform:translateY(1px)}
 .palette{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px 4px;padding-top:4px}
 .palette.p7{grid-template-columns:repeat(7,minmax(0,1fr))}
 .palette.p4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.palette.p8{grid-template-columns:repeat(8,minmax(0,1fr))}
+.palette.p12{grid-template-columns:repeat(12,minmax(0,1fr))}
+.board{display:grid;gap:10px}
+.brow{display:grid;gap:4px}
+.blabel{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.blabel b{font-size:14px;margin-right:4px;color:var(--ink-2);text-transform:none;letter-spacing:0}
 .palette .tile{width:100%;max-width:44px;justify-self:center}
 .counter{font-family:var(--f-num);font-size:13px;font-weight:600}
 .counter.ok{color:var(--gain)}
@@ -372,6 +378,7 @@ button.tile:active{transform:translateY(1px)}
   const { useState, useEffect, useMemo, useRef } = preactHooks;
   const html = htm.bind(h);
   const RULES = MJ.RULES;
+  const LITE = !!window.LITE;
 
   /* ------------------------------------------------ helpers */
   const clone = (o) => JSON.parse(JSON.stringify(o));
@@ -688,7 +695,7 @@ button.tile:active{transform:translateY(1px)}
       if (n) return { dot: 'warn', text: 'Saving ' + n + ' game' + (n > 1 ? 's' : '') + ' to your account…' };
       return { dot: 'ok', text: 'Games are saved to your account (' + Store.user.name + ').' };
     }
-    if (Store.mode === 'local') return { dot: 'warn', text: 'Games are saved in this browser only. Sign in to keep them in your account and to read photos.' };
+    if (Store.mode === 'local') return { dot: 'warn', text: 'Games are saved in this browser only. Sign in to keep them in your account' + (LITE ? '.' : ' and to read photos.') };
     return { dot: 'bad', text: 'This browser can’t keep games. Download a backup before you close it.' };
   }
 
@@ -861,13 +868,10 @@ button.tile:active{transform:translateY(1px)}
   }
 
   /* ------------------------------------------------ tile editor */
-  const TABS = [['m', '萬', 'Chars'], ['p', '筒', 'Dots'], ['s', '索', 'Bamboo'], ['z', '字', 'Honours'], ['b', '花', 'Bonus']];
   function TileEditor({ R, tiles, onChange }) {
     const [mode, setMode] = useState('tile');
-    const [tab, setTab] = useState('m');
     const [sel, setSel] = useState(null);
     const bonusSet = R.id === 'riichi' ? [] : R.id === 'sg' ? ['F', 'S', 'A'] : ['F', 'S'];
-    const tabs = TABS.filter(([k]) => k !== 'b' || bonusSet.length);
     const check = MJ.checkHand(tiles, R.handSize);
     const used = {};
     tiles.hand.forEach((c) => (used[c] = (used[c] || 0) + 1));
@@ -891,22 +895,24 @@ button.tile:active{transform:translateY(1px)}
       if (win && !hand.includes(win)) win = hand.length ? hand[hand.length - 1] : null;
       onChange(Object.assign({}, tiles, { hand, win })); setSel(null);
     }
-    const palette = () => {
-      if (tab === 'b') {
-        const codes = [];
-        bonusSet.forEach((k) => [1, 2, 3, 4].forEach((n) => codes.push(k + n)));
-        return html`<div class="palette p4">${codes.map((c) => html`<${Tile} code=${c} onClick=${() => add(c)} disabled=${tiles.bonus.includes(c)} />`)}</div>`;
-      }
-      const n = tab === 'z' ? 7 : 9;
-      const codes = []; for (let k = 1; k <= n; k++) codes.push(k + tab);
-      return html`<div class=${'palette' + (tab === 'z' ? ' p7' : '')}>${codes.map((c) => {
-        const u = used[c] || 0;
-        const i = MJ.ix(c);
-        const need = mode === 'pon' ? 3 : mode === 'kan' || mode === 'ckan' ? 4 : 1;
-        const blocked = mode === 'chi' ? i >= 27 || i % 9 > 6 || [0, 1, 2].some((k) => (used[MJ.cd(i + k)] || 0) >= 4) : u + need > 4;
-        return html`<${Tile} code=${c} onClick=${() => add(c)} badge=${u || null} disabled=${blocked} />`;
-      })}</div>`;
+    const tileBtn = (c) => {
+      const u = used[c] || 0;
+      if (MJ.isBonus(c)) return html`<${Tile} key=${c} code=${c} onClick=${() => add(c)} disabled=${tiles.bonus.includes(c)} />`;
+      const i = MJ.ix(c);
+      const need = mode === 'pon' ? 3 : mode === 'kan' || mode === 'ckan' ? 4 : 1;
+      const blocked = mode === 'chi' ? i >= 27 || i % 9 > 6 || [0, 1, 2].some((k) => (used[MJ.cd(i + k)] || 0) >= 4) : u + need > 4;
+      return html`<${Tile} key=${c} code=${c} onClick=${() => add(c)} badge=${u || null} disabled=${blocked} />`;
     };
+    const suitRow = (sfx) => Array.from({ length: 9 }, (_, k) => (k + 1) + sfx);
+    const bonusCodes = [];
+    bonusSet.forEach((k) => [1, 2, 3, 4].forEach((n) => bonusCodes.push(k + n)));
+    const board = html`<div class="board">
+      <div class="brow"><span class="blabel"><b class="k">字</b> Winds and dragons</span><div class="palette p7">${['1z', '2z', '3z', '4z', '7z', '6z', '5z'].map(tileBtn)}</div></div>
+      ${bonusCodes.length ? html`<div class="brow"><span class="blabel"><b class="k">花</b> Flowers${R.id === 'sg' ? ', seasons and animals' : ' and seasons'}</span><div class=${'palette ' + (bonusCodes.length > 8 ? 'p12' : 'p8')}>${bonusCodes.map(tileBtn)}</div></div>` : null}
+      <div class="brow"><span class="blabel"><b class="k">萬</b> Characters</span><div class="palette">${suitRow('m').map(tileBtn)}</div></div>
+      <div class="brow"><span class="blabel"><b class="k">筒</b> Dots</span><div class="palette">${suitRow('p').map(tileBtn)}</div></div>
+      <div class="brow"><span class="blabel"><b class="k">索</b> Bamboo</span><div class="palette">${suitRow('s').map(tileBtn)}</div></div>
+    </div>`;
     const modes = [['tile', 'Tile'], ['chi', 'Chow'], ['pon', 'Pung'], ['kan', 'Kong'], ['ckan', 'Hidden kong']];
     return html`<div class="handbox">
       <div class="zone">
@@ -914,7 +920,7 @@ button.tile:active{transform:translateY(1px)}
         <div class="zone-tiles">
           ${display.map(({ c, i }) => html`<${Tile} code=${c} pressed=${sel === i} onClick=${() => setSel(sel === i ? null : i)} />`)}
           ${tiles.win ? html`<span class="wingap"></span><${Tile} code=${tiles.win} win=${true} pressed=${sel === 'w'} onClick=${() => setSel(sel === 'w' ? null : 'w')} label=${'Winning tile: ' + MJ.tileName(tiles.win)} />` : null}
-          ${!tiles.hand.length ? html`<span class="hint">Tap tiles below. The last tile you add is marked as the winning tile.</span>` : null}
+          ${!tiles.hand.length ? html`<span class="hint">Tap the tiles you won with on the board below. The last tile you add is marked as the winning tile.</span>` : null}
         </div>
         ${sel != null ? html`<div class="selbar">
           ${sel !== 'w' ? html`<button type="button" class="btn small" onClick=${() => { onChange(Object.assign({}, tiles, { win: sorted[sel] })); setSel(null); }}>Make winning tile</button>` : html`<span class="hint">Winning tile</span>`}
@@ -933,8 +939,7 @@ button.tile:active{transform:translateY(1px)}
       </div>` : null}
       ${check.problems.length ? html`<p class="warn">${check.problems[0]}</p>` : null}
       <div class="modebar" role="group" aria-label="Add as">${modes.map(([k, t]) => html`<button type="button" class="chip" aria-pressed=${mode === k ? 'true' : 'false'} onClick=${() => setMode(mode === k && k !== 'tile' ? 'tile' : k)}>${t}</button>`)}</div>
-      <div class="tabs" role="tablist">${tabs.map(([k, g, t]) => html`<button type="button" role="tab" aria-selected=${tab === k ? 'true' : 'false'} aria-pressed=${tab === k ? 'true' : 'false'} onClick=${() => setTab(k)}><b>${g}</b><span>${t}</span></button>`)}</div>
-      ${palette()}
+      ${board}
       <div class="row" style=${{ justifyContent: 'space-between' }}>
         <span class="hint">${mode === 'tile' ? 'Adding single tiles to the hand' : mode === 'chi' ? 'Adding an exposed chow' : mode === 'pon' ? 'Adding an exposed pung' : mode === 'kan' ? 'Adding an exposed kong' : 'Adding a concealed kong'}</span>
         <button type="button" class="link" onClick=${() => onChange(MJ.emptyHand())}>Clear all</button>
@@ -979,7 +984,7 @@ button.tile:active{transform:translateY(1px)}
 
   /* ------------------------------------------------ record a hand */
   function freshDraft() {
-    return { outcome: 'win', winner: null, how: 'discard', discarder: null, tiles: null, manual: {}, liable: null,
+    return { outcome: 'win', winner: null, how: 'discard', discarder: null, tiles: MJ.emptyHand(), manual: {}, liable: null,
       riichi: { declared: [], dora: 0, fu: 30, closed: true }, draw: { tenpai: [], abortive: false }, value: '', label: '' };
   }
   function cleanInput(R, d) {
@@ -1034,7 +1039,7 @@ button.tile:active{transform:translateY(1px)}
       }
     }
     const onPick = (e) => { const f = e.target.files && e.target.files[0]; e.target.value = ''; if (f) runScan(f, 'default'); };
-    const canScan = Store.canScan !== false;
+    const canScan = !LITE && Store.canScan !== false;
 
     /* receipt rows */
     const rows = [];
@@ -1117,11 +1122,11 @@ button.tile:active{transform:translateY(1px)}
             ${scan.status === 'done' && scan.unsure && scan.unsure.length ? html`<p class="warn">Double-check: ${scan.unsure.join('; ')}</p>` : null}
             ${scan.status === 'done' && scan.redFives ? html`<p class="hint">${scan.redFives} red five${scan.redFives > 1 ? 's' : ''} spotted and added to dora.</p>` : null}` : null}
           ${!scan && canScan ? html`<ul class="tips"><li>Lay the hand face up in one row, melds and flowers a little apart.</li><li>Fill the frame, straight on, in good light. Photos are kept 60 days to improve reading.</li></ul>` : null}
-          ${!canScan ? html`<p class="hint">Photo reading isn’t switched on for this server yet. Tap the tiles in instead.</p>` : null}
+          ${!canScan && !LITE ? html`<p class="hint">Photo reading isn’t switched on for this server yet. Tap the tiles in instead.</p>` : null}
           ${d.tiles ? html`<${TileEditor} R=${R} tiles=${d.tiles} onChange=${(t) => up({ tiles: t })} />
             ${res.tileNote ? html`<p class="warn">${res.tileNote}</p>` : null}
             <button type="button" class="link" style=${{ justifySelf: 'start' }} onClick=${() => up({ tiles: null })}>Don’t use tiles, just tick patterns</button>`
-          : html`<button type="button" class="btn" onClick=${() => up({ tiles: MJ.emptyHand() })}>${I.tiles}Tap in the tiles</button>
+          : html`<button type="button" class="btn" onClick=${() => up({ tiles: MJ.emptyHand() })}>${I.tiles}Pick the tiles on the board</button>
             <p class="hint">${R.detect ? 'Enter tiles to have the patterns picked for you, or tick them yourself below.' : 'Tick the fan yourself below.'}</p>`}
         </div>`}
         ${riichi ? html`<div class="sec"><h3>Dora and fu</h3>
@@ -1441,8 +1446,8 @@ button.tile:active{transform:translateY(1px)}
     };
     return html`<main class="wrap">
       <header class="hero">
-        <div class="brand"><span class="seal" aria-hidden="true">麻雀</span><h1>Mahjong Scorebook</h1></div>
-        <p class="lede">Record who won, how, and with what. It works out the faan, tai or han, splits the payments and keeps the running score. Snap the winning hand and it reads the tiles for you.</p>
+        <div class="brand"><span class="seal" aria-hidden="true">麻雀</span><h1>Mahjong Scorebook${LITE ? html` <span class="k muted" style=${{ fontSize: '18px', fontFamily: 'var(--f-ui)' }}>Lite</span>` : null}</h1></div>
+        <p class="lede">Record who won, how, and with what. Tap the winning tiles on the board and it works out the patterns, the faan, tai or han, splits the payments and keeps the running score.${LITE ? '' : ' Or snap the winning hand and it reads the tiles for you.'}</p>
         <div class="rules-strip">${MJ.ORDER.map((id) => html`<span>${RULES[id].name}<b>${RULES[id].native.replace('麻雀', '').replace('麻将', '').replace('麻將', '') || RULES[id].native}</b></span>`)}</div>
         <div class="row">
           <button type="button" class="btn primary big" onClick=${onNew}>${I.plus}New game</button>
@@ -1481,7 +1486,7 @@ button.tile:active{transform:translateY(1px)}
       }
       setBusy(false);
     }
-    return html`<${Sheet} title=${create ? 'Create account' : 'Sign in'} sub="Saves games to your account and turns on photo reading" onClose=${onClose}
+    return html`<${Sheet} title=${create ? 'Create account' : 'Sign in'} sub=${LITE ? 'Saves games to your account' : 'Saves games to your account and turns on photo reading'} onClose=${onClose}
       foot=${html`<div class="row" style=${{ justifyContent: 'space-between' }}>
         <button type="button" class="link" onClick=${() => { setCreate(!create); setErr(''); }}>${create ? 'I already have an account' : 'Create a new account'}</button>
         <button type="button" class="btn primary" disabled=${!ok || busy} onClick=${go}>${busy ? 'One moment…' : create ? 'Create account' : 'Sign in'}</button></div>`}>
@@ -1510,8 +1515,8 @@ button.tile:active{transform:translateY(1px)}
     return html`<${Sheet} title="Account" sub=${u.name} onClose=${onClose}>
       ${mode === 'info' ? html`
         <div class="sec">
-          <p class="acct"><b>${u.name}</b>${Store.scans ? html`<span>· ${Store.scans.today} of ${Store.scans.limit} photo reads used today</span>` : null}</p>
-          <p class="hint">Games are saved to this account and appear on any phone you sign in on. One phone keeps score; photo reading uses this account’s daily allowance.</p>
+          <p class="acct"><b>${u.name}</b>${Store.scans && !LITE ? html`<span>· ${Store.scans.today} of ${Store.scans.limit} photo reads used today</span>` : null}</p>
+          <p class="hint">Games are saved to this account and appear on any phone you sign in on. One phone keeps score${LITE ? '.' : '; photo reading uses this account’s daily allowance.'}</p>
         </div>
         <div class="menu">
           <button type="button" onClick=${() => setMode('pin')}>${I.rules}<span>Change PIN</span></button>
