@@ -75,9 +75,26 @@ function makeJpeg() {
   for (let k = 0; k < 3; k++) await tap('字', 'East');
   for (let k = 0; k < 2; k++) await tap('字', 'White dragon');
   await page.waitForSelector('.counter.ok');
+  // one-tap removal: tap a hand tile → 13 of 14, then re-add it
+  await page.click('.zone-tiles button[aria-label="Remove 1 Characters"]');
+  ok('tile removed with one tap', /13 of 14/.test(await page.locator('.counter').innerText()));
+  await tap('萬', '1 Characters');
+  await page.waitForSelector('.counter.ok');
+  // change winning tile: pick mode → tap a tile → it becomes the winning tile
+  await page.click('button:has-text("Change winning tile")');
+  await page.click('.zone-tiles button[aria-label="Make winning tile: 2 Dots"]');
+  ok('winning tile changed', (await page.locator('.zone-tiles .tile.is-win').getAttribute('aria-label')).includes('2 Dots'));
   const total = await page.locator('.sumv b').first().innerText();
   ok('hand evaluated (' + total + ')', /faan/.test(total));
   await page.screenshot({ path: path.join(SHOTS, '03-record.png') });
+  // add-pattern list shows example tiles; the explain switch adds descriptions
+  await page.click('details.addlist summary');
+  await page.waitForSelector('.addrow .phelp .ltiles');
+  ok('example tiles under patterns', (await page.locator('.addrow .phelp .ltiles').count()) >= 5);
+  eq('no descriptions yet', await page.locator('.pdesc').count(), 0);
+  await page.click('.addbody .switch');
+  ok('descriptions shown', (await page.locator('.pdesc').count()) >= 5);
+  await page.click('.addbody .switch');
   await page.click('button:has-text("Save hand")');
   await page.waitForSelector('text=Hand saved');
   ok('ledger has 1 hand', (await page.locator('.lrow').count()) === 1);
@@ -200,6 +217,18 @@ function makeJpeg() {
   eq('lite has no scan buttons', await page.locator('button:has-text("Take photo")').count(), 0);
   await page.click('.sheet-head button[aria-label="Close"]');
   await page.click('.backbtn');
+
+  // 10c. branded copies
+  for (const [folder, brand] of [['parlour', 'Mahjong Parlour'], ['kawa', 'Kawa Mahjong']]) {
+    await page.goto('http://127.0.0.1:8080/' + folder + '/', { waitUntil: 'load' });
+    await page.waitForSelector('.hero, .topbar');
+    eq(folder + ' title', await page.title(), brand);
+    if (await page.locator('.backbtn').count()) await page.click('.backbtn');
+    ok(folder + ' h1', (await page.locator('h1').innerText()).startsWith(brand));
+    eq(folder + ' no photo buttons', await page.locator('button:has-text("Take photo")').count(), 0);
+    const man = await (await fetch('http://127.0.0.1:8080/' + folder + '/manifest.webmanifest')).json();
+    eq(folder + ' manifest name', man.name, brand);
+  }
 
   // 11. dark theme snapshot + manifest + sw present
   await page.emulateMedia({ colorScheme: 'dark' });
