@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@500;600&family=Young+Serif&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@700&display=swap&text=__KAI_TEXT__">
-<script>window.API_URL = '__API_URL__'; window.BUILD = '__BUILD__'; window.LITE = __LITE__;</script>
+<script>window.API_URL = '__API_URL__'; window.BUILD = '__BUILD__'; window.LITE = __LITE__; window.BRAND = '__BRAND__';</script>
 <style>
 :root{
   --ground:#EDF1EC;--paper:#FBFCF9;--paper-2:#F2F5F0;--ink:#17231E;--ink-2:#3A4942;--muted:#5E6E67;
@@ -213,6 +213,7 @@ button.tile:active{transform:translateY(1px)}
 .tile.is-win{box-shadow:0 2px 0 var(--tile-back),0 0 0 2px var(--gold)}
 .tile.is-back{background:linear-gradient(180deg,#3E8C6C,var(--tile-back));border-color:#23654B}
 .tile .tb{position:absolute;top:-7px;right:-7px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--ink);color:var(--ground);font-family:var(--f-num);font-size:11px;line-height:17px;text-align:center}
+.zone-tiles .tile .tb{background:var(--loss);color:#fff;font-size:12px;font-weight:700}
 .tile:disabled{opacity:.35;cursor:not-allowed}
 .tf-k{font-family:var(--f-cjk);font-weight:700}
 .tf-idx{font-family:var(--f-ui);font-weight:700}
@@ -307,6 +308,13 @@ button.tile:active{transform:translateY(1px)}
 .addrow .nm b{font-weight:700;font-size:15px}
 .addrow .nm span{font-size:13px;color:var(--muted)}
 .addrow .v{font-family:var(--f-num);font-size:14px;color:var(--ink-2)}
+.addrow{grid-template-rows:auto auto}
+.addrow .phelp{grid-column:2/4}
+.phelp{display:grid;gap:4px;padding:2px 0 4px}
+.phelp .ltiles{gap:2px 2px}
+.pdesc{font-size:13px;color:var(--muted);margin:0}
+.rrow .phelp{grid-column:1/4}
+.rrow{grid-template-rows:auto auto}
 .fuchips .chip{min-height:36px;padding:4px 11px;font-family:var(--f-num);font-weight:600}
 
 /* summary footer */
@@ -379,6 +387,8 @@ button.tile:active{transform:translateY(1px)}
   const html = htm.bind(h);
   const RULES = MJ.RULES;
   const LITE = !!window.LITE;
+  const BRAND = window.BRAND || 'Mahjong Scorebook';
+  const IS_DEFAULT_BRAND = BRAND === 'Mahjong Scorebook';
 
   /* ------------------------------------------------ helpers */
   const clone = (o) => JSON.parse(JSON.stringify(o));
@@ -870,14 +880,15 @@ button.tile:active{transform:translateY(1px)}
   /* ------------------------------------------------ tile editor */
   function TileEditor({ R, tiles, onChange }) {
     const [mode, setMode] = useState('tile');
-    const [sel, setSel] = useState(null);
+    const [pickWin, setPickWin] = useState(false);
+    const pickWinTile = (c) => { onChange(Object.assign({}, tiles, { win: c })); setPickWin(false); };
     const bonusSet = R.id === 'riichi' ? [] : R.id === 'sg' ? ['F', 'S', 'A'] : ['F', 'S'];
     const check = MJ.checkHand(tiles, R.handSize);
     const used = {};
     tiles.hand.forEach((c) => (used[c] = (used[c] || 0) + 1));
     tiles.melds.forEach((m) => { const i = MJ.ix(m.tile); const add = (c) => (used[c] = (used[c] || 0) + 1); if (m.type === 'chi') [0, 1, 2].forEach((k) => add(MJ.cd(i + k))); else for (let k = 0; k < (m.type === 'kan' ? 4 : 3); k++) add(m.tile); });
     function add(code) {
-      setSel(null);
+      setPickWin(false);
       if (MJ.isBonus(code)) { if (!tiles.bonus.includes(code)) onChange(Object.assign({}, tiles, { bonus: tiles.bonus.concat(code) })); return; }
       if (mode === 'tile') { onChange(Object.assign({}, tiles, { hand: tiles.hand.concat(code), win: code })); return; }
       const i = MJ.ix(code);
@@ -893,7 +904,7 @@ button.tile:active{transform:translateY(1px)}
       const hand = tiles.hand.slice(); const k = hand.lastIndexOf(c); if (k > -1) hand.splice(k, 1);
       let win = tiles.win;
       if (win && !hand.includes(win)) win = hand.length ? hand[hand.length - 1] : null;
-      onChange(Object.assign({}, tiles, { hand, win })); setSel(null);
+      onChange(Object.assign({}, tiles, { hand, win }));
     }
     const tileBtn = (c) => {
       const u = used[c] || 0;
@@ -918,13 +929,15 @@ button.tile:active{transform:translateY(1px)}
       <div class="zone">
         <div class="zone-h"><span>In hand</span><span class=${'counter' + (check.ok ? ' ok' : '')}>${check.have} of ${check.expected}</span></div>
         <div class="zone-tiles">
-          ${display.map(({ c, i }) => html`<${Tile} code=${c} pressed=${sel === i} onClick=${() => setSel(sel === i ? null : i)} />`)}
-          ${tiles.win ? html`<span class="wingap"></span><${Tile} code=${tiles.win} win=${true} pressed=${sel === 'w'} onClick=${() => setSel(sel === 'w' ? null : 'w')} label=${'Winning tile: ' + MJ.tileName(tiles.win)} />` : null}
+          ${display.map(({ c, i }) => html`<${Tile} code=${c} pressed=${pickWin} onClick=${() => (pickWin ? pickWinTile(c) : removeAt(c))} label=${(pickWin ? 'Make winning tile: ' : 'Remove ') + MJ.tileName(c)} badge=${pickWin ? null : '×'} />`)}
+          ${tiles.win ? html`<span class="wingap"></span><${Tile} code=${tiles.win} win=${true} onClick=${() => (pickWin ? setPickWin(false) : removeAt(tiles.win))} label=${'Winning tile: ' + MJ.tileName(tiles.win) + (pickWin ? '' : ' (tap to remove)')} badge=${pickWin ? null : '×'} />` : null}
           ${!tiles.hand.length ? html`<span class="hint">Tap the tiles you won with on the board below. The last tile you add is marked as the winning tile.</span>` : null}
         </div>
-        ${sel != null ? html`<div class="selbar">
-          ${sel !== 'w' ? html`<button type="button" class="btn small" onClick=${() => { onChange(Object.assign({}, tiles, { win: sorted[sel] })); setSel(null); }}>Make winning tile</button>` : html`<span class="hint">Winning tile</span>`}
-          <button type="button" class="btn small danger" onClick=${() => removeAt(sel === 'w' ? tiles.win : sorted[sel])}>Remove</button>
+        ${tiles.hand.length ? html`<div class="selbar">
+          ${pickWin ? html`<span class="hint">Tap the tile you won with.</span><button type="button" class="btn small" onClick=${() => setPickWin(false)}>Done</button>`
+          : html`<span class="hint">Tap a tile to remove it.</span>
+            <button type="button" class="btn small" onClick=${() => onChange(Object.assign({}, tiles, { hand: tiles.hand.slice(0, -1), win: tiles.hand.length > 1 ? (tiles.win === tiles.hand[tiles.hand.length - 1] && tiles.hand.slice(0, -1).lastIndexOf(tiles.win) < 0 ? tiles.hand[tiles.hand.length - 2] : tiles.win) : null }))}>Undo last</button>
+            ${tiles.hand.length > 1 ? html`<button type="button" class="btn small" onClick=${() => setPickWin(true)}>Change winning tile</button>` : null}`}
         </div>` : null}
       </div>
       ${tiles.melds.length || mode !== 'tile' ? html`<div class="zone">
@@ -982,6 +995,113 @@ button.tile:active{transform:translateY(1px)}
     return { b64: dataUrl.slice(dataUrl.indexOf(',') + 1), type: 'image/jpeg', w: cv.width, h: cv.height };
   }
 
+
+  /* ------------------------------------------------ pattern examples & descriptions */
+  // Example hands are written as tile strings; melds/bonus optional. Shared ids apply to every rule system that uses them.
+  const EX = (hand, win, extra) => Object.assign({ hand, win }, extra || {});
+  const PATTERN_INFO = {
+    selfDraw: { d: 'You drew the winning tile from the wall yourself instead of taking someone’s discard.' },
+    concealed: { d: 'No chow, pung or open kong taken from other players — the whole hand stayed in your rack until you won.', ex: EX('123m456p789s111z55z', '5z') },
+    concealedSelfDraw: { d: 'A fully concealed hand finished by drawing the winning tile yourself.', ex: EX('123m456p789s111z55z', '5z') },
+    lastTile: { d: 'Won with the very last tile of the wall (self-drawn) or the last discard of the hand.' },
+    robbingKong: { d: 'Won by taking the tile another player was adding to a pung to make a kong.' },
+    kongReplacement: { d: 'Won with the replacement tile drawn after declaring a kong.' },
+    heavenly: { d: 'The dealer’s starting 14 tiles are already a winning hand.' },
+    earthly: { d: 'A non-dealer wins on the dealer’s very first discard, before anyone has called a tile.' },
+    human: { d: 'A non-dealer wins on a discard in the first go-round, before drawing a tile.' },
+    allFromOthers: { d: 'Every set was taken from discards (four chows/pungs/kongs exposed) and the last tile was a discard too.', ex: EX('55z', '5z', { melds: [{ type: 'chi', tile: '1m' }, { type: 'pon', tile: '5p' }, { type: 'chi', tile: '7s' }, { type: 'pon', tile: '1z' }] }) },
+    singleWait: { d: 'Only one tile could have completed the hand: the middle of a 2-4, an edge 1-2 / 8-9, or the pair.', ex: EX('123m456p789s11z345m', '4m') },
+    noFlowers: { d: 'You have no flower or season tiles at all.' },
+    seatFlower: { d: 'A flower or season whose number matches your seat: 1 East, 2 South, 3 West, 4 North.', ex: EX('123m456p789s111z55z', '5z', { bonus: ['F1'] }) },
+    flowerSet: { d: 'All four flowers (梅蘭菊竹) or all four seasons (春夏秋冬).', ex: EX('123m456p789s111z55z', '5z', { bonus: ['F1', 'F2', 'F3', 'F4'] }) },
+    flowerKong: { d: 'All four flowers (梅蘭菊竹) or all four seasons (春夏秋冬).', ex: EX('123m456p789s111z55z', '5z', { bonus: ['S1', 'S2', 'S3', 'S4'] }) },
+    allFlowers: { d: 'All eight bonus tiles: four flowers and four seasons.', ex: EX('123m456p789s111z55z', '5z', { bonus: ['F1', 'F2', 'F3', 'F4', 'S1', 'S2', 'S3', 'S4'] }) },
+    eightFlowers: { d: 'All eight bonus tiles: four flowers and four seasons.', ex: EX('123m456p789s111z55z', '5z', { bonus: ['F1', 'F2', 'F3', 'F4', 'S1', 'S2', 'S3', 'S4'] }) },
+    sevenRobOne: { d: 'You hold seven flowers and the eighth is drawn by someone else — you claim it and win.' },
+    animal: { d: 'An animal tile (cat, mouse, rooster, centipede).', ex: EX('123m456p789s111z55z', '5z', { bonus: ['A1'] }) },
+    allAnimals: { d: 'All four animals: cat, mouse, rooster and centipede.', ex: EX('123m456p789s111z55z', '5z', { bonus: ['A1', 'A2', 'A3', 'A4'] }) },
+    dragonPung: { d: 'A pung or kong of one dragon: red 中, green 發 or white 白.', ex: EX('123m456p789s777z55m', '5m') },
+    seatWind: { d: 'A pung or kong of the wind of your seat (East for the dealer, then South, West, North going round).', ex: EX('123m456p789s222z55m', '5m') },
+    roundWind: { d: 'A pung or kong of the prevailing wind of the round (East in the first round, then South, West, North).', ex: EX('123m456p789s111z55m', '5m') },
+    allChows: { d: 'Four chows (runs of three) and a pair — no pungs or kongs anywhere.', ex: EX('123m456p789s234m55p', '5p') },
+    pingHu: { d: 'All chows and a pair with nothing else: no flowers, a plain pair (no dragon or scoring wind) and a two-sided wait.', ex: EX('123m456p789s234m55p', '5p') },
+    mixedTerminals: { d: 'Every set and the pair are made only of 1s, 9s and honours (winds and dragons).', ex: EX('111m999p111s111z99s', '9s') },
+    allPungs: { d: 'Four pungs or kongs and a pair — no chows.', ex: EX('111m222p333s111z55z', '5z') },
+    mixedSuit: { d: 'Half flush: every tile is from one suit plus winds/dragons.', ex: EX('123m456m789m111z55z', '5z') },
+    pureSuit: { d: 'Full flush: every tile is from one suit, no honours at all.', ex: EX('123m456m789m234m55m', '5m') },
+    smallDragons: { d: 'Two dragon pungs and a pair of the third dragon.', ex: EX('555z666z77z123m456p', '6p') },
+    bigDragons: { d: 'Pungs or kongs of all three dragons.', ex: EX('555z666z777z123m55p', '5p') },
+    smallWinds: { d: 'Three wind pungs and a pair of the fourth wind.', ex: EX('111z222z333z44z123m', '3m') },
+    bigWinds: { d: 'Pungs or kongs of all four winds.', ex: EX('111z222z333z444z55m', '5m') },
+    allHonors: { d: 'Every tile is a wind or a dragon.', ex: EX('111z222z555z666z77z', '7z') },
+    allTerminals: { d: 'Every tile is a 1 or a 9 — no honours, no middle numbers.', ex: EX('111m999m111p999p99s', '9s') },
+    thirteenOrphans: { d: 'One of each 1 and 9 of every suit, one of every wind and dragon, plus one duplicate of any of them.', ex: EX('19m19p19s12345677z', '7z') },
+    nineGates: { d: '1112345678999 of one suit, concealed, winning on any tile of that suit.', ex: EX('11123456789995m', '5m') },
+    threeConcealed: { d: 'Three pungs formed in your own hand, not called from discards.', ex: EX('111m222p333s456m55z', '5z') },
+    fourConcealed: { d: 'Four pungs formed in your own hand. Winning on a discard makes that last pung open, so finish on the pair or by self-draw.', ex: EX('111m222p333s444m55z', '5z') },
+    fiveConcealed: { d: 'Five pungs formed in your own hand (16-tile game).', ex: EX('111m222p333s444m555p6z6z', '6z') },
+    fourKongs: { d: 'Four kongs and a pair.', ex: EX('55z', '5z', { melds: [{ type: 'kan', tile: '1m' }, { type: 'kan', tile: '2p' }, { type: 'kan', tile: '3s' }, { type: 'kan', tile: '1z', concealed: true }] }) },
+    sevenPairs: { d: 'Seven different pairs, fully concealed.', ex: EX('11m22p33s44m55p66s77z', '7z') },
+    /* Riichi */
+    riichi: { d: 'You declared riichi (bet 1,000 points) when your closed hand was one tile away, then won.' },
+    doubleRiichi: { d: 'Riichi declared on your very first discard.' },
+    ippatsu: { d: 'Won within one go-round after declaring riichi, with no calls in between.' },
+    menzenTsumo: { d: 'Closed hand finished by self-draw.', ex: EX('123m456p789s111z55z', '5z') },
+    haitei: { d: 'Won on the last tile from the wall (haitei) or the last discard (houtei).' },
+    rinshan: { d: 'Won with the replacement tile drawn after a kan.' },
+    chankan: { d: 'Won by robbing the tile another player added to a pon to make a kan.' },
+    pinfu: { d: 'Closed hand of four sequences and a non-scoring pair, won on a two-sided wait.', ex: EX('234m567p678s234m44p', '4m') },
+    tanyao: { d: 'All simples: only 2–8 of the suits, no terminals or honours.', ex: EX('234m567p678s345m44p', '4p') },
+    iipeikou: { d: 'Two identical sequences in the same suit, closed hand.', ex: EX('223344m567p678s44p', '4p') },
+    yakuhaiSeat: { d: 'A triplet of your seat wind.', ex: EX('123m456p789s222z55m', '5m') },
+    yakuhaiRound: { d: 'A triplet of the round wind.', ex: EX('123m456p789s111z55m', '5m') },
+    haku: { d: 'A triplet of white dragons.', ex: EX('123m456p789s555z55m', '5m') },
+    hatsu: { d: 'A triplet of green dragons.', ex: EX('123m456p789s666z55m', '5m') },
+    chun: { d: 'A triplet of red dragons.', ex: EX('123m456p789s777z55m', '5m') },
+    chiitoitsu: { d: 'Seven different pairs, closed hand (always 25 fu).', ex: EX('11m22p33s44m55p66s77z', '7z') },
+    sanshoku: { d: 'The same sequence in all three suits.', ex: EX('234m234p234s678m44p', '4p') },
+    ittsu: { d: 'A straight 1-9 of one suit as three sequences (123, 456, 789).', ex: EX('123456789m567p44s', '4s') },
+    chanta: { d: 'Every set and the pair contains a terminal or an honour, with at least one sequence.', ex: EX('123m789p999s111z99m', '9m') },
+    toitoi: { d: 'Four triplets or kans and a pair.', ex: EX('111m222p333s111z55z', '5z') },
+    sanankou: { d: 'Three concealed triplets (not called).', ex: EX('111m222p333s456m55z', '5z') },
+    sanshokuDoukou: { d: 'The same triplet in all three suits.', ex: EX('222m222p222s456m55z', '5z') },
+    sankantsu: { d: 'Three kans.', ex: EX('456m55z', '5z', { melds: [{ type: 'kan', tile: '1m' }, { type: 'kan', tile: '2p' }, { type: 'kan', tile: '3s', concealed: true }] }) },
+    honroutou: { d: 'Only terminals and honours (so it is also toitoi or chiitoitsu).', ex: EX('111m999p111s111z99s', '9s') },
+    shousangen: { d: 'Two dragon triplets and a pair of the third dragon.', ex: EX('555z666z77z123m456p', '6p') },
+    honitsu: { d: 'Half flush: one suit plus honours.', ex: EX('123m456m789m111z55z', '5z') },
+    junchan: { d: 'Every set and the pair contains a terminal (1 or 9), no honours.', ex: EX('123m789p999s111m99m', '9m') },
+    ryanpeikou: { d: 'Two different pairs of identical sequences, closed hand.', ex: EX('223344m667788p55s', '5s') },
+    chinitsu: { d: 'Full flush: one suit only.', ex: EX('123m456m789m234m55m', '5m') },
+    kokushi: { d: 'Thirteen orphans: one of each terminal and honour plus a duplicate.', ex: EX('19m19p19s12345677z', '7z') },
+    suuankou: { d: 'Four concealed triplets. Finish on the pair or by self-draw.', ex: EX('111m222p333s444m55z', '5z') },
+    daisangen: { d: 'Triplets of all three dragons.', ex: EX('555z666z777z123m55p', '5p') },
+    shousuushii: { d: 'Three wind triplets and a pair of the fourth wind.', ex: EX('111z222z333z44z123m', '3m') },
+    daisuushii: { d: 'Triplets of all four winds.', ex: EX('111z222z333z444z55m', '5m') },
+    tsuuiisou: { d: 'All honours.', ex: EX('111z222z555z666z77z', '7z') },
+    chinroutou: { d: 'All terminals (1s and 9s only).', ex: EX('111m999m111p999p99s', '9s') },
+    ryuuiisou: { d: 'All green: only 2, 3, 4, 6, 8 of bamboo and green dragons.', ex: EX('234s666s888s666z22s', '2s') },
+    chuuren: { d: 'Nine gates: 1112345678999 of one suit, closed.', ex: EX('11123456789995m', '5m') },
+    suukantsu: { d: 'Four kans.', ex: EX('55z', '5z', { melds: [{ type: 'kan', tile: '1m' }, { type: 'kan', tile: '2p' }, { type: 'kan', tile: '3s' }, { type: 'kan', tile: '1z', concealed: true }] }) },
+    tenhou: { d: 'Dealer wins with the starting 14 tiles.' },
+    chiihou: { d: 'Non-dealer wins on the first draw before any call.' },
+    flowers: { d: 'Each flower tile counts (Singapore/Malaysian-style riichi tables).', ex: EX('123m456p789s111z55z', '5z', { bonus: ['F1'] }) },
+  };
+  function exampleTiles(id) {
+    const info = PATTERN_INFO[id];
+    if (!info || !info.ex) return null;
+    const e = info.ex;
+    return { hand: MJ.parse(e.hand), melds: e.melds || [], win: e.win || null, bonus: e.bonus || [] };
+  }
+  function PatternHelp({ id, showDesc }) {
+    const info = PATTERN_INFO[id];
+    if (!info) return null;
+    const t = exampleTiles(id);
+    return html`<div class="phelp">
+      ${t ? html`<${HandView} tiles=${t} size="xs" />` : null}
+      ${showDesc && info.d ? html`<p class="pdesc">${info.d}</p>` : null}
+    </div>`;
+  }
+
   /* ------------------------------------------------ record a hand */
   function freshDraft() {
     return { outcome: 'win', winner: null, how: 'discard', discarder: null, tiles: MJ.emptyHand(), manual: {}, liable: null,
@@ -1003,6 +1123,8 @@ button.tile:active{transform:translateY(1px)}
     const [scan, setScan] = useState(null);
     const [viewPhoto, setViewPhoto] = useState(false);
     const [q, setQ] = useState('');
+    const [explain, setExplain] = useState(() => lsGet('mjsb.explain') === '1');
+    const toggleExplain = (v) => { setExplain(v); lsSet('mjsb.explain', v ? '1' : '0'); };
     const camRef = useRef(null), picRef = useRef(null), ctlRef = useRef(null);
     const res = useMemo(() => MJ.evaluate(game, d), [game, d]);
     const up = (patch) => setD((prev) => Object.assign({}, prev, typeof patch === 'function' ? patch(prev) : patch));
@@ -1149,6 +1271,7 @@ button.tile:active{transform:translateY(1px)}
               </div>
               ${p.max > 1 && !fixed ? html`<${Stepper} label=${p.en} value=${n} min=${0} max=${p.max} onChange=${(v) => setCount(p.id, v)} />` : html`<span></span>`}
               <span style=${{ display: 'flex', alignItems: 'center', gap: '2px' }}><span class="rval">${val}</span>${fixed ? null : html`<button type="button" class="rx" aria-label=${'Remove ' + p.en} onClick=${() => setCount(p.id, 0)}>×</button>`}</span>
+              ${explain && PATTERN_INFO[p.id] && PATTERN_INFO[p.id].d ? html`<div class="phelp"><p class="pdesc">${PATTERN_INFO[p.id].d}</p></div>` : null}
             </div>`;
           })}
           ${riichi && (d.riichi.dora || 0) > 0 && res.valid && !res.ym ? html`<div class="rrow"><div class="rname"><span class="zh">ドラ</span><span class="en">Dora</span></div><span></span><span class="rval">${d.riichi.dora} han</span></div>` : null}
@@ -1157,13 +1280,14 @@ button.tile:active{transform:translateY(1px)}
           <details class="addlist" open=${!d.tiles}>
             <summary>Add a pattern</summary>
             <div class="addbody">
+              <div class="toggle-row"><span class="tl"><b>Explain each pattern</b><small>Shows what it means under the example tiles</small></span><${Switch} on=${explain} onChange=${toggleExplain} label="Explain each pattern" /></div>
               ${R.patterns.length > 35 ? html`<input class="input" type="search" placeholder="Search patterns" value=${q} onInput=${(e) => setQ(e.target.value)} aria-label="Search patterns" />` : null}
               ${groupsOf(R).map((g) => {
                 const list = addable.filter((p) => p.g === g && matches(p));
                 if (!list.length) return null;
                 return html`<div class="addgrp">${groupName(g)}</div>${list.map((p) => {
                   const lab = patLabel(R, p, selfDraw);
-                  return html`<button type="button" class="addrow" key=${p.id} onClick=${() => setCount(p.id, 1)}><span class="plus" aria-hidden="true">+</span><span class="nm"><b>${lab.zh}</b><span>${lab.en}${p.note ? ' — ' + p.note : ''}</span></span><span class="v">${valueText(R, p, V, menzen)}</span></button>`;
+                  return html`<button type="button" class="addrow" key=${p.id} onClick=${() => setCount(p.id, 1)}><span class="plus" aria-hidden="true">+</span><span class="nm"><b>${lab.zh}</b><span>${lab.en}${p.note ? ' — ' + p.note : ''}</span></span><span class="v">${valueText(R, p, V, menzen)}</span><${PatternHelp} id=${p.id} showDesc=${explain} /></button>`;
                 })}`;
               })}
             </div>
@@ -1446,7 +1570,7 @@ button.tile:active{transform:translateY(1px)}
     };
     return html`<main class="wrap">
       <header class="hero">
-        <div class="brand"><span class="seal" aria-hidden="true">麻雀</span><h1>Mahjong Scorebook${LITE ? html` <span class="k muted" style=${{ fontSize: '18px', fontFamily: 'var(--f-ui)' }}>Lite</span>` : null}</h1></div>
+        <div class="brand"><span class="seal" aria-hidden="true">麻雀</span><h1>${BRAND}${LITE && IS_DEFAULT_BRAND ? html` <span class="k muted" style=${{ fontSize: '18px', fontFamily: 'var(--f-ui)' }}>Lite</span>` : null}</h1></div>
         <p class="lede">Record who won, how, and with what. Tap the winning tiles on the board and it works out the patterns, the faan, tai or han, splits the payments and keeps the running score.${LITE ? '' : ' Or snap the winning hand and it reads the tiles for you.'}</p>
         <div class="rules-strip">${MJ.ORDER.map((id) => html`<span>${RULES[id].name}<b>${RULES[id].native.replace('麻雀', '').replace('麻将', '').replace('麻將', '') || RULES[id].native}</b></span>`)}</div>
         <div class="row">
