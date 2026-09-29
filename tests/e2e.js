@@ -15,7 +15,7 @@ const eq = (l, g, w) => ok(l, JSON.stringify(g) === JSON.stringify(w), { got: g,
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.png': 'image/png' };
 const server = http.createServer((req, res) => {
   let p = decodeURIComponent(req.url.split('?')[0]);
-  if (p === '/') p = '/index.html';
+  if (p.endsWith('/')) p += 'index.html';
   const f = path.join(DOCS, p);
   if (!f.startsWith(DOCS) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.writeHead(404); res.end('nope'); return; }
   res.writeHead(200, { 'content-type': MIME[path.extname(f)] || 'application/octet-stream' });
@@ -66,9 +66,9 @@ function makeJpeg() {
   await page.click('.chip:has-text("Budi")');
   await page.locator('.flabel:has-text("Who discarded")').waitFor();
   await page.click('.sec:has(.flabel:has-text("Who discarded")) .chip:has-text("Dewi")');
-  await page.click('button:has-text("Tap in the tiles")');
-  await page.waitForSelector('.palette');
-  const tap = async (tab, label) => { await page.click('.tabs button:has(b:text-is("' + tab + '"))'); await page.click('.palette button[aria-label="' + label + '"]'); };
+  await page.waitForSelector('.board');
+  eq('board shows all 34 tiles + 8 bonus', await page.locator('.board .tile').count(), 42);
+  const tap = async (tab, label) => { await page.click('.board button[aria-label="' + label + '"]'); };
   for (let k = 0; k < 3; k++) await tap('萬', '1 Characters');
   for (let k = 0; k < 3; k++) await tap('筒', '2 Dots');
   for (let k = 0; k < 3; k++) await tap('索', '3 Bamboo');
@@ -188,6 +188,18 @@ function makeJpeg() {
   await new Promise((r) => setTimeout(r, 1500));
   const exp3 = await admin('export');
   ok('imported game uploaded', exp3.games.some((g) => g.game.id === 'imp' + stamp));
+
+  // 10b. lite build: no photo buttons, board present
+  await page.goto('http://127.0.0.1:8080/lite/', { waitUntil: 'load' });
+  await page.waitForSelector('.hero, .topbar');
+  ok('lite title', /Lite/.test(await page.title()));
+  if (!(await page.locator('.backbtn').count())) await page.click('.gcard');   // same origin: it may reopen the last game
+  await page.click('button:has-text("Record hand")');
+  await page.waitForSelector('.board');
+  eq('lite has no photo inputs', await page.locator('input[type=file][accept="image/*"]').count(), 0);
+  eq('lite has no scan buttons', await page.locator('button:has-text("Take photo")').count(), 0);
+  await page.click('.sheet-head button[aria-label="Close"]');
+  await page.click('.backbtn');
 
   // 11. dark theme snapshot + manifest + sw present
   await page.emulateMedia({ colorScheme: 'dark' });
