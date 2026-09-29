@@ -9,17 +9,19 @@ Everything runs on the Cloudflare **free plan** in account `maxondelberthakim@gm
 | KV namespace | `mahjong-photos` (id `e111d3237ed043c2878bce5050bf7b15`) | scanned photos, kept 60 days |
 | Secrets | `ADMIN_KEY`, `PIN_PEPPER`, `ANTHROPIC_API_KEY` | set by `deploy.sh`; the first two are kept in `ADMIN_KEY.txt` / `PIN_PEPPER.txt` next to the script |
 
-## First deploy (on the Mac)
+## Deploy (on the Mac)
+
+Double-click `deploy.command` in Finder (`~/Claude Co Work/mahjong-cloudflare`), or in Terminal:
 
 ```
 cd "$HOME/Claude Co Work/mahjong-cloudflare" && bash deploy.sh
 ```
 
-The script downloads a private copy of Node if the Mac has none, installs wrangler into this folder, logs in to Cloudflare (a browser page opens — click **Allow**), sets the secrets once, applies the database schema, deploys the Worker and prints the health check.
+The script is non-interactive and writes everything to `deploy.log`. It reuses the Node copy from `ipc-cloudflare` (or downloads one), installs wrangler into this folder, logs in to Cloudflare if needed (a browser page opens — click **Allow**), sets the secrets once, applies the database schema, deploys the Worker and prints the health check. First deploy done 29 Sep 2026 (version a272ed8c).
 
-It asks for the **Anthropic API key** once. Create one at console.anthropic.com → API keys (a pay-as-you-go account is enough; a scan costs roughly Rp 100–200 on the default model). Paste it when asked; it is sent straight to Cloudflare and not stored on the Mac. To change the key later: `bash deploy.sh --key`.
+**Photo reading key:** create an API key at console.anthropic.com → API keys (pay-as-you-go; a scan costs roughly Rp 100–200 on the default model), save it as a plain-text file named `ANTHROPIC_API_KEY.txt` in this folder, and run the deploy again. The script sends it to Cloudflare as a secret; delete the text file afterwards if you like. Until then `/admin/info` shows `"visionKey": false` and the app says photo reading isn't switched on.
 
-Redeploys after code changes are the same command; nothing is asked again.
+Redeploys after code changes are the same double-click.
 
 ## Models and limits
 
