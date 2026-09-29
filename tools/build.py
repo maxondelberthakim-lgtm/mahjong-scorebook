@@ -40,13 +40,20 @@ def main():
         if ch not in seen: seen.append(ch)
     vendor = '\n'.join(read(SRC / 'vendor' / f) for f in ('preact.min.umd.js', 'preact-hooks.umd.js', 'htm.umd.js'))
     out = app.replace('__KAI_TEXT__', urllib.parse.quote(''.join(seen)))
-    for marker, val in (('/*__VENDOR__*/', vendor), ('/*__ENGINE__*/', engine), ('__API_URL__', api_url), ('__BUILD__', build)):
-        assert marker in out, f'missing {marker} in app.src.html'
-        out = out.replace(marker, val)
-    assert '</script>' not in vendor.replace('</script>', '') or True
-    write(DOCS / 'index.html', out)
-    write(DOCS / 'sw.js', read(TOOLS / 'sw.js').replace('__BUILD__', build))
-    write(DOCS / 'manifest.webmanifest', read(TOOLS / 'manifest.webmanifest'))
+    for lite in (False, True):
+        page = out
+        for marker, val in (('/*__VENDOR__*/', vendor), ('/*__ENGINE__*/', engine), ('__API_URL__', api_url), ('__BUILD__', build), ('__LITE__', 'true' if lite else 'false')):
+            assert marker in page, f'missing {marker} in app.src.html'
+            page = page.replace(marker, val)
+        d = DOCS / 'lite' if lite else DOCS
+        if lite:
+            page = page.replace('<title>Mahjong Scorebook</title>', '<title>Mahjong Scorebook Lite</title>').replace('href="icons/', 'href="../icons/')
+        write(d / 'index.html', page)
+        write(d / 'sw.js', read(TOOLS / 'sw.js').replace('__BUILD__', build + ('-lite' if lite else '')))
+        man = read(TOOLS / 'manifest.webmanifest')
+        if lite:
+            man = man.replace('"Mahjong Scorebook"', '"Mahjong Scorebook Lite"').replace('"Scorebook"', '"Scorebook Lite"').replace('"icons/', '"../icons/').replace(' Photograph the winning hand and it reads the tiles.', '')
+        write(d / 'manifest.webmanifest', man)
     write(DOCS / '.nojekyll', '')
     if not (DOCS / 'icons' / 'icon-512.png').exists():
         subprocess.check_call([sys.executable, str(TOOLS / 'icons.py')])
