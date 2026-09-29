@@ -1,5 +1,5 @@
-/* Mahjong Scorebook service worker — app shell offline, network first. Build cd11051f82 */
-const CACHE = 'mjsb-cd11051f82';
+/* Mahjong Scorebook service worker — app shell offline, network first. Build 605fa72a9c */
+const CACHE = 'mjsb-605fa72a9c';
 const SHELL = ['./', './index.html', './manifest.webmanifest'];
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
