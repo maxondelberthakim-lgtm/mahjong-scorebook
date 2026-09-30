@@ -43,10 +43,11 @@ function effOf(r) { const o = {}; Object.keys(r.eff).sort().forEach((k) => (o[k]
   r = MJ.evaluate(g, { outcome: 'win', winner: 1, how: 'discard', discarder: 0, tiles: hand('19m19p19s1234567z1m', '1m') });
   eq('hk d orphans', [r.score, r.eff.thirteenOrphans, r.deltas[1]], [10, 1, 128]);
 
-  // e) seven pairs is off by default, allowed with a value
-  r = MJ.evaluate(g, { outcome: 'win', winner: 1, how: 'self', tiles: hand('1122m3344p5566s77z', '7z') });
+  // e) seven pairs is 4 faan by default; a table can switch it off with 0
+  const gOff = game('hk', {}, { sevenPairs: 0 });
+  r = MJ.evaluate(gOff, { outcome: 'win', winner: 1, how: 'self', tiles: hand('1122m3344p5566s77z', '7z') });
   eq('hk e off', r.valid, false);
-  const g3 = game('hk', {}, { sevenPairs: 4 });
+  const g3 = game('hk', {}, {});
   r = MJ.evaluate(g3, { outcome: 'win', winner: 1, how: 'self', tiles: hand('1122m3344p5566s77z', '7z') });
   eq('hk e on', [effOf(r), r.score], [{ noFlowers: 1, selfDraw: 1, sevenPairs: 1 }, 6]);
 

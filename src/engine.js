@@ -70,6 +70,7 @@
       if (g.kind === 'seq') t.push(g.i, g.i + 1, g.i + 2);
       else if (g.kind === 'pair') t.push(g.i, g.i);
       else if (g.kind === 'tri') t.push(g.i, g.i, g.i);
+      else if (g.kind === 'knit') { /* the nine knitted tiles are appended by the caller */ }
       else t.push(g.i, g.i, g.i, g.i);
     }
     return t;
@@ -180,6 +181,45 @@
         out.push({ form: 'standard', groups, wait, win: w, tiles: groupTiles(groups) });
       });
     }
+    if (opt.knitted) {
+      // Knitted straight 组合龙: 1-4-7 of one suit, 2-5-8 of another, 3-6-9 of the third, plus one set and a pair.
+      const PERMS = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]];
+      for (const pm of PERMS) {
+        const knit = [];
+        pm.forEach((suit, k) => [k, k + 3, k + 6].forEach((n) => knit.push(suit * 9 + n)));
+        if (!knit.every((i) => counts[i] >= 1)) continue;
+        const rest = counts.slice(); knit.forEach((i) => rest[i]--);
+        for (const d of decompose(rest, need - 3)) {
+          const closed = d.sets.map((x) => ({ kind: x.kind, i: x.i, open: false, concealed: x.kind === 'tri', meld: false }));
+          closed.push({ kind: 'pair', i: d.pair, open: false, concealed: true, meld: false });
+          const inKnit = knit.includes(w) && rest[w] === 0;
+          const groups = meldGroups.map((x) => Object.assign({}, x)).concat(closed.map((x) => {
+            const y = Object.assign({}, x, { isWin: !inKnit && (x.kind === 'seq' ? w >= x.i && w <= x.i + 2 : x.i === w) });
+            if (y.isWin && y.kind === 'tri' && !selfDraw) y.concealed = false;
+            return y;
+          })).concat([{ kind: 'knit', i: knit[0], tiles: knit, open: false, concealed: true, meld: false, isWin: inKnit }]);
+          const wg = groups.find((g) => g.isWin);
+          const wait = !wg ? 'other' : wg.kind === 'pair' ? 'tanki' : wg.kind === 'tri' ? 'shanpon' : wg.kind === 'knit' ? 'other' : (w - wg.i === 1 ? 'kanchan' : (w === wg.i && wg.i % 9 === 6) || (w === wg.i + 2 && wg.i % 9 === 0) ? 'penchan' : 'ryanmen');
+          out.push({ form: 'knitted', groups, wait, win: w, tiles: groupTiles(groups).concat(knit) });
+        }
+      }
+      if (!h.melds.length) {
+        // Honours and knitted tiles 全不靠 / 七星不靠: 14 different tiles from one knitted set plus honours.
+        const singles = counts.every((n) => n <= 1);
+        if (singles) {
+          for (const pm of PERMS) {
+            const allowed = new Set([27, 28, 29, 30, 31, 32, 33]);
+            pm.forEach((suit, k) => [k, k + 3, k + 6].forEach((n) => allowed.add(suit * 9 + n)));
+            const tiles = []; counts.forEach((n, i) => { if (n) tiles.push(i); });
+            if (tiles.length === 14 && tiles.every((i) => allowed.has(i))) {
+              const honors = tiles.filter(isHonor).length;
+              out.push({ form: honors === 7 ? 'greaterKnitted' : 'lesserKnitted', groups: [], wait: 'tanki', win: w, tiles });
+              break;
+            }
+          }
+        }
+      }
+    }
     if (!h.melds.length && opt.handSize === 13) {
       if (opt.sevenPairs && sevenPairs(counts, opt.quadPairs)) {
         const groups = [];
@@ -195,6 +235,25 @@
     return out;
   }
 
+  function knittedOk(counts, need) {
+    const PERMS = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]];
+    for (const pm of PERMS) {
+      const knit = [];
+      pm.forEach((suit, k) => [k, k + 3, k + 6].forEach((n) => knit.push(suit * 9 + n)));
+      if (knit.every((i) => counts[i] >= 1)) {
+        const rest = counts.slice(); knit.forEach((i) => rest[i]--);
+        if (decompose(rest, need - 3).length) return true;
+      }
+      if (need === 4 && counts.every((n) => n <= 1)) {
+        const allowed = new Set([27, 28, 29, 30, 31, 32, 33]);
+        pm.forEach((suit, k) => [k, k + 3, k + 6].forEach((n) => allowed.add(suit * 9 + n)));
+        let total = 0, ok = true;
+        counts.forEach((n, i) => { total += n; if (n && !allowed.has(i)) ok = false; });
+        if (ok && total === 14) return true;
+      }
+    }
+    return false;
+  }
   // Tiles that would have completed the hand before the winning tile arrived.
   function waits(h, opt) {
     const counts = countsOf(h.hand);
@@ -204,7 +263,8 @@
     for (let t = 0; t < 34; t++) {
       counts[t]++;
       const ok = decompose(counts.slice(), need).length > 0 ||
-        (need === 4 && opt.handSize === 13 && ((opt.sevenPairs && sevenPairs(counts, opt.quadPairs)) || orphans(counts)));
+        (need === 4 && opt.handSize === 13 && ((opt.sevenPairs && sevenPairs(counts, opt.quadPairs)) || orphans(counts))) ||
+        (opt.knitted && knittedOk(counts, need));
       if (ok) res.push(t);
       counts[t]--;
     }
@@ -328,7 +388,7 @@
       P('smallWinds', 'Small four winds', '小四喜', 6, 'hand', { note: 'Includes the wind pungs' }),
       P('pureSuit', 'Full flush (one suit only)', '清一色', 7, 'hand'),
       P('bigDragons', 'Big three dragons', '大三元', 8, 'hand', { note: 'Includes the dragon pungs' }),
-      P('sevenPairs', 'Seven pairs', '七對子', 0, 'hand', { note: 'House rule. Give it a value (often 4) to allow it.' }),
+      P('sevenPairs', 'Seven pairs', '七對子', 4, 'hand', { note: 'House rule; set to 0 to disallow it.' }),
       P('bigWinds', 'Big four winds', '大四喜', 'L', 'limit'),
       P('allHonors', 'All honours', '字一色', 'L', 'limit'),
       P('allTerminals', 'All terminals', '清么九', 'L', 'limit'),
@@ -904,23 +964,244 @@
     ['closedWait', 'Closed wait', '嵌张', 1], ['singleWait', 'Single wait', '单钓将', 1], ['selfDrawn', 'Self-drawn', '自摸', 1],
     ['flowers', 'Flower tiles (each)', '花牌', 1, 8],
   ];
+  const MCR_FLAGS = ['lastTileDraw', 'lastTileClaim', 'outWithReplacement', 'robbingTheKong', 'lastTile'];
+  const numOf = (i) => (i % 9) + 1;
+  // Chinese Official: every fan that can be read from the tiles. Flags (last tile, kong-related) are tapped in.
+  function mcrDetect(v, ctx, S, h) {
+    const c = {};
+    const t = v.tiles, G = v.groups;
+    const suitedTiles = t.filter((i) => i < 27);
+    const honors = t.filter(isHonor);
+    const suits = new Set(suitedTiles.map(suitOf));
+    const menzen = !G.some((g) => g.open);
+    const flowers = (h.bonus || []).length;
+    if (flowers) put(c, 'flowers', flowers);
+    // ---- special forms
+    if (v.form === 'orphans') { put(c, 'thirteenOrphans'); return { counts: c, limit: true, menzen }; }
+    if (v.form === 'greaterKnitted' || v.form === 'lesserKnitted') {
+      put(c, v.form === 'greaterKnitted' ? 'greaterHonorsKnitted' : 'lesserHonorsKnitted');
+      if (v.form === 'lesserKnitted' && suits.size === 3 && honors.some(isWind) && honors.some(isDragon)) put(c, 'allTypes');
+      return { counts: c, menzen };
+    }
+    if (v.form === 'pairs') {
+      const ps = G.map((g) => g.i).sort((a, b) => a - b);
+      const shifted = ps.every((i) => i < 27) && new Set(ps.map(suitOf)).size === 1 && ps.every((i, k) => k === 0 || i === ps[k - 1] + 1);
+      if (shifted) put(c, 'sevenShiftedPairs');
+      else {
+        put(c, 'sevenPairs');
+        if (suits.size === 1 && !honors.length) put(c, 'fullFlush');
+        else if (suits.size === 1) put(c, 'halfFlush');
+        if (t.every((i) => !isTH(i))) put(c, 'allSimples');
+        if (!honors.length) put(c, 'noHonors');
+        if (t.every(isTH) && honors.length && !t.every(isHonor)) put(c, 'allTerminalsHonors');
+        if (t.every(isHonor)) put(c, 'allHonors');
+        if (t.every(isTerm)) put(c, 'allTerminals');
+        if (suits.size === 2 && !honors.length) put(c, 'oneVoidedSuit');
+        if (t.every((i) => i < 27 && numOf(i) >= 7)) put(c, 'upperTiles');
+        else if (t.every((i) => i < 27 && numOf(i) >= 4 && numOf(i) <= 6)) put(c, 'middleTiles');
+        else if (t.every((i) => i < 27 && numOf(i) <= 3)) put(c, 'lowerTiles');
+        else if (t.every((i) => i < 27 && numOf(i) >= 6)) put(c, 'upperFour');
+        else if (t.every((i) => i < 27 && numOf(i) <= 4)) put(c, 'lowerFour');
+        if (t.every((i) => GREEN.has(i))) put(c, 'allGreen');
+        if (t.every((i) => REVERSIBLE.has(i))) put(c, 'reversibleTiles');
+        const cnt = {}; ps.forEach((i) => (cnt[i] = (cnt[i] || 0) + 1));
+        put(c, 'tileHog', Object.values(cnt).filter((n) => n === 2).length);
+      }
+      return { counts: c, menzen };
+    }
+    // ---- standard and knitted forms
+    const sets = G.filter((g) => g.kind === 'seq' || g.kind === 'tri' || g.kind === 'kan');
+    const seqs = G.filter((g) => g.kind === 'seq'), trips = G.filter((g) => g.kind === 'tri' || g.kind === 'kan');
+    const kans = G.filter((g) => g.kind === 'kan');
+    const pair = G.find((g) => g.kind === 'pair');
+    const knit = G.find((g) => g.kind === 'knit');
+    const prevW = 27 + ctx.round, seatW = 27 + ctx.seat;
+    const concealedTrips = trips.filter((g) => g.concealed).length;
+    const seqIdx = seqs.map((g) => g.i), tripIdx = trips.map((g) => g.i);
+    const bySuit = (list) => { const m = [[], [], []]; list.forEach((i) => { if (i < 27) m[suitOf(i)].push(numOf(i)); }); return m; };
+    const has = (list, i) => list.includes(i);
+    // 88
+    if (trips.filter((g) => isWind(g.i)).length === 4) put(c, 'bigFourWinds');
+    if (trips.filter((g) => isDragon(g.i)).length === 3) put(c, 'bigThreeDragons');
+    if (t.every((i) => GREEN.has(i))) put(c, 'allGreen');
+    if (!knit && nineGates(v)) put(c, 'nineGates');
+    if (kans.length === 4) put(c, 'fourKongs');
+    // 64
+    if (t.every(isTerm)) put(c, 'allTerminals');
+    if (trips.filter((g) => isWind(g.i)).length === 3 && pair && isWind(pair.i)) put(c, 'littleFourWinds');
+    if (trips.filter((g) => isDragon(g.i)).length === 2 && pair && isDragon(pair.i)) put(c, 'littleThreeDragons');
+    if (t.every(isHonor)) put(c, 'allHonors');
+    if (concealedTrips === 4) put(c, 'fourConcealedPungs');
+    if (seqs.length === 4 && suits.size === 1 && !honors.length && pair && numOf(pair.i) === 5) {
+      const ns = seqIdx.map(numOf).sort((a, b) => a - b).join('');
+      if (ns === '1177') put(c, 'pureTerminalChows');
+    }
+    // 48 / 32: same-suit chow and pung structures
+    const seqSuits = bySuit(seqIdx), tripSuits = bySuit(tripIdx);
+    for (let su = 0; su < 3; su++) {
+      const ss = seqSuits[su].slice().sort((a, b) => a - b), ts = tripSuits[su].slice().sort((a, b) => a - b);
+      if (ss.length === 4 && new Set(ss).size === 1) put(c, 'quadrupleChow');
+      if (ts.length === 4 && ts.every((n, k) => k === 0 || n === ts[k - 1] + 1)) put(c, 'fourPureShiftedPungs');
+      if (ss.length === 4 && (ss.every((n, k) => k === 0 || n === ss[k - 1] + 1) || ss.every((n, k) => k === 0 || n === ss[k - 1] + 2))) put(c, 'fourPureShiftedChows');
+    }
+    if (kans.length === 3) put(c, 'threeKongs');
+    if (t.every(isTH) && honors.length && !t.every(isHonor) && !t.every(isTerm)) put(c, 'allTerminalsHonors');
+    // 24
+    if (!seqs.length && !knit && trips.length === 4 && trips.every((g) => g.i < 27 && numOf(g.i) % 2 === 0) && pair && pair.i < 27 && numOf(pair.i) % 2 === 0) put(c, 'allEvenPungs');
+    if (suits.size === 1 && !honors.length) put(c, 'fullFlush');
+    const triple = (list, same) => { for (let su = 0; su < 3; su++) { const arr = list[su]; const cnt = {}; arr.forEach((n) => (cnt[n] = (cnt[n] || 0) + 1)); if (Object.values(cnt).some((n) => n >= 3)) return true; } return false; };
+    if (!c.quadrupleChow && triple(seqSuits)) put(c, 'pureTripleChow');
+    const shiftedRun = (arr, step, len) => { const a = arr.slice().sort((x, y) => x - y); for (let i = 0; i + len <= a.length; i++) { let ok = true; for (let k = 1; k < len; k++) if (a[i + k] !== a[i] + k * step) ok = false; if (ok) return true; } return false; };
+    if (!c.fourPureShiftedPungs) for (let su = 0; su < 3; su++) if (shiftedRun(tripSuits[su], 1, 3)) { put(c, 'pureShiftedPungs'); break; }
+    const numsAll = t.filter((i) => i < 27).map(numOf);
+    if (!honors.length && numsAll.every((n) => n >= 7)) put(c, 'upperTiles');
+    else if (!honors.length && numsAll.every((n) => n >= 4 && n <= 6)) put(c, 'middleTiles');
+    else if (!honors.length && numsAll.every((n) => n <= 3)) put(c, 'lowerTiles');
+    else if (!honors.length && numsAll.every((n) => n >= 6)) put(c, 'upperFour');
+    else if (!honors.length && numsAll.every((n) => n <= 4)) put(c, 'lowerFour');
+    // 16
+    for (let su = 0; su < 3; su++) if ([1, 4, 7].every((n) => seqSuits[su].includes(n))) { put(c, 'pureStraight'); break; }
+    if (seqs.length === 4 && pair && pair.i < 27 && numOf(pair.i) === 5) {
+      const a = seqSuits.map((x) => x.slice().sort().join(''));
+      const ps = suitOf(pair.i);
+      const others = [0, 1, 2].filter((x) => x !== ps);
+      if (others.every((x) => a[x] === '17') && a[ps] === '') put(c, 'threeSuitedTerminalChows');
+    }
+    if (!c.fourPureShiftedChows) for (let su = 0; su < 3; su++) if (shiftedRun(seqSuits[su], 1, 3) || shiftedRun(seqSuits[su], 2, 3)) { put(c, 'pureShiftedChows'); break; }
+    const hasFive = (g) => g.kind === 'seq' ? g.i < 27 && numOf(g.i) >= 3 && numOf(g.i) <= 5 : g.i < 27 && numOf(g.i) === 5;
+    if (!knit && G.every((g) => hasFive(g))) put(c, 'allFives');
+    for (let n = 1; n <= 9; n++) if ([0, 1, 2].every((su) => tripSuits[su].includes(n))) { put(c, 'triplePung'); break; }
+    if (concealedTrips === 3) put(c, 'threeConcealedPungs');
+    // 12
+    if (knit) put(c, 'knittedStraight');
+    if (trips.filter((g) => isWind(g.i)).length === 3 && !(pair && isWind(pair.i))) put(c, 'bigThreeWinds');
+    // 8
+    if (!c.pureStraight) {
+      const PERMS = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]];
+      if (PERMS.some((pm) => seqSuits[pm[0]].includes(1) && seqSuits[pm[1]].includes(4) && seqSuits[pm[2]].includes(7))) put(c, 'mixedStraight');
+    }
+    if (t.every((i) => REVERSIBLE.has(i))) put(c, 'reversibleTiles');
+    for (let n = 1; n <= 7; n++) if ([0, 1, 2].every((su) => seqSuits[su].includes(n))) { put(c, 'mixedTripleChow'); break; }
+    const mixedShift = (list, step) => { for (let n = 1; n <= 9; n++) { const PERMS = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]]; if (PERMS.some((pm) => list[pm[0]].includes(n) && list[pm[1]].includes(n + step) && list[pm[2]].includes(n + 2 * step))) return true; } return false; };
+    if (mixedShift(tripSuits, 1)) put(c, 'mixedShiftedPungs');
+    // 6
+    if (!seqs.length && !knit && trips.length === 4) put(c, 'allPungs');
+    if (suits.size === 1 && honors.length) put(c, 'halfFlush');
+    if (mixedShift(seqSuits, 1)) put(c, 'mixedShiftedChows');
+    if (suits.size === 3 && honors.some(isWind) && honors.some(isDragon)) put(c, 'allTypes');
+    if (sets.length === 4 && sets.every((g) => g.open) && !ctx.selfDraw) put(c, 'meldedHand');
+    if (kans.filter((g) => g.concealed).length === 2) put(c, 'twoConcealedKongs');
+    if (trips.filter((g) => isDragon(g.i)).length === 2 && !c.littleThreeDragons) put(c, 'twoDragonPungs');
+    // 4
+    if (!knit && G.every((g) => (g.kind === 'seq' ? numOf(g.i) === 1 || numOf(g.i) === 7 : isTH(g.i))) && seqs.length) put(c, 'outsideHand');
+    if (kans.filter((g) => g.open).length === 2) put(c, 'twoMeldedKongs');
+    // 2
+    const dragonTrips = trips.filter((g) => isDragon(g.i)).length;
+    if (dragonTrips === 1) put(c, 'dragonPung');
+    if (trips.some((g) => g.i === prevW)) put(c, 'prevalentWind');
+    if (trips.some((g) => g.i === seatW)) put(c, 'seatWind');
+    if (menzen) put(c, 'concealedHand');
+    if (seqs.length === 4 && pair && !isHonor(pair.i)) put(c, 'allChows');
+    const cnt = new Array(34).fill(0); t.forEach((i) => cnt[i]++);
+    put(c, 'tileHog', cnt.filter((n, i) => n === 4 && !kans.some((g) => g.i === i)).length);
+    for (let n = 1; n <= 9; n++) { const k = [0, 1, 2].filter((su) => tripSuits[su].includes(n)).length; if (k === 2) put(c, 'doublePung'); }
+    if (concealedTrips === 2) put(c, 'twoConcealedPungs');
+    if (kans.filter((g) => g.concealed).length === 1) put(c, 'concealedKong');
+    if (t.every((i) => !isTH(i))) put(c, 'allSimples');
+    // 1
+    const seqCnt = {}; seqIdx.forEach((i) => (seqCnt[i] = (seqCnt[i] || 0) + 1));
+    put(c, 'pureDoubleChow', Object.values(seqCnt).reduce((a, n) => a + Math.floor(n / 2), 0));
+    let mdc = 0; for (let n = 1; n <= 7; n++) { const k = [0, 1, 2].filter((su) => seqSuits[su].includes(n)).length; if (k === 2) mdc++; }
+    put(c, 'mixedDoubleChow', mdc);
+    let ss6 = 0, tc = 0;
+    for (let su = 0; su < 3; su++) {
+      const a = seqSuits[su];
+      for (let n = 1; n <= 6; n++) if (a.includes(n) && a.includes(n + 3)) ss6++;
+      if (a.includes(1) && a.includes(7)) tc++;
+    }
+    put(c, 'shortStraight', ss6);
+    put(c, 'twoTerminalChows', tc);
+    put(c, 'pungTerminalsHonors', trips.filter((g) => (isTerm(g.i) || isWind(g.i)) && g.i !== prevW && g.i !== seatW).length);
+    if (kans.filter((g) => g.open).length === 1) put(c, 'meldedKong');
+    if (suits.size === 2) put(c, 'oneVoidedSuit');
+    if (!honors.length) put(c, 'noHonors');
+    // waits: only when the winning tile could not have completed the hand any other way
+    const ws = waits(h, { handSize: 13, sevenPairs: true, quadPairs: true, knitted: true });
+    if (ws.length === 1) {
+      if (v.wait === 'penchan') put(c, 'edgeWait');
+      else if (v.wait === 'kanchan') put(c, 'closedWait');
+      else if (v.wait === 'tanki') put(c, 'singleWait');
+    }
+    // chicken hand: nothing at all (flowers aside) and not self-drawn
+    const core = Object.keys(c).filter((k) => k !== 'flowers');
+    if (!core.length && !ctx.selfDraw) put(c, 'chickenHand');
+    return { counts: c, menzen };
+  }
+  const REVERSIBLE = new Set([9, 10, 11, 12, 13, 16, 17, 19, 22, 23, 24, 26, 31]); // 1234589p, 245689s, white dragon
   const MCR = {
-    id: 'mcr', name: 'Chinese Official', native: '国标麻将', unit: 'fan', handSize: 13, manualOnly: true,
-    blurb: '81 fan, 8 to win. Tick the fan yourself',
+    id: 'mcr', name: 'Chinese Official', native: '国标麻将', unit: 'fan', handSize: 13,
+    blurb: '81 fan, 8 to win, all read from the tiles',
     settings: [
       { key: 'minFan', label: 'Fan needed to win (flowers excluded)', type: 'int', min: 0, max: 20, def: 8 },
       { key: 'base', label: 'Base points from each opponent', type: 'int', min: 0, max: 100, def: 8 },
     ],
-    patterns: MCR_LIST.map(([id, en, zh, fan, max]) => P(id, en, zh, fan, 'f' + fan, { max: max || 1, src: id === 'selfDrawn' ? 'how' : undefined })),
+    patterns: MCR_LIST.map(([id, en, zh, fan, max]) => P(id, en, zh, fan, 'f' + fan, { max: max || 1, src: id === 'selfDrawn' ? 'how' : undefined, flag: MCR_FLAGS.includes(id) })),
     fixedValues: true,
+    // "Not counted with" rules of the official scoring (the main implications; the rest are handled inside detect).
     excl: {
-      fullyConcealed: ['selfDrawn', 'concealedHand'], lastTileDraw: ['selfDrawn'], outWithReplacement: ['selfDrawn'],
-      bigThreeDragons: ['dragonPung', 'twoDragonPungs'], littleThreeDragons: ['dragonPung', 'twoDragonPungs'], twoDragonPungs: ['dragonPung'],
-      fullFlush: ['oneVoidedSuit', 'noHonors'], sevenPairs: ['concealedHand', 'singleWait', 'fullyConcealed'],
+      bigFourWinds: ['bigThreeWinds', 'allPungs', 'prevalentWind', 'seatWind', 'pungTerminalsHonors'],
+      bigThreeDragons: ['dragonPung', 'twoDragonPungs'],
+      nineGates: ['fullFlush', 'concealedHand', 'pungTerminalsHonors', 'noHonors', 'edgeWait', 'closedWait', 'singleWait'],
+      fourKongs: ['threeKongs', 'twoMeldedKongs', 'twoConcealedKongs', 'meldedKong', 'concealedKong', 'allPungs', 'singleWait'],
+      sevenShiftedPairs: ['sevenPairs', 'fullFlush', 'concealedHand', 'singleWait', 'noHonors'],
+      thirteenOrphans: ['allTerminalsHonors', 'concealedHand', 'allTypes', 'singleWait', 'pungTerminalsHonors'],
+      allTerminals: ['allTerminalsHonors', 'allPungs', 'outsideHand', 'pungTerminalsHonors', 'noHonors', 'doublePung'],
+      littleFourWinds: ['bigThreeWinds', 'prevalentWind', 'seatWind', 'pungTerminalsHonors'],
+      littleThreeDragons: ['twoDragonPungs', 'dragonPung'],
+      allHonors: ['allTerminalsHonors', 'allPungs', 'outsideHand', 'pungTerminalsHonors'],
+      fourConcealedPungs: ['allPungs', 'threeConcealedPungs', 'twoConcealedPungs', 'concealedHand'],
+      pureTerminalChows: ['fullFlush', 'allChows', 'pureDoubleChow', 'twoTerminalChows', 'noHonors', 'oneVoidedSuit'],
+      quadrupleChow: ['pureTripleChow', 'pureDoubleChow', 'tileHog'],
+      fourPureShiftedPungs: ['pureShiftedPungs', 'allPungs'],
+      fourPureShiftedChows: ['pureShiftedChows', 'shortStraight', 'twoTerminalChows'],
+      threeKongs: ['twoMeldedKongs', 'twoConcealedKongs', 'meldedKong', 'concealedKong'],
+      allTerminalsHonors: ['outsideHand', 'allPungs', 'pungTerminalsHonors'],
+      sevenPairs: ['concealedHand', 'singleWait'],
+      greaterHonorsKnitted: ['lesserHonorsKnitted', 'allTypes', 'concealedHand', 'singleWait'],
+      allEvenPungs: ['allPungs', 'allSimples', 'noHonors'],
+      fullFlush: ['halfFlush', 'oneVoidedSuit', 'noHonors'],
+      pureTripleChow: ['pureDoubleChow'],
+      upperTiles: ['upperFour', 'noHonors'], middleTiles: ['allSimples', 'noHonors'], lowerTiles: ['lowerFour', 'noHonors'],
+      pureStraight: ['shortStraight', 'twoTerminalChows'],
+      threeSuitedTerminalChows: ['allChows', 'mixedDoubleChow', 'twoTerminalChows', 'noHonors'],
+      allFives: ['allSimples', 'noHonors'],
+      triplePung: ['doublePung'],
+      threeConcealedPungs: ['twoConcealedPungs'],
+      lesserHonorsKnitted: ['allTypes', 'concealedHand', 'singleWait'],
+      upperFour: ['noHonors'], lowerFour: ['noHonors'],
+      reversibleTiles: ['oneVoidedSuit'],
+      mixedTripleChow: ['mixedDoubleChow'],
+      lastTileDraw: ['selfDrawn'], outWithReplacement: ['selfDrawn'], robbingTheKong: ['lastTile'],
+      halfFlush: ['oneVoidedSuit'],
+      meldedHand: ['singleWait'],
+      twoConcealedKongs: ['concealedKong', 'twoConcealedPungs'],
+      twoDragonPungs: ['dragonPung'],
+      fullyConcealed: ['selfDrawn', 'concealedHand'], twoMeldedKongs: ['meldedKong'],
+      allChows: ['noHonors'], allSimples: ['noHonors'],
     },
-    ctxCounts(c, ctx) { if (ctx.selfDraw) put(c, 'selfDrawn'); },
+    variantOpts: () => ({ handSize: 13, sevenPairs: true, quadPairs: true, knitted: true }),
+    detect(v, ctx, S, h) {
+      return mcrDetect(v, ctx, S, h);
+    },
+    ctxCounts(c, ctx, S, input, fromTiles) {
+      if (ctx.selfDraw) put(c, 'selfDrawn');
+      if (fromTiles && ctx.selfDraw && c.concealedHand) { delete c.concealedHand; put(c, 'fullyConcealed'); }
+    },
     total(eff, V, S) {
       let fan = 0;
+      // Chicken hand only when nothing else scores (flowers aside), including flags tapped in by hand.
+      const other = Object.keys(eff).some((k) => eff[k] && k !== 'chickenHand' && k !== 'flowers');
+      if (other && eff.chickenHand) delete eff.chickenHand;
       for (const p of MCR.patterns) if (eff[p.id]) fan += p.v * eff[p.id];
       const flowers = eff.flowers || 0;
       const core = fan - flowers;
@@ -1000,8 +1281,11 @@
   function applyExclusions(R, counts) {
     const eff = Object.assign({}, counts), by = {};
     const ex = R.excl || {};
-    for (const id in counts) {
-      if (!counts[id]) continue;
+    // Higher-valued patterns exclude first, and a pattern that has itself been excluded excludes nothing.
+    const val = (id) => { const p = R.patterns.find((x) => x.id === id); const v = p ? p.v : 0; return v === 'L' || v === 'Y' ? 1e9 : +v || 0; };
+    const ids = Object.keys(counts).filter((id) => counts[id]).sort((a, b) => val(b) - val(a));
+    for (const id of ids) {
+      if (!eff[id]) continue;
       for (const x of ex[id] || []) if (eff[x]) { by[x] = id; delete eff[x]; }
     }
     return { eff, by };
