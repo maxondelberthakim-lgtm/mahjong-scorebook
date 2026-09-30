@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@500;600&family=Young+Serif&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@700&display=swap&text=%E4%B8%80%E4%BA%8C%E4%B8%89%E5%9B%9B%E4%BA%94%E5%85%AD%E4%B8%83%E5%85%AB%E4%B9%9D%E8%90%AC%E6%9D%B1%E5%8D%97%E8%A5%BF%E5%8C%97%E4%B8%AD%E7%99%BC%E6%A2%85%E8%98%AD%E8%8F%8A%E7%AB%B9%E6%98%A5%E5%A4%8F%E7%A7%8B%E5%86%AC%E8%B2%93%E9%BC%A0%E9%9B%9E%E8%9A%A3%E8%8E%8A%E9%BA%BB%E9%9B%80%E7%AD%92%E7%B4%A2%E5%AD%97%E8%8A%B1%E9%A6%99%E6%B8%AF%E6%96%B0%E5%8A%A0%E5%9D%A1%E7%AB%8B%E7%9B%B4%E5%8F%B0%E7%81%A3%E5%9B%BD%E6%A0%87%E8%87%AA%E8%A8%82%E5%B0%86%E5%B0%87%E6%91%B8%E5%87%BA%E9%8A%83%E6%94%BE%E7%82%AE%E6%A7%8D%E3%83%84%E3%83%A2%E3%83%AD%E3%83%B3%E7%82%B9%E5%92%8C%E6%B5%81%E5%B1%80%E8%B5%B7%E7%B3%8A%E7%88%86%E6%A3%9A%E5%BA%95">
-<script>window.API_URL = 'https://mahjong-api.maxondelberthakim.workers.dev'; window.BUILD = '69b0f60027'; window.LITE = true; window.BRAND = 'Kawa Mahjong';</script>
+<script>window.API_URL = 'https://mahjong-api.maxondelberthakim.workers.dev'; window.BUILD = '9d07a4e4fe'; window.LITE = true; window.BRAND = 'Kawa Mahjong';</script>
 <style>
 :root{
   --ground:#EDF1EC;--paper:#FBFCF9;--paper-2:#F2F5F0;--ink:#17231E;--ink-2:#3A4942;--muted:#5E6E67;
@@ -361,6 +361,11 @@ button.tile:active{transform:translateY(1px)}
 .trow .ta{font-family:var(--f-num);font-weight:600;white-space:nowrap}
 .tips{font-size:13.5px;color:var(--muted);padding-left:18px;margin:0;display:grid;gap:2px}
 .hidden-input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.welcome-actions{display:grid;gap:10px;margin-top:6px}
+.guide{display:grid;gap:10px;padding:14px 16px;border-radius:14px;background:var(--paper);border:1px solid var(--line);font-size:14.5px;color:var(--ink-2)}
+.guide p{margin:0}
+.guestbox{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;border-radius:12px;background:var(--accent-soft);border:1px solid var(--accent)}
+.guestbox b{font-size:26px;letter-spacing:.12em;font-weight:600}
 @media (min-width:720px){.hero h1{font-size:40px}.felt{min-height:340px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -1863,7 +1868,7 @@ button.tile:active{transform:translateY(1px)}
   const LS_KEY = 'mjsb.games.v1', LS_SYNC = 'mjsb.sync.v1';
   const Store = {
     games: {}, mode: 'memory', ready: false, error: '', note: '', subs: new Set(),
-    user: null, userId: null, synced: {}, lastSync: 0, pending: {}, inflight: {}, again: {}, timers: {}, syncing: false, scans: null, canScan: true,
+    user: null, userId: null, synced: {}, lastSync: 0, pending: {}, inflight: {}, again: {}, timers: {}, syncing: false, scans: null, canScan: true, authChecked: false, expiresAt: null, inactiveDays: 7,
     emit() { this.subs.forEach((f) => f()); },
     sub(f) { this.subs.add(f); return () => this.subs.delete(f); },
     list() { return Object.values(this.games).sort((a, b) => b.updatedAt - a.updatedAt); },
@@ -1916,7 +1921,17 @@ button.tile:active{transform:translateY(1px)}
         }
         this.error = '';
         this.writeLocal();
-      } catch (e) { this.fail(e); }
+      } catch (e) {
+        if (e && e.code === 'not_yours') {
+          // The id belongs to another account (an imported backup from a different table): keep the copy under a fresh id.
+          const g2 = clone(g); g2.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+          delete this.games[id]; delete this.pending[id]; delete this.synced[id];
+          this.games[g2.id] = g2; this.writeLocal();
+          if (lsGet('mjsb.last') === id) lsSet('mjsb.last', g2.id);
+          this.inflight[id] = false; this.push(g2.id); this.emit(); return;
+        }
+        this.fail(e);
+      }
       this.inflight[id] = false;
       if (this.again[id]) { delete this.again[id]; this.timers[id] = setTimeout(() => this.flush(id), 50); }
       this.emit();
@@ -1930,11 +1945,12 @@ button.tile:active{transform:translateY(1px)}
         : 'Couldn’t reach your account just now. Changes are kept on this device.';
       this.emit();
     },
-    sessionLost() { this.user = null; this.pending = {}; this.error = 'Your sign-in expired. Sign in again to keep saving to your account.'; this.emit(); },
+    sessionLost() { this.user = null; this.pending = {}; this.error = 'Your sign-in expired or the account was removed after ' + this.inactiveDays + ' days without use. Sign in again or start a new guest table.'; this.emit(); },
     async signIn(name, pin, create) {
       const r = await API.call(create ? 'signup' : 'signin', { name, pin });
       API.setToken(r.token);
       this.setUser(r.user);
+      this.expiresAt = Date.now() + this.inactiveDays * 86400 * 1000;
       await this.sync();
     },
     setUser(u) {
@@ -1945,6 +1961,7 @@ button.tile:active{transform:translateY(1px)}
     },
     async signOut() {
       try { await API.call('signout'); } catch (e) { /* the token is dropped anyway */ }
+      try { localStorage.removeItem('mjsb.last'); } catch (e) {}
       API.setToken(null);
       // Cloud copies leave this device; anything not yet uploaded stays.
       Object.keys(this.games).forEach((id) => { if (this.synced[id] !== undefined && !this.dirty(id)) delete this.games[id]; });
@@ -1971,12 +1988,20 @@ button.tile:active{transform:translateY(1px)}
       this.emit();
     },
     async refreshMe() {
-      if (!API.token) return;
+      if (!API.token) { this.authChecked = true; this.emit(); return; }
       try {
         const r = await API.call('me');
-        this.setUser(r.user); this.scans = r.scans; this.canScan = r.canScan !== false;
+        this.setUser(r.user); this.scans = r.scans; this.canScan = r.canScan !== false; this.expiresAt = r.expiresAt || null; this.inactiveDays = r.inactiveDays || 7;
         await this.sync();
       } catch (e) { if (e.code !== 'signin_required') this.fail(e); }
+      this.authChecked = true; this.emit();
+    },
+    async guestStart() {
+      const r = await API.call('guestStart', {});
+      API.setToken(r.token);
+      this.setUser(r.user);
+      await this.sync();
+      return r.guestId;
     },
     bumpScans() { if (this.scans) { this.scans.today += 1; this.emit(); } },
   };
@@ -1993,10 +2018,86 @@ button.tile:active{transform:translateY(1px)}
     if (Store.user) {
       const n = Store.pendingCount();
       if (n) return { dot: 'warn', text: 'Saving ' + n + ' game' + (n > 1 ? 's' : '') + ' to your account…' };
-      return { dot: 'ok', text: 'Games are saved to your account (' + Store.user.name + ').' };
+      return { dot: 'ok', text: (isGuest(Store.user) ? 'Guest table ' + Store.user.name.replace(/^guest-/, '') + ' · share the id so your table can join.' : 'Games are saved to your account (' + Store.user.name + ').') + ' Kept ' + Store.inactiveDays + ' days after last use — save recap images.' };
     }
     if (Store.mode === 'local') return { dot: 'warn', text: 'Games are saved in this browser only. Sign in to keep them in your account' + (LITE ? '.' : ' and to read photos.') };
     return { dot: 'bad', text: 'This browser can’t keep games. Download a backup before you close it.' };
+  }
+
+  /* ------------------------------------------------ names & recap image */
+  const isGuest = (u) => !!(u && (u.guest || /^guest-/.test(u.name || '')));
+  const displayName = (u) => (u ? (isGuest(u) ? 'Guest ' + u.name.replace(/^guest-/, '') : u.name) : '');
+  // Draws the whole match (standings, settlement, every hand) onto a canvas and returns a PNG blob.
+  async function recapImage(game) {
+    const R = RULES[game.ruleset], rows = MJ.standings(game), riichi = game.ruleset === 'riichi';
+    const hands = game.entries;
+    const W = 1080, pad = 48, lh = 40, lh2 = 66;
+    const H = 420 + rows.length * 52 + 40 + Math.max(1, hands.length) * (lh2 + 6) + 160;
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const x = cv.getContext('2d');
+    x.fillStyle = '#FBFCF9'; x.fillRect(0, 0, W, H);
+    x.fillStyle = '#153F31'; x.fillRect(0, 0, W, 150);
+    x.fillStyle = '#ECF5F0'; x.font = '700 44px system-ui, sans-serif'; x.fillText(BRAND, pad, 70);
+    x.font = '400 26px system-ui, sans-serif';
+    x.fillText(R.name + ' rules · ' + new Date(game.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' }) + ' · ' + hands.filter((e) => e.kind === 'hand').length + ' hands', pad, 118);
+    let y = 210;
+    x.fillStyle = '#17231E'; x.font = '700 30px system-ui, sans-serif'; x.fillText('Final standings', pad, y); y += 24;
+    x.font = '400 28px system-ui, sans-serif';
+    rows.forEach((r, i) => {
+      y += 52;
+      x.fillStyle = '#5E6E67'; x.fillText(String(i + 1), pad, y);
+      x.fillStyle = '#17231E'; x.fillText(pname(game, r.p), pad + 50, y);
+      const main = riichi ? fmt(r.points) + ' pts (' + (r.final > 0 ? '+' : '') + r.final + ')' : signed(r.points) + ' pts';
+      const m = riichi ? moneyFor(game, (r.final || 0) * 1000) : moneyFor(game, r.points);
+      x.textAlign = 'right'; x.fillStyle = (riichi ? r.final : r.points) >= 0 ? '#15784A' : '#BE3A2C';
+      x.fillText(main + (m ? '   ' + m : ''), W - pad, y); x.textAlign = 'left';
+    });
+    const hasMoney = +(game.money && game.money.per) > 0;
+    const nets = hasMoney ? MJ.moneyNets(game) : (riichi ? rows.reduce((a, r) => { a[r.p] = (r.final || 0) * 1000; return a; }, [0, 0, 0, 0]) : MJ.totals(game));
+    const transfers = MJ.settle(nets);
+    if (transfers.length) {
+      y += 60; x.fillStyle = '#17231E'; x.font = '700 30px system-ui, sans-serif'; x.fillText('Settle up', pad, y);
+      x.font = '400 26px system-ui, sans-serif';
+      transfers.forEach((t) => { y += 38; x.fillStyle = '#3A4942'; x.fillText(pname(game, t.from) + ' pays ' + pname(game, t.to) + '  ' + (hasMoney ? moneyText(game, t.amount) : riichi ? fmt(t.amount / 1000) : fmt(t.amount) + ' pts'), pad, y); });
+    }
+    y += 70; x.fillStyle = '#17231E'; x.font = '700 30px system-ui, sans-serif'; x.fillText('Every hand', pad, y); y += 14;
+    x.font = '400 22px system-ui, sans-serif';
+    const cols = [pad, pad + 60, pad + 200, pad + 520];
+    const dcols = [W - pad - 480, W - pad - 320, W - pad - 160, W - pad];
+    y += 34; x.fillStyle = '#5E6E67'; x.fillText('#', cols[0], y); x.fillText('Round', cols[1], y); x.fillText('Result', cols[2], y);
+    x.textAlign = 'right'; game.players.forEach((p, i) => x.fillText(pname(game, i).slice(0, 10), dcols[i], y)); x.textAlign = 'left';
+    let n = 0;
+    for (const e of hands) {
+      y += lh; x.fillStyle = '#17231E'; x.font = '400 22px system-ui, sans-serif';
+      let sub = '';
+      if (e.kind === 'side') { x.fillText('·', cols[0], y); x.fillText('Payout', cols[1], y); x.fillText(e.label.slice(0, 40), cols[2], y); }
+      else {
+        n++; x.fillText(String(n), cols[0], y); x.fillText(MJ.roundLabel(game, e.before).replace(' · ', ' '), cols[1], y);
+        const who = e.outcome === 'draw' ? 'Draw' : pname(game, e.winner) + (e.how === 'self' ? ' self-drew' : ' won off ' + pname(game, e.discarder));
+        x.fillText(who.slice(0, 34), cols[2], y);
+        if (e.outcome === 'win') sub = e.text.split(' · ')[0] + (e.patterns.length ? ' · ' + e.patterns.join(' · ') : '');
+      }
+      x.textAlign = 'right';
+      e.deltas.forEach((d, i) => { x.fillStyle = d > 0.004 ? '#15784A' : d < -0.004 ? '#BE3A2C' : '#8EA197'; x.fillText(signed(d), dcols[i], y); });
+      x.textAlign = 'left';
+      if (sub) { y += 26; x.fillStyle = '#5E6E67'; x.font = '400 20px system-ui, sans-serif'; x.fillText(sub.slice(0, 80), cols[1], y); }
+      x.strokeStyle = '#D5DDD7'; x.beginPath(); x.moveTo(pad, y + 12); x.lineTo(W - pad, y + 12); x.stroke();
+    }
+    if (!hands.length) { y += lh; x.fillStyle = '#5E6E67'; x.fillText('No hands recorded.', pad, y); }
+    y += 70; x.fillStyle = '#8EA197'; x.font = '400 20px system-ui, sans-serif';
+    x.fillText('Recap made with ' + BRAND + ' · ' + new Date().toLocaleString(), pad, y);
+    return new Promise((res) => cv.toBlob(res, 'image/png'));
+  }
+  async function saveRecap(game, onToast) {
+    const blob = await recapImage(game);
+    const name = 'mahjong-recap-' + new Date(game.createdAt).toISOString().slice(0, 10) + '.png';
+    try {
+      const file = new File([blob], name, { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: name }); return; }
+    } catch (e) { if (e && e.name === 'AbortError') return; }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+    onToast('Recap image saved');
   }
 
   /* ------------------------------------------------ files: download, share, import */
@@ -2380,7 +2481,8 @@ button.tile:active{transform:translateY(1px)}
     const info = PATTERN_INFO[id];
     if (!info || !info.ex) return null;
     const e = info.ex;
-    return { hand: MJ.parse(e.hand), melds: e.melds || [], win: e.win || null, bonus: e.bonus || [] };
+    // The winning tile is deliberately not highlighted in examples: any tile of the hand may have been the last one.
+    return { hand: MJ.parse(e.hand), melds: e.melds || [], win: null, bonus: e.bonus || [] };
   }
   function PatternHelp({ id, showDesc }) {
     const info = PATTERN_INFO[id];
@@ -2787,9 +2889,10 @@ button.tile:active{transform:translateY(1px)}
       </div>
       ${copyText ? html`<div class="sec"><p class="hint">Copying isn’t allowed here. Select the text and copy it yourself.</p><textarea class="copybox" readonly value=${copyText} onFocus=${(e) => e.target.select()}></textarea></div>` : null}
       <div class="sec"><h3>Export</h3><div class="row">
+        <button type="button" class="btn primary" onClick=${() => saveRecap(game, onToast).catch(() => onToast('Could not make the recap image'))}>Save recap image</button>
         <button type="button" class="btn" onClick=${() => exportFile('mahjong-' + stamp + '.csv', csvOf(game), 'text/csv')}>Hands as CSV</button>
         <button type="button" class="btn" onClick=${() => exportFile('mahjong-' + stamp + '.json', JSON.stringify(game, null, 1), 'application/json')}>Full backup (JSON)</button>
-      </div><p class="hint">${share ? 'Opens the share sheet, so you can save the file or send it to a friend.' : 'The file downloads to this device.'} A backup can be imported again from the home screen.</p></div>
+      </div><p class="hint">The recap image has the standings, who pays whom and every hand — keep it, because accounts unused for ${Store.inactiveDays} days are deleted. ${share ? 'Files open the share sheet, so you can save them or send them to a friend.' : 'Files download to this device.'} A JSON backup can be imported again from the home screen.</p></div>
     <//>`;
   }
 
@@ -2865,7 +2968,7 @@ button.tile:active{transform:translateY(1px)}
         <div class="rules-strip">${MJ.ORDER.map((id) => html`<span>${RULES[id].name}<b>${RULES[id].native.replace('麻雀', '').replace('麻将', '').replace('麻將', '') || RULES[id].native}</b></span>`)}</div>
         <div class="row">
           <button type="button" class="btn primary big" onClick=${onNew}>${I.plus}New game</button>
-          ${Store.user ? html`<button type="button" class="btn big" onClick=${onAccount}>${I.people}${Store.user.name}</button>` : html`<button type="button" class="btn big" onClick=${onSignIn}>${I.people}Sign in</button>`}
+          ${Store.user ? html`<button type="button" class="btn big" onClick=${onAccount}>${I.people}${displayName(Store.user)}</button>` : html`<button type="button" class="btn big" onClick=${onSignIn}>${I.people}Sign in</button>`}
         </div>
       </header>
       ${active.length ? html`<div class="section-head"><h2>In progress</h2></div><div class="stack">${active.map((g) => html`<${GameCard} key=${g.id} game=${g} onOpen=${() => onOpen(g.id)} />`)}</div>` : null}
@@ -2879,13 +2982,15 @@ button.tile:active{transform:translateY(1px)}
   }
 
   /* ------------------------------------------------ sign in & account */
-  function SignInSheet({ onClose, onDone }) {
+  function SignInSheet({ onClose, onDone, initialMode }) {
     const [name, setName] = useState(lsGet('mjsb.name') || '');
     const [pin, setPin] = useState('');
-    const [create, setCreate] = useState(false);
+    const [mode, setMode] = useState(initialMode || 'signin'); // signin | create | guest
+    const [guestCode, setGuestCode] = useState('');
     const [busy, setBusy] = useState(false);
     const [err, setErr] = useState('');
-    const ok = name.trim().length >= 2 && /^\d{4,8}$/.test(pin);
+    const create = mode === 'create';
+    const ok = name.trim().length >= 2 && /^[^\s]{4,32}$/.test(pin);
     async function go() {
       if (!ok || busy) return;
       setBusy(true); setErr('');
@@ -2894,22 +2999,52 @@ button.tile:active{transform:translateY(1px)}
         lsSet('mjsb.name', name.trim());
         onDone();
       } catch (e) {
-        if (e.code === 'no_such_user') { setCreate(true); setErr('No account has that name yet. Tap “Create account” to start one with this name and PIN.'); }
-        else if (e.code === 'name_taken') { setCreate(false); setErr('That name already has an account. Enter its PIN to sign in.'); }
+        if (e.code === 'no_such_user') { setMode('create'); setErr('No account has that name yet. Tap “Create account” to start one with this name and password.'); }
+        else if (e.code === 'name_taken') { setMode('signin'); setErr('That name already has an account. Enter its password to sign in.'); }
         else setErr(e.message || 'Could not sign in.');
       }
       setBusy(false);
     }
-    return html`<${Sheet} title=${create ? 'Create account' : 'Sign in'} sub=${LITE ? 'Saves games to your account' : 'Saves games to your account and turns on photo reading'} onClose=${onClose}
+    async function guestNew() {
+      if (busy) return;
+      setBusy(true); setErr('');
+      try { const id = await Store.guestStart(); onDone('Your guest id is ' + id.replace(/^guest-/, '') + ' — share it with your table'); }
+      catch (e) { setErr(e.message || 'Could not start as a guest.'); }
+      setBusy(false);
+    }
+    async function guestJoin() {
+      const code = 'guest-' + guestCode.trim().toUpperCase().replace(/^GUEST-/, '');
+      if (!/^guest-[A-Z2-9]{6}$/.test(code) || busy) { setErr('A guest id is 6 letters or numbers, like K7M2XQ.'); return; }
+      setBusy(true); setErr('');
+      try { await Store.signIn(code, code, false); onDone(); }
+      catch (e) { setErr(e.code === 'no_such_user' ? 'No table has that guest id (ids expire after ' + Store.inactiveDays + ' days without use).' : (e.message || 'Could not join.')); }
+      setBusy(false);
+    }
+    const guide = html`<div class="guide">
+      <p><b>Same scorebook for the whole table:</b> everyone who signs in with the same name and password (or the same guest id) sees and edits the same games. Other tables can’t see yours.</p>
+      <p><b>Kept for ${Store.inactiveDays} days:</b> an account that isn’t used for ${Store.inactiveDays} days is deleted with its games. Save the <b>recap image</b> (Standings → Save recap image) to keep a match for good.</p>
+    </div>`;
+    if (mode === 'guest') return html`<${Sheet} title="Play as a guest" sub="No account needed" onClose=${onClose}
+      foot=${html`<div class="row" style=${{ justifyContent: 'space-between' }}><button type="button" class="link" onClick=${() => { setMode('signin'); setErr(''); }}>Use an account instead</button><button type="button" class="btn primary" disabled=${busy} onClick=${guestNew}>${busy ? 'One moment…' : 'New guest table'}</button></div>`}>
+      <div class="sec">
+        <p>A guest table gets a <b>6-character guest id</b>. Share it with the people at your table: anyone who enters it sees and edits the same scorebook.</p>
+        <div class="field"><label for="gj">Have a guest id already? Enter it to join</label><div class="row"><input id="gj" class="input num pinbox" style=${{ flex: '1 1 160px', textTransform: 'uppercase' }} maxlength="12" autocapitalize="characters" value=${guestCode} onInput=${(e) => setGuestCode(e.target.value)} onKeyDown=${(e) => { if (e.key === 'Enter') guestJoin(); }} placeholder="e.g. K7M2XQ" /><button type="button" class="btn" disabled=${busy} onClick=${guestJoin}>Join</button></div></div>
+        ${err ? html`<p class="err">${err}</p>` : null}
+      </div>
+      <div class="sec">${guide}</div>
+    <//>`;
+    return html`<${Sheet} title=${create ? 'Create account' : 'Sign in'} sub=${create ? 'Pick a name and password for your table' : 'The name and password you created'} onClose=${onClose}
       foot=${html`<div class="row" style=${{ justifyContent: 'space-between' }}>
-        <button type="button" class="link" onClick=${() => { setCreate(!create); setErr(''); }}>${create ? 'I already have an account' : 'Create a new account'}</button>
+        <button type="button" class="link" onClick=${() => { setMode(create ? 'signin' : 'create'); setErr(''); }}>${create ? 'I already have an account' : 'Create a new account'}</button>
         <button type="button" class="btn primary" disabled=${!ok || busy} onClick=${go}>${busy ? 'One moment…' : create ? 'Create account' : 'Sign in'}</button></div>`}>
       <div class="sec">
-        <div class="field"><label for="si-name">Your name</label><input id="si-name" class="input" value=${name} maxlength="24" autocomplete="username" onInput=${(e) => setName(e.target.value)} onKeyDown=${(e) => { if (e.key === 'Enter') go(); }} placeholder="e.g. James" /></div>
-        <div class="field"><label for="si-pin">PIN (4 to 8 digits)</label><input id="si-pin" class="input num pinbox" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete=${create ? 'new-password' : 'current-password'} value=${pin} onInput=${(e) => setPin(e.target.value.replace(/\D/g, ''))} onKeyDown=${(e) => { if (e.key === 'Enter') go(); }} /></div>
+        <div class="field"><label for="si-name">Name (your table or group)</label><input id="si-name" class="input" value=${name} maxlength="24" autocomplete="username" onInput=${(e) => setName(e.target.value)} onKeyDown=${(e) => { if (e.key === 'Enter') go(); }} placeholder="e.g. Table 3 or James" /></div>
+        <div class="field"><label for="si-pin">Password (4 to 32 characters)</label><input id="si-pin" class="input" type="password" maxlength="32" autocomplete=${create ? 'new-password' : 'current-password'} value=${pin} onInput=${(e) => setPin(e.target.value)} onKeyDown=${(e) => { if (e.key === 'Enter') go(); }} /></div>
         ${err ? html`<p class="err">${err}</p>` : null}
-        <p class="hint">${create ? 'Pick a name your friends will recognise and a PIN you will remember. There is no password reset, so note the PIN somewhere safe.' : 'The name and PIN you chose when you created the account.'}</p>
+        ${create ? html`<p class="hint">There is no password reset, so note it somewhere safe. Give the same name and password to everyone at your table.</p>` : null}
+        <button type="button" class="link" style=${{ justifySelf: 'start' }} onClick=${() => { setMode('guest'); setErr(''); }}>Or continue as a guest</button>
       </div>
+      <div class="sec">${guide}</div>
     <//>`;
   }
   function AccountSheet({ onClose, onToast }) {
@@ -2918,36 +3053,69 @@ button.tile:active{transform:translateY(1px)}
     const [busy, setBusy] = useState(false), [err, setErr] = useState('');
     const u = Store.user;
     async function changePin() {
-      if (!/^\d{4,8}$/.test(pin) || !/^\d{4,8}$/.test(pin2) || busy) return;
+      if (!/^[^\s]{4,32}$/.test(pin) || !/^[^\s]{4,32}$/.test(pin2) || busy) return;
       setBusy(true); setErr('');
-      try { await API.call('changePin', { pin, newPin: pin2 }); onToast('PIN changed'); setMode('info'); setPin(''); setPin2(''); }
-      catch (e) { setErr(e.message || 'Could not change the PIN.'); }
+      try { await API.call('changePin', { pin, newPin: pin2 }); onToast('Password changed'); setMode('info'); setPin(''); setPin2(''); }
+      catch (e) { setErr(e.message || 'Could not change the password.'); }
       setBusy(false);
     }
     async function signOut() { setBusy(true); await Store.signOut(); setBusy(false); onToast('Signed out'); onClose(); }
+    async function copyId() {
+      const id = u.name.replace(/^guest-/, '');
+      try { await navigator.clipboard.writeText(id); onToast('Guest id copied'); } catch (e) { onToast('Guest id: ' + id); }
+    }
     if (!u) return null;
-    return html`<${Sheet} title="Account" sub=${u.name} onClose=${onClose}>
+    const guest = isGuest(u);
+    const days = Store.expiresAt ? Math.max(0, Math.ceil((Store.expiresAt - Date.now()) / 86400000)) : Store.inactiveDays;
+    return html`<${Sheet} title="Account" sub=${displayName(u)} onClose=${onClose}>
       ${mode === 'info' ? html`
         <div class="sec">
-          <p class="acct"><b>${u.name}</b>${Store.scans && !LITE ? html`<span>· ${Store.scans.today} of ${Store.scans.limit} photo reads used today</span>` : null}</p>
-          <p class="hint">Games are saved to this account and appear on any phone you sign in on. One phone keeps score${LITE ? '.' : '; photo reading uses this account’s daily allowance.'}</p>
+          ${guest ? html`<div class="guestbox"><span class="eyebrow">Your guest id</span><b class="num">${u.name.replace(/^guest-/, '')}</b><button type="button" class="btn small" onClick=${copyId}>Copy</button></div>
+            <p class="hint">Give this id to everyone at your table. On their phone: Play as a guest → enter the id → Join. They then see and edit the same games as you.</p>`
+          : html`<p class="hint">Everyone who signs in with <b>${u.name}</b> and the same password sees and edits the same games. Other tables can’t see yours.</p>`}
+          ${Store.scans && !LITE ? html`<p class="acct">${Store.scans.today} of ${Store.scans.limit} photo reads used today</p>` : null}
+          <p class="warn">This ${guest ? 'guest table' : 'account'} is kept for ${Store.inactiveDays} days after its last use (about ${days} day${days === 1 ? '' : 's'} from now unless someone opens it again). After that it is deleted with all its games. Save each match as a <b>recap image</b> from Standings to keep it.</p>
         </div>
         <div class="menu">
-          <button type="button" onClick=${() => setMode('pin')}>${I.rules}<span>Change PIN</span></button>
-          <button type="button" onClick=${() => setMode('out')}>${I.people}<span>Sign out<small>Your games stay in your account</small></span></button>
+          ${guest ? null : html`<button type="button" onClick=${() => setMode('pin')}>${I.rules}<span>Change password</span></button>`}
+          <button type="button" onClick=${() => setMode('out')}>${I.people}<span>Sign out<small>${guest ? 'Keep the guest id if you want to come back' : 'Your games stay in the account'}</small></span></button>
         </div>` : null}
       ${mode === 'pin' ? html`<div class="sec">
-          <div class="field"><label for="cp-old">Current PIN</label><input id="cp-old" class="input num pinbox" type="password" inputmode="numeric" maxlength="8" value=${pin} onInput=${(e) => setPin(e.target.value.replace(/\D/g, ''))} /></div>
-          <div class="field"><label for="cp-new">New PIN (4 to 8 digits)</label><input id="cp-new" class="input num pinbox" type="password" inputmode="numeric" maxlength="8" value=${pin2} onInput=${(e) => setPin2(e.target.value.replace(/\D/g, ''))} /></div>
+          <div class="field"><label for="cp-old">Current password</label><input id="cp-old" class="input" type="password" maxlength="32" value=${pin} onInput=${(e) => setPin(e.target.value)} /></div>
+          <div class="field"><label for="cp-new">New password (4 to 32 characters)</label><input id="cp-new" class="input" type="password" maxlength="32" value=${pin2} onInput=${(e) => setPin2(e.target.value)} /></div>
           ${err ? html`<p class="err">${err}</p>` : null}
-          <div class="row" style=${{ justifyContent: 'flex-end' }}><button type="button" class="btn" onClick=${() => setMode('info')}>Cancel</button><button type="button" class="btn primary" disabled=${busy} onClick=${changePin}>Save PIN</button></div>
+          <div class="row" style=${{ justifyContent: 'flex-end' }}><button type="button" class="btn" onClick=${() => setMode('info')}>Cancel</button><button type="button" class="btn primary" disabled=${busy} onClick=${changePin}>Save password</button></div>
         </div>` : null}
       ${mode === 'out' ? html`<div class="sec">
-          <p>Sign out of <b>${u.name}</b> on this device?</p>
-          <p class="hint">Games saved to the account are removed from this device and come back when you sign in again. Anything not yet uploaded stays here.</p>
+          <p>Sign out of <b>${displayName(u)}</b> on this device?</p>
+          <p class="hint">${guest ? 'Write down the guest id first — it is the only way back into this table.' : 'Games saved to the account are removed from this device and come back when you sign in again.'}</p>
           <div class="row" style=${{ justifyContent: 'flex-end' }}><button type="button" class="btn" onClick=${() => setMode('info')}>Cancel</button><button type="button" class="btn danger" disabled=${busy} onClick=${signOut}>Sign out</button></div>
         </div>` : null}
     <//>`;
+  }
+
+  /* ------------------------------------------------ welcome (before sign-in) */
+  function Welcome({ onPick }) {
+    return html`<main class="wrap">
+      <header class="hero">
+        <div class="brand"><span class="seal" aria-hidden="true">麻雀</span><h1>${BRAND}</h1></div>
+        <p class="lede">Keeps the score for your mahjong table. Pick the rules, tap the winning tiles on a board, and it works out the patterns, the points and who pays whom.</p>
+        <div class="rules-strip">${MJ.ORDER.map((id) => html`<span>${RULES[id].name}<b>${RULES[id].native.replace('麻雀', '').replace('麻将', '').replace('麻將', '') || RULES[id].native}</b></span>`)}</div>
+      </header>
+      <div class="welcome-actions">
+        <button type="button" class="btn primary big block" onClick=${() => onPick('create')}>${I.plus}Create an account for your table</button>
+        <button type="button" class="btn big block" onClick=${() => onPick('signin')}>Sign in</button>
+        <button type="button" class="btn big block" onClick=${() => onPick('guest')}>Continue as a guest</button>
+      </div>
+      <div class="guide" style=${{ marginTop: '22px' }}>
+        <p class="eyebrow">How it works</p>
+        <p><b>One scorebook per table.</b> Sign in with the same name and password on every phone at your table — or share a guest id — and everyone sees and edits the same games. Other tables can’t see yours.</p>
+        <p><b>Kept for ${Store.inactiveDays} days.</b> An account or guest table that isn’t used for ${Store.inactiveDays} days is deleted with its games, so at the end of a match save the <b>recap image</b> (Standings → Save recap image): it has the final scores, who pays whom and every hand.</p>
+        <p><b>Install it:</b> Share → Add to Home Screen puts ${BRAND} on your phone like an app.</p>
+      </div>
+      ${Store.error ? html`<p class="store-note"><span class="dot bad"></span>${Store.error}</p>` : null}
+      ${window.BUILD ? html`<p class="acct">build ${window.BUILD}</p>` : null}
+    </main>`;
   }
 
   /* ------------------------------------------------ app */
@@ -2977,12 +3145,14 @@ button.tile:active{transform:translateY(1px)}
     const commit = (g) => { if (g.example) setExample(g); else Store.save(g); };
     const signIn = () => setModal('signin');
     let body;
-    if (view === 'setup') body = html`<${Setup} onCancel=${() => setView(game ? 'game' : 'home')} onCreate=${(g) => { Store.save(g); open(g.id); }} />`;
+    if (!Store.authChecked) body = html`<div class="boot">Opening ${BRAND}…</div>`;
+    else if (!Store.user) body = html`<${Welcome} onPick=${(m) => setModal(m === 'signin' ? 'signin' : m === 'create' ? 'create' : 'guest')} />`;
+    else if (view === 'setup') body = html`<${Setup} onCancel=${() => setView(game ? 'game' : 'home')} onCreate=${(g) => { Store.save(g); open(g.id); }} />`;
     else if (view === 'game' && game) body = html`<${GameView} key=${game.id} game=${game} onBack=${() => { setView('home'); setGid(null); }} commit=${commit}
       onDelete=${() => { Store.remove(game.id); setView('home'); setGid(null); setToastMsg('Game deleted'); }} onNewGame=${() => setView('setup')} toast=${setToastMsg} onSignIn=${signIn} />`;
     else body = html`<${Home} example=${example} onNew=${() => setView('setup')} onOpen=${open} onSignIn=${signIn} onAccount=${() => setModal('account')} onToast=${setToastMsg} />`;
     return html`${body}
-      ${modal === 'signin' ? html`<${SignInSheet} onClose=${() => setModal(null)} onDone=${() => { setModal(null); setToastMsg('Signed in as ' + (Store.user ? Store.user.name : '')); }} />` : null}
+      ${modal === 'signin' || modal === 'create' || modal === 'guest' ? html`<${SignInSheet} initialMode=${modal} onClose=${() => setModal(null)} onDone=${(msg) => { setModal(null); setView('home'); setGid(null); setToastMsg(msg || ('Signed in as ' + displayName(Store.user))); }} />` : null}
       ${modal === 'account' ? html`<${AccountSheet} onClose=${() => setModal(null)} onToast=${setToastMsg} />` : null}
       ${update ? html`<div class="toast" role="status">A new version is ready<button type="button" onClick=${() => location.reload()}>Reload</button></div>` : toastMsg ? html`<div class="toast" role="status">${toastMsg}</div>` : null}`;
   }
