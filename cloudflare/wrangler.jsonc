@@ -6,6 +6,7 @@
   "compatibility_date": "2026-09-01",
   "workers_dev": true,
   "observability": { "enabled": true },
+  "triggers": { "crons": ["0 20 * * *"] },
   "vars": {
     "MODEL_DEFAULT": "claude-sonnet-5",
     "MODEL_CAREFUL": "claude-opus-5-5",
