@@ -43,6 +43,7 @@ def main():
     # (folder, brand, short name, lite?)
     VARIANTS = [('', 'Mahjong Scorebook', 'Scorebook', False), ('lite', 'Mahjong Scorebook', 'Scorebook Lite', True),
                 ('parlour', 'Mahjong Parlour', 'Parlour', True), ('kawa', 'Kawa Mahjong', 'Kawa', True)]
+    PAGES = ('parlour', 'kawa')  # brands that also get their own Cloudflare Pages site (pages/<folder>/)
     for folder, brand, short, lite in VARIANTS:
         page = out
         for marker, val in (('/*__VENDOR__*/', vendor), ('/*__ENGINE__*/', engine), ('__API_URL__', api_url), ('__BUILD__', build), ('__LITE__', 'true' if lite else 'false'), ('__BRAND__', brand)):
@@ -60,9 +61,19 @@ def main():
         if lite:
             man = man.replace(' Photograph the winning hand and it reads the tiles.', '')
         write(d / 'manifest.webmanifest', man)
+        if folder in PAGES:
+            # Self-contained copy for a Cloudflare Pages project (own free *.pages.dev address, served at the site root).
+            p = ROOT / 'pages' / folder
+            write(p / 'index.html', page.replace('href="../icons/', 'href="icons/'))
+            write(p / 'sw.js', read(TOOLS / 'sw.js').replace('__BUILD__', build + '-' + folder + '-pages'))
+            write(p / 'manifest.webmanifest', man.replace('"../icons/', '"icons/'))
+            write(p / '_headers', '/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n')
     write(DOCS / '.nojekyll', '')
     if not (DOCS / 'icons' / 'icon-512.png').exists():
         subprocess.check_call([sys.executable, str(TOOLS / 'icons.py')])
+    for folder in PAGES:
+        import shutil
+        shutil.copytree(DOCS / 'icons', ROOT / 'pages' / folder / 'icons', dirs_exist_ok=True)
     print('build', build, '· API', api_url)
 
 def repr_js(s):
