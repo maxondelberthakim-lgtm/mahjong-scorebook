@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@700&display=swap&text=%E4%B8%80%E4%BA%8C%E4%B8%89%E5%9B%9B%E4%BA%94%E5%85%AD%E4%B8%83%E5%85%AB%E4%B9%9D%E8%90%AC%E6%9D%B1%E5%8D%97%E8%A5%BF%E5%8C%97%E4%B8%AD%E7%99%BC%E6%A2%85%E8%98%AD%E8%8F%8A%E7%AB%B9%E6%98%A5%E5%A4%8F%E7%A7%8B%E5%86%AC%E8%B2%93%E9%BC%A0%E9%9B%9E%E8%9A%A3%E8%8E%8A%E9%BA%BB%E9%9B%80%E7%AD%92%E7%B4%A2%E5%AD%97%E8%8A%B1%E9%A6%99%E6%B8%AF%E6%96%B0%E5%8A%A0%E5%9D%A1%E7%AB%8B%E7%9B%B4%E5%8F%B0%E7%81%A3%E5%9B%BD%E6%A0%87%E8%87%AA%E8%A8%82%E5%B0%86%E5%B0%87%E6%91%B8%E5%87%BA%E9%8A%83%E6%94%BE%E7%82%AE%E6%A7%8D%E3%83%84%E3%83%A2%E3%83%AD%E3%83%B3%E7%82%B9%E5%92%8C%E6%B5%81%E5%B1%80%E8%B5%B7%E7%B3%8A%E7%88%86%E6%A3%9A%E5%BA%95">
-<script>window.API_URL = 'https://mahjong-api.maxondelberthakim.workers.dev'; window.BUILD = '15a87ec594'; window.LITE = false; window.BRAND = 'Mahjong Scorebook';</script>
+<script>window.API_URL = 'https://mahjong-api.maxondelberthakim.workers.dev'; window.BUILD = 'd0d1030b18'; window.LITE = false; window.BRAND = 'Mahjong Scorebook';</script>
 <style>
 :root{
   --ground:#F2F2F7;--paper:#FFFFFF;--paper-2:#F7F7FA;--fill:rgba(120,120,128,.12);--fill-2:rgba(120,120,128,.2);
@@ -57,17 +57,23 @@
   --scrim:rgba(0,0,0,.6);--shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);}
 
 *,*::before,*::after{box-sizing:border-box}
-html,body{background:var(--ground)}
+html,body{background:var(--ground);min-height:100%}
+html{-webkit-text-size-adjust:100%;height:-webkit-fill-available}
 body{margin:0;color:var(--ink);font-family:var(--f-ui);font-size:17px;line-height:1.35;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
-button,input,select,textarea{font:inherit;color:inherit;letter-spacing:inherit}
-button{cursor:pointer;-webkit-user-select:none;user-select:none}
+button,input,select,textarea{font:inherit;color:inherit;letter-spacing:inherit;-webkit-appearance:none;appearance:none;margin:0;border-radius:0}
+input[type="search"]::-webkit-search-decoration,input[type="search"]::-webkit-search-cancel-button{-webkit-appearance:none}
+button{cursor:pointer;-webkit-user-select:none;user-select:none;touch-action:manipulation;-webkit-touch-callout:none;background:none;border:0;padding:0;text-align:center;color:inherit}
+summary{-webkit-tap-highlight-color:transparent}
+summary::-webkit-details-marker{display:none}
+summary::marker{content:""}
+img,svg{max-width:100%}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 h1,h2,h3{margin:0;font-weight:700;text-wrap:balance;letter-spacing:-.01em}
 p{margin:0}
 .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
 .k{font-family:var(--f-cjk-ui);font-weight:600}
 .muted{color:var(--muted)}
-.wrap{max-width:680px;margin:0 auto;padding-inline:16px;padding-block:8px 140px}
+.wrap{max-width:680px;margin:0 auto;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));padding-block:8px calc(140px + env(safe-area-inset-bottom,0px))}
 .stack{display:grid;gap:12px}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -75,7 +81,7 @@ p{margin:0}
 .boot{min-height:60vh;display:grid;place-items:center;color:var(--muted);padding-inline:16px;text-align:center}
 
 /* buttons, chips, controls */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:50px;padding:10px 18px;border-radius:12px;border:0;background:var(--fill);color:var(--accent);font-weight:600;font-size:17px;text-decoration:none;line-height:1.2;letter-spacing:-.01em;transition:transform .12s ease,opacity .12s ease}
+.btn{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:50px;padding:10px 18px;border-radius:12px;border:0;background:var(--fill);color:var(--accent);font-weight:600;font-size:17px;text-decoration:none;line-height:1.2;letter-spacing:-.01em;transition:transform .12s ease,opacity .12s ease}
 .btn:active{transform:scale(.98);opacity:.85}
 .btn svg{width:19px;height:19px;flex:none}
 .btn.primary{background:var(--accent);color:var(--accent-ink)}
@@ -235,8 +241,10 @@ p{margin:0}
 .empty{padding:22px 16px;color:var(--muted);font-size:15px}
 
 /* tiles */
-.tile{--tw:34px;position:relative;display:inline-block;width:var(--tw);aspect-ratio:30/40;padding:0;border:1px solid var(--bone-edge);border-radius:5px;background:linear-gradient(180deg,var(--bone-hi),var(--bone));box-shadow:0 2px 0 var(--tile-back),0 3px 5px rgba(0,0,0,.16);vertical-align:bottom;flex:none;transition:transform .12s ease}
-.tile svg{display:block;width:100%;height:100%}
+.tile{--tw:34px;position:relative;display:inline-block;width:var(--tw);height:calc(var(--tw) * 4 / 3);padding:0;margin:0;border:1px solid var(--bone-edge);border-radius:5px;background:linear-gradient(180deg,var(--bone-hi),var(--bone));box-shadow:0 2px 0 var(--tile-back),0 3px 5px rgba(0,0,0,.16);vertical-align:bottom;flex:none;transition:transform .12s ease;-webkit-appearance:none;appearance:none;line-height:0;overflow:visible}
+.tile svg{position:absolute;inset:0;display:block;width:100%;height:100%}
+.palette .tile{--tw:100%;width:100%;max-width:44px;height:auto;justify-self:center}
+.palette .tile::before{content:"";display:block;padding-top:133.33%}
 .tile.t-lg{--tw:42px;border-radius:6px}
 .tile.t-sm{--tw:25px;border-radius:4px;box-shadow:0 1.5px 0 var(--tile-back),0 2px 3px rgba(0,0,0,.14)}
 .tile.t-xs{--tw:18px;border-radius:3px;box-shadow:0 1px 0 var(--tile-back)}
@@ -265,7 +273,7 @@ button.tile:active{transform:translateY(1px)}
 .sheet-head .st span{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sheet-head .iconbtn{width:30px;height:30px;border-radius:50%;background:var(--fill);color:var(--ink-2);margin-top:-8px}
 .sheet-head .iconbtn svg{width:14px;height:14px;stroke-width:3}
-.sheet-body{flex:1;overflow-y:auto;padding:0 16px 28px;overscroll-behavior:contain}
+.sheet-body{flex:1;overflow-y:auto;padding:0 16px 28px;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .sheet-foot{border-top:1px solid var(--line);background:color-mix(in srgb,var(--ground) 82%,transparent);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
 .sec{padding:18px 0 4px;display:grid;gap:10px}
 .sec>h3,.sec-h{font-family:var(--f-ui);font-size:13px;font-weight:400;letter-spacing:-.005em;text-transform:uppercase;color:var(--muted);margin:0;padding-left:4px}
@@ -304,7 +312,6 @@ button.tile:active{transform:translateY(1px)}
 .brow{display:grid;gap:4px}
 .blabel{font-size:12px;font-weight:400;letter-spacing:0;text-transform:uppercase;color:var(--muted)}
 .blabel b{font-size:14px;margin-right:4px;color:var(--ink-2);text-transform:none;letter-spacing:0}
-.palette .tile{width:100%;max-width:44px;justify-self:center}
 .counter{font-variant-numeric:tabular-nums;font-size:13px;font-weight:600;text-transform:none}
 .counter.ok{color:var(--gain)}
 .scanrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -510,6 +517,7 @@ button.tile:active{transform:translateY(1px)}
       if (g.kind === 'seq') t.push(g.i, g.i + 1, g.i + 2);
       else if (g.kind === 'pair') t.push(g.i, g.i);
       else if (g.kind === 'tri') t.push(g.i, g.i, g.i);
+      else if (g.kind === 'knit') { /* the nine knitted tiles are appended by the caller */ }
       else t.push(g.i, g.i, g.i, g.i);
     }
     return t;
@@ -620,6 +628,45 @@ button.tile:active{transform:translateY(1px)}
         out.push({ form: 'standard', groups, wait, win: w, tiles: groupTiles(groups) });
       });
     }
+    if (opt.knitted) {
+      // Knitted straight 组合龙: 1-4-7 of one suit, 2-5-8 of another, 3-6-9 of the third, plus one set and a pair.
+      const PERMS = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]];
+      for (const pm of PERMS) {
+        const knit = [];
+        pm.forEach((suit, k) => [k, k + 3, k + 6].forEach((n) => knit.push(suit * 9 + n)));
+        if (!knit.every((i) => counts[i] >= 1)) continue;
+        const rest = counts.slice(); knit.forEach((i) => rest[i]--);
+        for (const d of decompose(rest, need - 3)) {
+          const closed = d.sets.map((x) => ({ kind: x.kind, i: x.i, open: false, concealed: x.kind === 'tri', meld: false }));
+          closed.push({ kind: 'pair', i: d.pair, open: false, concealed: true, meld: false });
+          const inKnit = knit.includes(w) && rest[w] === 0;
+          const groups = meldGroups.map((x) => Object.assign({}, x)).concat(closed.map((x) => {
+            const y = Object.assign({}, x, { isWin: !inKnit && (x.kind === 'seq' ? w >= x.i && w <= x.i + 2 : x.i === w) });
+            if (y.isWin && y.kind === 'tri' && !selfDraw) y.concealed = false;
+            return y;
+          })).concat([{ kind: 'knit', i: knit[0], tiles: knit, open: false, concealed: true, meld: false, isWin: inKnit }]);
+          const wg = groups.find((g) => g.isWin);
+          const wait = !wg ? 'other' : wg.kind === 'pair' ? 'tanki' : wg.kind === 'tri' ? 'shanpon' : wg.kind === 'knit' ? 'other' : (w - wg.i === 1 ? 'kanchan' : (w === wg.i && wg.i % 9 === 6) || (w === wg.i + 2 && wg.i % 9 === 0) ? 'penchan' : 'ryanmen');
+          out.push({ form: 'knitted', groups, wait, win: w, tiles: groupTiles(groups).concat(knit) });
+        }
+      }
+      if (!h.melds.length) {
+        // Honours and knitted tiles 全不靠 / 七星不靠: 14 different tiles from one knitted set plus honours.
+        const singles = counts.every((n) => n <= 1);
+        if (singles) {
+          for (const pm of PERMS) {
+            const allowed = new Set([27, 28, 29, 30, 31, 32, 33]);
+            pm.forEach((suit, k) => [k, k + 3, k + 6].forEach((n) => allowed.add(suit * 9 + n)));
+            const tiles = []; counts.forEach((n, i) => { if (n) tiles.push(i); });
+            if (tiles.length === 14 && tiles.every((i) => allowed.has(i))) {
+              const honors = tiles.filter(isHonor).length;
+              out.push({ form: honors === 7 ? 'greaterKnitted' : 'lesserKnitted', groups: [], wait: 'tanki', win: w, tiles });
+              break;
+            }
+          }
+        }
+      }
+    }
     if (!h.melds.length && opt.handSize === 13) {
       if (opt.sevenPairs && sevenPairs(counts, opt.quadPairs)) {
         const groups = [];
@@ -635,6 +682,25 @@ button.tile:active{transform:translateY(1px)}
     return out;
   }
 
+  function knittedOk(counts, need) {
+    const PERMS = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]];
+    for (const pm of PERMS) {
+      const knit = [];
+      pm.forEach((suit, k) => [k, k + 3, k + 6].forEach((n) => knit.push(suit * 9 + n)));
+      if (knit.every((i) => counts[i] >= 1)) {
+        const rest = counts.slice(); knit.forEach((i) => rest[i]--);
+        if (decompose(rest, need - 3).length) return true;
+      }
+      if (need === 4 && counts.every((n) => n <= 1)) {
+        const allowed = new Set([27, 28, 29, 30, 31, 32, 33]);
+        pm.forEach((suit, k) => [k, k + 3, k + 6].forEach((n) => allowed.add(suit * 9 + n)));
+        let total = 0, ok = true;
+        counts.forEach((n, i) => { total += n; if (n && !allowed.has(i)) ok = false; });
+        if (ok && total === 14) return true;
+      }
+    }
+    return false;
+  }
   // Tiles that would have completed the hand before the winning tile arrived.
   function waits(h, opt) {
     const counts = countsOf(h.hand);
@@ -644,7 +710,8 @@ button.tile:active{transform:translateY(1px)}
     for (let t = 0; t < 34; t++) {
       counts[t]++;
       const ok = decompose(counts.slice(), need).length > 0 ||
-        (need === 4 && opt.handSize === 13 && ((opt.sevenPairs && sevenPairs(counts, opt.quadPairs)) || orphans(counts)));
+        (need === 4 && opt.handSize === 13 && ((opt.sevenPairs && sevenPairs(counts, opt.quadPairs)) || orphans(counts))) ||
+        (opt.knitted && knittedOk(counts, need));
       if (ok) res.push(t);
       counts[t]--;
     }
@@ -768,7 +835,7 @@ button.tile:active{transform:translateY(1px)}
       P('smallWinds', 'Small four winds', '小四喜', 6, 'hand', { note: 'Includes the wind pungs' }),
       P('pureSuit', 'Full flush (one suit only)', '清一色', 7, 'hand'),
       P('bigDragons', 'Big three dragons', '大三元', 8, 'hand', { note: 'Includes the dragon pungs' }),
-      P('sevenPairs', 'Seven pairs', '七對子', 0, 'hand', { note: 'House rule. Give it a value (often 4) to allow it.' }),
+      P('sevenPairs', 'Seven pairs', '七對子', 4, 'hand', { note: 'House rule; set to 0 to disallow it.' }),
       P('bigWinds', 'Big four winds', '大四喜', 'L', 'limit'),
       P('allHonors', 'All honours', '字一色', 'L', 'limit'),
       P('allTerminals', 'All terminals', '清么九', 'L', 'limit'),
@@ -1344,23 +1411,244 @@ button.tile:active{transform:translateY(1px)}
     ['closedWait', 'Closed wait', '嵌张', 1], ['singleWait', 'Single wait', '单钓将', 1], ['selfDrawn', 'Self-drawn', '自摸', 1],
     ['flowers', 'Flower tiles (each)', '花牌', 1, 8],
   ];
+  const MCR_FLAGS = ['lastTileDraw', 'lastTileClaim', 'outWithReplacement', 'robbingTheKong', 'lastTile'];
+  const numOf = (i) => (i % 9) + 1;
+  // Chinese Official: every fan that can be read from the tiles. Flags (last tile, kong-related) are tapped in.
+  function mcrDetect(v, ctx, S, h) {
+    const c = {};
+    const t = v.tiles, G = v.groups;
+    const suitedTiles = t.filter((i) => i < 27);
+    const honors = t.filter(isHonor);
+    const suits = new Set(suitedTiles.map(suitOf));
+    const menzen = !G.some((g) => g.open);
+    const flowers = (h.bonus || []).length;
+    if (flowers) put(c, 'flowers', flowers);
+    // ---- special forms
+    if (v.form === 'orphans') { put(c, 'thirteenOrphans'); return { counts: c, limit: true, menzen }; }
+    if (v.form === 'greaterKnitted' || v.form === 'lesserKnitted') {
+      put(c, v.form === 'greaterKnitted' ? 'greaterHonorsKnitted' : 'lesserHonorsKnitted');
+      if (v.form === 'lesserKnitted' && suits.size === 3 && honors.some(isWind) && honors.some(isDragon)) put(c, 'allTypes');
+      return { counts: c, menzen };
+    }
+    if (v.form === 'pairs') {
+      const ps = G.map((g) => g.i).sort((a, b) => a - b);
+      const shifted = ps.every((i) => i < 27) && new Set(ps.map(suitOf)).size === 1 && ps.every((i, k) => k === 0 || i === ps[k - 1] + 1);
+      if (shifted) put(c, 'sevenShiftedPairs');
+      else {
+        put(c, 'sevenPairs');
+        if (suits.size === 1 && !honors.length) put(c, 'fullFlush');
+        else if (suits.size === 1) put(c, 'halfFlush');
+        if (t.every((i) => !isTH(i))) put(c, 'allSimples');
+        if (!honors.length) put(c, 'noHonors');
+        if (t.every(isTH) && honors.length && !t.every(isHonor)) put(c, 'allTerminalsHonors');
+        if (t.every(isHonor)) put(c, 'allHonors');
+        if (t.every(isTerm)) put(c, 'allTerminals');
+        if (suits.size === 2 && !honors.length) put(c, 'oneVoidedSuit');
+        if (t.every((i) => i < 27 && numOf(i) >= 7)) put(c, 'upperTiles');
+        else if (t.every((i) => i < 27 && numOf(i) >= 4 && numOf(i) <= 6)) put(c, 'middleTiles');
+        else if (t.every((i) => i < 27 && numOf(i) <= 3)) put(c, 'lowerTiles');
+        else if (t.every((i) => i < 27 && numOf(i) >= 6)) put(c, 'upperFour');
+        else if (t.every((i) => i < 27 && numOf(i) <= 4)) put(c, 'lowerFour');
+        if (t.every((i) => GREEN.has(i))) put(c, 'allGreen');
+        if (t.every((i) => REVERSIBLE.has(i))) put(c, 'reversibleTiles');
+        const cnt = {}; ps.forEach((i) => (cnt[i] = (cnt[i] || 0) + 1));
+        put(c, 'tileHog', Object.values(cnt).filter((n) => n === 2).length);
+      }
+      return { counts: c, menzen };
+    }
+    // ---- standard and knitted forms
+    const sets = G.filter((g) => g.kind === 'seq' || g.kind === 'tri' || g.kind === 'kan');
+    const seqs = G.filter((g) => g.kind === 'seq'), trips = G.filter((g) => g.kind === 'tri' || g.kind === 'kan');
+    const kans = G.filter((g) => g.kind === 'kan');
+    const pair = G.find((g) => g.kind === 'pair');
+    const knit = G.find((g) => g.kind === 'knit');
+    const prevW = 27 + ctx.round, seatW = 27 + ctx.seat;
+    const concealedTrips = trips.filter((g) => g.concealed).length;
+    const seqIdx = seqs.map((g) => g.i), tripIdx = trips.map((g) => g.i);
+    const bySuit = (list) => { const m = [[], [], []]; list.forEach((i) => { if (i < 27) m[suitOf(i)].push(numOf(i)); }); return m; };
+    const has = (list, i) => list.includes(i);
+    // 88
+    if (trips.filter((g) => isWind(g.i)).length === 4) put(c, 'bigFourWinds');
+    if (trips.filter((g) => isDragon(g.i)).length === 3) put(c, 'bigThreeDragons');
+    if (t.every((i) => GREEN.has(i))) put(c, 'allGreen');
+    if (!knit && nineGates(v)) put(c, 'nineGates');
+    if (kans.length === 4) put(c, 'fourKongs');
+    // 64
+    if (t.every(isTerm)) put(c, 'allTerminals');
+    if (trips.filter((g) => isWind(g.i)).length === 3 && pair && isWind(pair.i)) put(c, 'littleFourWinds');
+    if (trips.filter((g) => isDragon(g.i)).length === 2 && pair && isDragon(pair.i)) put(c, 'littleThreeDragons');
+    if (t.every(isHonor)) put(c, 'allHonors');
+    if (concealedTrips === 4) put(c, 'fourConcealedPungs');
+    if (seqs.length === 4 && suits.size === 1 && !honors.length && pair && numOf(pair.i) === 5) {
+      const ns = seqIdx.map(numOf).sort((a, b) => a - b).join('');
+      if (ns === '1177') put(c, 'pureTerminalChows');
+    }
+    // 48 / 32: same-suit chow and pung structures
+    const seqSuits = bySuit(seqIdx), tripSuits = bySuit(tripIdx);
+    for (let su = 0; su < 3; su++) {
+      const ss = seqSuits[su].slice().sort((a, b) => a - b), ts = tripSuits[su].slice().sort((a, b) => a - b);
+      if (ss.length === 4 && new Set(ss).size === 1) put(c, 'quadrupleChow');
+      if (ts.length === 4 && ts.every((n, k) => k === 0 || n === ts[k - 1] + 1)) put(c, 'fourPureShiftedPungs');
+      if (ss.length === 4 && (ss.every((n, k) => k === 0 || n === ss[k - 1] + 1) || ss.every((n, k) => k === 0 || n === ss[k - 1] + 2))) put(c, 'fourPureShiftedChows');
+    }
+    if (kans.length === 3) put(c, 'threeKongs');
+    if (t.every(isTH) && honors.length && !t.every(isHonor) && !t.every(isTerm)) put(c, 'allTerminalsHonors');
+    // 24
+    if (!seqs.length && !knit && trips.length === 4 && trips.every((g) => g.i < 27 && numOf(g.i) % 2 === 0) && pair && pair.i < 27 && numOf(pair.i) % 2 === 0) put(c, 'allEvenPungs');
+    if (suits.size === 1 && !honors.length) put(c, 'fullFlush');
+    const triple = (list, same) => { for (let su = 0; su < 3; su++) { const arr = list[su]; const cnt = {}; arr.forEach((n) => (cnt[n] = (cnt[n] || 0) + 1)); if (Object.values(cnt).some((n) => n >= 3)) return true; } return false; };
+    if (!c.quadrupleChow && triple(seqSuits)) put(c, 'pureTripleChow');
+    const shiftedRun = (arr, step, len) => { const a = arr.slice().sort((x, y) => x - y); for (let i = 0; i + len <= a.length; i++) { let ok = true; for (let k = 1; k < len; k++) if (a[i + k] !== a[i] + k * step) ok = false; if (ok) return true; } return false; };
+    if (!c.fourPureShiftedPungs) for (let su = 0; su < 3; su++) if (shiftedRun(tripSuits[su], 1, 3)) { put(c, 'pureShiftedPungs'); break; }
+    const numsAll = t.filter((i) => i < 27).map(numOf);
+    if (!honors.length && numsAll.every((n) => n >= 7)) put(c, 'upperTiles');
+    else if (!honors.length && numsAll.every((n) => n >= 4 && n <= 6)) put(c, 'middleTiles');
+    else if (!honors.length && numsAll.every((n) => n <= 3)) put(c, 'lowerTiles');
+    else if (!honors.length && numsAll.every((n) => n >= 6)) put(c, 'upperFour');
+    else if (!honors.length && numsAll.every((n) => n <= 4)) put(c, 'lowerFour');
+    // 16
+    for (let su = 0; su < 3; su++) if ([1, 4, 7].every((n) => seqSuits[su].includes(n))) { put(c, 'pureStraight'); break; }
+    if (seqs.length === 4 && pair && pair.i < 27 && numOf(pair.i) === 5) {
+      const a = seqSuits.map((x) => x.slice().sort().join(''));
+      const ps = suitOf(pair.i);
+      const others = [0, 1, 2].filter((x) => x !== ps);
+      if (others.every((x) => a[x] === '17') && a[ps] === '') put(c, 'threeSuitedTerminalChows');
+    }
+    if (!c.fourPureShiftedChows) for (let su = 0; su < 3; su++) if (shiftedRun(seqSuits[su], 1, 3) || shiftedRun(seqSuits[su], 2, 3)) { put(c, 'pureShiftedChows'); break; }
+    const hasFive = (g) => g.kind === 'seq' ? g.i < 27 && numOf(g.i) >= 3 && numOf(g.i) <= 5 : g.i < 27 && numOf(g.i) === 5;
+    if (!knit && G.every((g) => hasFive(g))) put(c, 'allFives');
+    for (let n = 1; n <= 9; n++) if ([0, 1, 2].every((su) => tripSuits[su].includes(n))) { put(c, 'triplePung'); break; }
+    if (concealedTrips === 3) put(c, 'threeConcealedPungs');
+    // 12
+    if (knit) put(c, 'knittedStraight');
+    if (trips.filter((g) => isWind(g.i)).length === 3 && !(pair && isWind(pair.i))) put(c, 'bigThreeWinds');
+    // 8
+    if (!c.pureStraight) {
+      const PERMS = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]];
+      if (PERMS.some((pm) => seqSuits[pm[0]].includes(1) && seqSuits[pm[1]].includes(4) && seqSuits[pm[2]].includes(7))) put(c, 'mixedStraight');
+    }
+    if (t.every((i) => REVERSIBLE.has(i))) put(c, 'reversibleTiles');
+    for (let n = 1; n <= 7; n++) if ([0, 1, 2].every((su) => seqSuits[su].includes(n))) { put(c, 'mixedTripleChow'); break; }
+    const mixedShift = (list, step) => { for (let n = 1; n <= 9; n++) { const PERMS = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]]; if (PERMS.some((pm) => list[pm[0]].includes(n) && list[pm[1]].includes(n + step) && list[pm[2]].includes(n + 2 * step))) return true; } return false; };
+    if (mixedShift(tripSuits, 1)) put(c, 'mixedShiftedPungs');
+    // 6
+    if (!seqs.length && !knit && trips.length === 4) put(c, 'allPungs');
+    if (suits.size === 1 && honors.length) put(c, 'halfFlush');
+    if (mixedShift(seqSuits, 1)) put(c, 'mixedShiftedChows');
+    if (suits.size === 3 && honors.some(isWind) && honors.some(isDragon)) put(c, 'allTypes');
+    if (sets.length === 4 && sets.every((g) => g.open) && !ctx.selfDraw) put(c, 'meldedHand');
+    if (kans.filter((g) => g.concealed).length === 2) put(c, 'twoConcealedKongs');
+    if (trips.filter((g) => isDragon(g.i)).length === 2 && !c.littleThreeDragons) put(c, 'twoDragonPungs');
+    // 4
+    if (!knit && G.every((g) => (g.kind === 'seq' ? numOf(g.i) === 1 || numOf(g.i) === 7 : isTH(g.i))) && seqs.length) put(c, 'outsideHand');
+    if (kans.filter((g) => g.open).length === 2) put(c, 'twoMeldedKongs');
+    // 2
+    const dragonTrips = trips.filter((g) => isDragon(g.i)).length;
+    if (dragonTrips === 1) put(c, 'dragonPung');
+    if (trips.some((g) => g.i === prevW)) put(c, 'prevalentWind');
+    if (trips.some((g) => g.i === seatW)) put(c, 'seatWind');
+    if (menzen) put(c, 'concealedHand');
+    if (seqs.length === 4 && pair && !isHonor(pair.i)) put(c, 'allChows');
+    const cnt = new Array(34).fill(0); t.forEach((i) => cnt[i]++);
+    put(c, 'tileHog', cnt.filter((n, i) => n === 4 && !kans.some((g) => g.i === i)).length);
+    for (let n = 1; n <= 9; n++) { const k = [0, 1, 2].filter((su) => tripSuits[su].includes(n)).length; if (k === 2) put(c, 'doublePung'); }
+    if (concealedTrips === 2) put(c, 'twoConcealedPungs');
+    if (kans.filter((g) => g.concealed).length === 1) put(c, 'concealedKong');
+    if (t.every((i) => !isTH(i))) put(c, 'allSimples');
+    // 1
+    const seqCnt = {}; seqIdx.forEach((i) => (seqCnt[i] = (seqCnt[i] || 0) + 1));
+    put(c, 'pureDoubleChow', Object.values(seqCnt).reduce((a, n) => a + Math.floor(n / 2), 0));
+    let mdc = 0; for (let n = 1; n <= 7; n++) { const k = [0, 1, 2].filter((su) => seqSuits[su].includes(n)).length; if (k === 2) mdc++; }
+    put(c, 'mixedDoubleChow', mdc);
+    let ss6 = 0, tc = 0;
+    for (let su = 0; su < 3; su++) {
+      const a = seqSuits[su];
+      for (let n = 1; n <= 6; n++) if (a.includes(n) && a.includes(n + 3)) ss6++;
+      if (a.includes(1) && a.includes(7)) tc++;
+    }
+    put(c, 'shortStraight', ss6);
+    put(c, 'twoTerminalChows', tc);
+    put(c, 'pungTerminalsHonors', trips.filter((g) => (isTerm(g.i) || isWind(g.i)) && g.i !== prevW && g.i !== seatW).length);
+    if (kans.filter((g) => g.open).length === 1) put(c, 'meldedKong');
+    if (suits.size === 2) put(c, 'oneVoidedSuit');
+    if (!honors.length) put(c, 'noHonors');
+    // waits: only when the winning tile could not have completed the hand any other way
+    const ws = waits(h, { handSize: 13, sevenPairs: true, quadPairs: true, knitted: true });
+    if (ws.length === 1) {
+      if (v.wait === 'penchan') put(c, 'edgeWait');
+      else if (v.wait === 'kanchan') put(c, 'closedWait');
+      else if (v.wait === 'tanki') put(c, 'singleWait');
+    }
+    // chicken hand: nothing at all (flowers aside) and not self-drawn
+    const core = Object.keys(c).filter((k) => k !== 'flowers');
+    if (!core.length && !ctx.selfDraw) put(c, 'chickenHand');
+    return { counts: c, menzen };
+  }
+  const REVERSIBLE = new Set([9, 10, 11, 12, 13, 16, 17, 19, 22, 23, 24, 26, 31]); // 1234589p, 245689s, white dragon
   const MCR = {
-    id: 'mcr', name: 'Chinese Official', native: '国标麻将', unit: 'fan', handSize: 13, manualOnly: true,
-    blurb: '81 fan, 8 to win. Tick the fan yourself',
+    id: 'mcr', name: 'Chinese Official', native: '国标麻将', unit: 'fan', handSize: 13,
+    blurb: '81 fan, 8 to win, all read from the tiles',
     settings: [
       { key: 'minFan', label: 'Fan needed to win (flowers excluded)', type: 'int', min: 0, max: 20, def: 8 },
       { key: 'base', label: 'Base points from each opponent', type: 'int', min: 0, max: 100, def: 8 },
     ],
-    patterns: MCR_LIST.map(([id, en, zh, fan, max]) => P(id, en, zh, fan, 'f' + fan, { max: max || 1, src: id === 'selfDrawn' ? 'how' : undefined })),
+    patterns: MCR_LIST.map(([id, en, zh, fan, max]) => P(id, en, zh, fan, 'f' + fan, { max: max || 1, src: id === 'selfDrawn' ? 'how' : undefined, flag: MCR_FLAGS.includes(id) })),
     fixedValues: true,
+    // "Not counted with" rules of the official scoring (the main implications; the rest are handled inside detect).
     excl: {
-      fullyConcealed: ['selfDrawn', 'concealedHand'], lastTileDraw: ['selfDrawn'], outWithReplacement: ['selfDrawn'],
-      bigThreeDragons: ['dragonPung', 'twoDragonPungs'], littleThreeDragons: ['dragonPung', 'twoDragonPungs'], twoDragonPungs: ['dragonPung'],
-      fullFlush: ['oneVoidedSuit', 'noHonors'], sevenPairs: ['concealedHand', 'singleWait', 'fullyConcealed'],
+      bigFourWinds: ['bigThreeWinds', 'allPungs', 'prevalentWind', 'seatWind', 'pungTerminalsHonors'],
+      bigThreeDragons: ['dragonPung', 'twoDragonPungs'],
+      nineGates: ['fullFlush', 'concealedHand', 'pungTerminalsHonors', 'noHonors', 'edgeWait', 'closedWait', 'singleWait'],
+      fourKongs: ['threeKongs', 'twoMeldedKongs', 'twoConcealedKongs', 'meldedKong', 'concealedKong', 'allPungs', 'singleWait'],
+      sevenShiftedPairs: ['sevenPairs', 'fullFlush', 'concealedHand', 'singleWait', 'noHonors'],
+      thirteenOrphans: ['allTerminalsHonors', 'concealedHand', 'allTypes', 'singleWait', 'pungTerminalsHonors'],
+      allTerminals: ['allTerminalsHonors', 'allPungs', 'outsideHand', 'pungTerminalsHonors', 'noHonors', 'doublePung'],
+      littleFourWinds: ['bigThreeWinds', 'prevalentWind', 'seatWind', 'pungTerminalsHonors'],
+      littleThreeDragons: ['twoDragonPungs', 'dragonPung'],
+      allHonors: ['allTerminalsHonors', 'allPungs', 'outsideHand', 'pungTerminalsHonors'],
+      fourConcealedPungs: ['allPungs', 'threeConcealedPungs', 'twoConcealedPungs', 'concealedHand'],
+      pureTerminalChows: ['fullFlush', 'allChows', 'pureDoubleChow', 'twoTerminalChows', 'noHonors', 'oneVoidedSuit'],
+      quadrupleChow: ['pureTripleChow', 'pureDoubleChow', 'tileHog'],
+      fourPureShiftedPungs: ['pureShiftedPungs', 'allPungs'],
+      fourPureShiftedChows: ['pureShiftedChows', 'shortStraight', 'twoTerminalChows'],
+      threeKongs: ['twoMeldedKongs', 'twoConcealedKongs', 'meldedKong', 'concealedKong'],
+      allTerminalsHonors: ['outsideHand', 'allPungs', 'pungTerminalsHonors'],
+      sevenPairs: ['concealedHand', 'singleWait'],
+      greaterHonorsKnitted: ['lesserHonorsKnitted', 'allTypes', 'concealedHand', 'singleWait'],
+      allEvenPungs: ['allPungs', 'allSimples', 'noHonors'],
+      fullFlush: ['halfFlush', 'oneVoidedSuit', 'noHonors'],
+      pureTripleChow: ['pureDoubleChow'],
+      upperTiles: ['upperFour', 'noHonors'], middleTiles: ['allSimples', 'noHonors'], lowerTiles: ['lowerFour', 'noHonors'],
+      pureStraight: ['shortStraight', 'twoTerminalChows'],
+      threeSuitedTerminalChows: ['allChows', 'mixedDoubleChow', 'twoTerminalChows', 'noHonors'],
+      allFives: ['allSimples', 'noHonors'],
+      triplePung: ['doublePung'],
+      threeConcealedPungs: ['twoConcealedPungs'],
+      lesserHonorsKnitted: ['allTypes', 'concealedHand', 'singleWait'],
+      upperFour: ['noHonors'], lowerFour: ['noHonors'],
+      reversibleTiles: ['oneVoidedSuit'],
+      mixedTripleChow: ['mixedDoubleChow'],
+      lastTileDraw: ['selfDrawn'], outWithReplacement: ['selfDrawn'], robbingTheKong: ['lastTile'],
+      halfFlush: ['oneVoidedSuit'],
+      meldedHand: ['singleWait'],
+      twoConcealedKongs: ['concealedKong', 'twoConcealedPungs'],
+      twoDragonPungs: ['dragonPung'],
+      fullyConcealed: ['selfDrawn', 'concealedHand'], twoMeldedKongs: ['meldedKong'],
+      allChows: ['noHonors'], allSimples: ['noHonors'],
     },
-    ctxCounts(c, ctx) { if (ctx.selfDraw) put(c, 'selfDrawn'); },
+    variantOpts: () => ({ handSize: 13, sevenPairs: true, quadPairs: true, knitted: true }),
+    detect(v, ctx, S, h) {
+      return mcrDetect(v, ctx, S, h);
+    },
+    ctxCounts(c, ctx, S, input, fromTiles) {
+      if (ctx.selfDraw) put(c, 'selfDrawn');
+      if (fromTiles && ctx.selfDraw && c.concealedHand) { delete c.concealedHand; put(c, 'fullyConcealed'); }
+    },
     total(eff, V, S) {
       let fan = 0;
+      // Chicken hand only when nothing else scores (flowers aside), including flags tapped in by hand.
+      const other = Object.keys(eff).some((k) => eff[k] && k !== 'chickenHand' && k !== 'flowers');
+      if (other && eff.chickenHand) delete eff.chickenHand;
       for (const p of MCR.patterns) if (eff[p.id]) fan += p.v * eff[p.id];
       const flowers = eff.flowers || 0;
       const core = fan - flowers;
@@ -1440,8 +1728,11 @@ button.tile:active{transform:translateY(1px)}
   function applyExclusions(R, counts) {
     const eff = Object.assign({}, counts), by = {};
     const ex = R.excl || {};
-    for (const id in counts) {
-      if (!counts[id]) continue;
+    // Higher-valued patterns exclude first, and a pattern that has itself been excluded excludes nothing.
+    const val = (id) => { const p = R.patterns.find((x) => x.id === id); const v = p ? p.v : 0; return v === 'L' || v === 'Y' ? 1e9 : +v || 0; };
+    const ids = Object.keys(counts).filter((id) => counts[id]).sort((a, b) => val(b) - val(a));
+    for (const id of ids) {
+      if (!eff[id]) continue;
       for (const x of ex[id] || []) if (eff[x]) { by[x] = id; delete eff[x]; }
     }
     return { eff, by };
@@ -1988,12 +2279,12 @@ button.tile:active{transform:translateY(1px)}
     fail(e) {
       const code = e && e.code;
       if (code === 'signin_required' || code === 'cancelled') return;
-      this.error = code === 'offline' ? 'No connection. Changes are kept on this device and will be saved to your account when you are back online.'
-        : code === 'too_big' ? 'This game is too large to save to your account. Export it and start a new one.'
-        : 'Couldn’t reach your account just now. Changes are kept on this device.';
+      this.error = code === 'offline' ? 'No connection. Changes are kept on this device and will be saved to the Game ID when you are back online.'
+        : code === 'too_big' ? 'This game is too large to save. Export it and start a new one.'
+        : 'Couldn’t reach the server just now. Changes are kept on this device.';
       this.emit();
     },
-    sessionLost() { this.user = null; this.pending = {}; this.error = 'Your sign-in expired or the account was removed after ' + this.inactiveDays + ' days without use. Sign in again or start a new guest table.'; this.emit(); },
+    sessionLost() { this.user = null; this.pending = {}; this.error = 'This Game ID expired after ' + this.inactiveDays + ' days without use, so it was deleted. Get a new Game ID for the table.'; this.emit(); },
     async signIn(name, pin, create) {
       const r = await API.call(create ? 'signup' : 'signin', { name, pin });
       API.setToken(r.token);
@@ -2065,16 +2356,16 @@ button.tile:active{transform:translateY(1px)}
     if (Store.error) return { dot: 'bad', text: Store.error };
     if (Store.user) {
       const n = Store.pendingCount();
-      if (n) return { dot: 'warn', text: 'Saving ' + n + ' game' + (n > 1 ? 's' : '') + ' to your account…' };
-      return { dot: 'ok', text: (isGuest(Store.user) ? 'Guest table ' + Store.user.name.replace(/^guest-/, '') + ' · share the id so your table can join.' : 'Games are saved to your account (' + Store.user.name + ').') + ' Kept ' + Store.inactiveDays + ' days after last use — save recap images.' };
+      if (n) return { dot: 'warn', text: 'Saving ' + n + ' game' + (n > 1 ? 's' : '') + ' to the Game ID…' };
+      return { dot: 'ok', text: 'Game ID ' + shortId(Store.user) + ' · share it so your table can join. Kept ' + Store.inactiveDays + ' days after last use — save recap images.' };
     }
-    if (Store.mode === 'local') return { dot: 'warn', text: 'Games are kept in this browser only — clearing it loses them. Keep them in an account or guest table' + (LITE ? '.' : ', which also unlocks photo reading.') };
+    if (Store.mode === 'local') return { dot: 'warn', text: 'Games are kept in this browser only — clearing it loses them. Get a Game ID to keep them' + (LITE ? '.' : ' and to unlock photo reading.') };
     return { dot: 'bad', text: 'This browser can’t keep games. Download a backup before you close it.' };
   }
 
   /* ------------------------------------------------ names & recap image */
   const isGuest = (u) => !!(u && (u.guest || /^guest-/.test(u.name || '')));
-  const displayName = (u) => (u ? (isGuest(u) ? 'Guest ' + u.name.replace(/^guest-/, '') : u.name) : '');
+  const displayName = (u) => (u ? 'Game ID ' + String(u.name || '').replace(/^guest-/, '').toUpperCase() : '');
   // Draws the whole match (standings, every hand) onto a canvas and returns a PNG blob.
   async function recapImage(game) {
     const R = RULES[game.ruleset], rows = MJ.standings(game), riichi = game.ruleset === 'riichi';
@@ -2391,7 +2682,7 @@ button.tile:active{transform:translateY(1px)}
   /* ------------------------------------------------ photo scan */
   function scanError(e) {
     const code = e && e.code;
-    if (code === 'signin_required') return 'Sign in to read photos.';
+    if (code === 'signin_required') return 'Get a Game ID to read photos.';
     if (code === 'not_configured') return 'Photo reading isn’t switched on for this server yet. Tap the tiles in instead.';
     if (code === 'rate_limited') return (e && e.message) || 'Too many scans just now. Wait a minute, then try again.';
     if (code === 'image_rejected') return 'That photo couldn’t be opened. Try a JPEG taken with the camera.';
@@ -2577,7 +2868,7 @@ button.tile:active{transform:translateY(1px)}
       const ctl = new AbortController(); ctlRef.current = ctl;
       const url = scan && scan.file === file ? scan.url : URL.createObjectURL(file);
       if (scan && scan.url && scan.url !== url) URL.revokeObjectURL(scan.url);
-      if (!Store.user) { setScan({ status: 'error', url, file, msg: 'Sign in to read photos.', signin: true }); return; }
+      if (!Store.user) { setScan({ status: 'error', url, file, msg: 'Photo reading needs a Game ID (free, no account).', signin: true }); return; }
       setScan({ status: 'reading', url, file, tier });
       try {
         const img = await prepImage(file);
@@ -2604,7 +2895,8 @@ button.tile:active{transform:translateY(1px)}
         rows.push({ p, n, fixed: p.src === 'how' ? 'from Self-draw above' : null });
       }
     }
-    const addable = R.patterns.filter((p) => !(res.counts[p.id] > 0) && !(p.src === 'how') && !(riichi && p.id === 'riichi'));
+    const flags = R.patterns.filter((p) => p.flag && p.id !== 'riichi');
+    const addable = R.patterns.filter((p) => !(res.counts[p.id] > 0) && !(p.src === 'how') && !(riichi && p.id === 'riichi') && !p.flag);
     const ql = q.trim().toLowerCase();
     const matches = (p) => !ql || p.en.toLowerCase().includes(ql) || (p.zh || '').includes(q.trim());
 
@@ -2649,13 +2941,15 @@ button.tile:active{transform:translateY(1px)}
           <${Seg} label="How it was won" value=${d.how} onChange=${(v) => up({ how: v })} options=${[['self', 'Self-draw', words[0]], ['discard', 'Discard', words[1]]]} />
           ${!selfDraw ? html`<p class="flabel" style=${{ marginTop: '4px' }}>Who discarded the winning tile?</p>
             <${PlayerChips} game=${game} value=${d.discarder} exclude=${d.winner} onPick=${(p) => up({ discarder: p })} />` : null}
+          ${flags.length ? html`<p class="flabel" style=${{ marginTop: '4px' }}>Anything special about the win?</p>
+            <div class="chips">${flags.map((p) => { const on = (d.manual[p.id] || 0) > 0; const lab = patLabel(R, p, selfDraw); return html`<button type="button" class="chip" key=${p.id} aria-pressed=${on ? 'true' : 'false'} onClick=${() => setCount(p.id, on ? 0 : 1)}><span class="cw">${lab.zh}</span>${lab.en}</button>`; })}</div>
+            <p class="hint">Everything else is read from the tiles.</p>` : null}
         </div>
         ${R.valueEntry ? html`<div class="sec"><h3>Hand value</h3>
           <div class="field"><label for="cv">Points for this hand</label><input id="cv" class="input num" inputmode="decimal" value=${d.value} onInput=${(e) => up({ value: e.target.value })} placeholder="e.g. 8" /></div>
           <div class="field"><label for="cl">What was it? (optional)</label><input id="cl" class="input" value=${d.label} onInput=${(e) => up({ label: e.target.value.slice(0, 60) })} placeholder="e.g. 清一色 pure one suit" /></div>
         </div>` : html`
         <div class="sec"><h3>The winning hand</h3>
-          ${R.manualOnly ? html`<p class="hint">Chinese Official has 81 fan with many “not counted with” rules, so tick the fan yourself below. Tiles help you check.</p>` : null}
           ${canScan ? html`<div class="scanrow">
               <button type="button" class="btn" onClick=${() => camRef.current && camRef.current.click()}>${I.camera}Take photo</button>
               <button type="button" class="btn" onClick=${() => picRef.current && picRef.current.click()}>${I.image}From photos</button>
@@ -2668,7 +2962,7 @@ button.tile:active{transform:translateY(1px)}
                 ${scan.status === 'reading' ? html`<div class="row"><span class="spinner" aria-hidden="true"></span><span>Reading the tiles${scan.tier === 'complex' ? ' carefully' : ''}…</span><button type="button" class="link" onClick=${() => ctlRef.current && ctlRef.current.abort()}>Stop</button></div>` : null}
                 ${scan.status === 'done' ? html`<p><b>Tiles filled in${scan.ms ? ' in ' + (scan.ms / 1000).toFixed(1) + ' s' : ''}.</b> Check them against the photo and tap any tile to fix it.</p>` : null}
                 ${scan.status === 'error' ? html`<p class="err">${scan.msg}</p>` : null}
-                ${scan.status === 'error' && scan.signin && onSignIn ? html`<button type="button" class="btn small primary" style=${{ justifySelf: 'start' }} onClick=${onSignIn}>Sign in</button>` : null}
+                ${scan.status === 'error' && scan.signin && onSignIn ? html`<button type="button" class="btn small primary" style=${{ justifySelf: 'start' }} onClick=${onSignIn}>Get a Game ID</button>` : null}
                 ${scan.status !== 'reading' && !(scan.status === 'error' && scan.signin) && canScan ? html`<button type="button" class="link" style=${{ justifySelf: 'start' }} onClick=${() => runScan(scan.file, 'complex')}>Read again, more carefully</button>` : null}
               </div>
             </div>
@@ -2802,7 +3096,9 @@ button.tile:active{transform:translateY(1px)}
     const [rs, setRs] = useState(pref.rs && RULES[pref.rs] ? pref.rs : 'hk');
     const [names, setNames] = useState(() => (pref.names && pref.names.length === 4 ? pref.names.slice() : lastGame ? lastGame.players.map((p) => p.name) : ['', '', '', '']));
     const [settings, setSettings] = useState({});
+    const [vals, setVals] = useState({});
     const R = RULES[rs];
+    const changed = Object.keys(vals).filter((k) => vals[k] !== R.patterns.find((p) => p.id === k).v).length;
     const S = Object.assign({}, MJ.newGame({ ruleset: rs, players: [{}, {}, {}, {}] }).settings, settings);
     const namesDone = names.filter((n) => n.trim()).length >= 2;
     // Head start: the rules are already chosen, so the bar never starts at zero.
@@ -2810,7 +3106,7 @@ button.tile:active{transform:translateY(1px)}
     const pct = Math.round((done / 3) * 100);
     const prefilled = !!(pref.names && pref.names.some((n) => n)) || !!lastGame;
     function create() {
-      const g = MJ.newGame({ ruleset: rs, players: names.map((n, i) => ({ name: n.trim() || 'Player ' + (i + 1) })), settings: S });
+      const g = MJ.newGame({ ruleset: rs, players: names.map((n, i) => ({ name: n.trim() || 'Player ' + (i + 1) })), settings: S, values: R.fixedValues ? {} : vals });
       lsSet(PREF_KEY, JSON.stringify({ rs, names: names.map((n) => n.trim()) }));
       onCreate(g);
     }
@@ -2821,7 +3117,7 @@ button.tile:active{transform:translateY(1px)}
           <div class="progress" role="progressbar" aria-valuenow=${pct} aria-valuemin="0" aria-valuemax="100"><i style=${{ width: pct + '%' }}></i></div>
         </div>
         <div class="sec"><h3>Rules ${pref.rs ? '· same as last time' : ''}</h3>
-          <div class="rgrid">${MJ.ORDER.map((id) => { const r = RULES[id]; return html`<button type="button" class="rcard" aria-pressed=${rs === id ? 'true' : 'false'} onClick=${() => { setRs(id); setSettings({}); }}><b>${r.name}</b><span class="kn">${r.native}</span><span>${r.blurb}</span></button>`; })}</div>
+          <div class="rgrid">${MJ.ORDER.map((id) => { const r = RULES[id]; return html`<button type="button" class="rcard" aria-pressed=${rs === id ? 'true' : 'false'} onClick=${() => { setRs(id); setSettings({}); setVals({}); }}><b>${r.name}</b><span class="kn">${r.native}</span><span>${r.blurb}</span></button>`; })}</div>
         </div>
         <div class="sec"><h3>Players ${prefilled && namesDone ? '· same as last time' : ''}</h3>
           <div class="card" style=${{ padding: '10px 16px' }}>
@@ -2836,28 +3132,40 @@ button.tile:active{transform:translateY(1px)}
             ${R.id === 'hk' || R.id === 'sg' || R.id === 'tw' ? html`<p class="hint">Pattern values can be changed per game from the game menu.</p>` : null}</div>
           </details></div>
         </div>
+        ${R.patterns.length ? html`<div class="sec"><h3>Pattern values</h3>
+          <div class="card"><details>
+            <summary><span>${R.fixedValues ? 'Fixed by the ' + R.name + ' rules' : changed ? changed + ' value' + (changed === 1 ? '' : 's') + ' changed from the defaults' : 'Default ' + R.unit + ' values'}<small>${R.fixedValues ? 'Tap to see the list' : 'Tap to change what each pattern is worth at your table'}</small></span></summary>
+            <div class="settings"><${ValuesTable} R=${R} vals=${vals} setVals=${setVals} />
+            ${!R.fixedValues && changed ? html`<button type="button" class="link" onClick=${() => setVals({})}>Reset to defaults</button>` : null}</div>
+          </details></div>
+        </div>` : null}
         <div class="sec"><button type="button" class="btn primary big block" onClick=${create}>Start the table</button></div>
       </main>`;
   }
 
   /* ------------------------------------------------ rules & values */
+  // Pattern values for one rule system. `vals` holds only the overrides; the rest come from the defaults.
+  function ValuesTable({ R, vals, setVals }) {
+    const base = {}; R.patterns.forEach((p) => (base[p.id] = p.v));
+    const V = Object.assign(base, R.fixedValues ? {} : vals);
+    return html`<div class="vtable">${groupsOf(R).map((gk) => html`<div class="addgrp">${groupName(gk)}</div>${R.patterns.filter((p) => p.g === gk).map((p) => {
+      const cur = V[p.id];
+      const control = R.fixedValues ? html`<span class="num" style=${{ textAlign: 'right' }}>${valueText(R, p, V, true)}</span>`
+        : p.v === 'L' || cur === 'L' ? html`<select class="select" value=${cur === 'L' ? 'L' : String(cur)} onChange=${(e) => setVals(Object.assign({}, vals, { [p.id]: e.target.value === 'L' ? 'L' : +e.target.value }))} aria-label=${p.en}>${['L'].concat(Array.from({ length: 14 }, (_, i) => String(i))).map((o) => html`<option value=${o}>${o === 'L' ? 'Limit' : o}</option>`)}</select>`
+        : html`<input class="input num" inputmode="numeric" value=${cur} aria-label=${p.en} onInput=${(e) => { const v = parseInt(e.target.value, 10); setVals(Object.assign({}, vals, { [p.id]: isNaN(v) ? 0 : Math.max(0, Math.min(99, v)) })); }} />`;
+      return html`<div class="vrow" key=${p.id}><span class="nm"><b>${p.zh}</b><span>${p.en}${p.note ? ' — ' + p.note : ''}</span></span>${control}</div>`;
+    })}`)}</div>`;
+  }
   function RulesSheet({ game, onClose, onSaved }) {
     const R = RULES[game.ruleset];
     const [S, setS] = useState(Object.assign({}, game.settings));
     const [vals, setVals] = useState(Object.assign({}, game.values || {}));
-    const V = Object.assign({}, MJ.valuesOf(Object.assign({}, game, { values: {} })), R.fixedValues ? {} : vals);
     function save() { const g = clone(game); g.settings = S; g.values = vals; onSaved(g); }
     return html`<${Sheet} tall=${true} title="Rules and values" sub=${R.name + ' · changes apply to new hands'} onClose=${onClose}
       foot=${html`<div class="row" style=${{ justifyContent: 'flex-end' }}><button type="button" class="btn" onClick=${onClose}>Cancel</button><button type="button" class="btn primary" onClick=${save}>Save rules</button></div>`}>
       <div class="sec"><h3>Settings</h3><div class="settings">${R.settings.map((s) => html`<${SettingControl} s=${s} value=${S[s.key]} onChange=${(v) => setS(Object.assign({}, S, { [s.key]: v }))} />`)}</div></div>
-      ${R.patterns.length ? html`<div class="sec"><h3>${R.fixedValues ? 'Values' : 'Values (edit to match your table)'}</h3>
-        <div class="vtable">${groupsOf(R).map((gk) => html`<div class="addgrp">${groupName(gk)}</div>${R.patterns.filter((p) => p.g === gk).map((p) => {
-          const cur = V[p.id];
-          const control = R.fixedValues ? html`<span class="num" style=${{ textAlign: 'right' }}>${valueText(R, p, V, true)}</span>`
-            : p.v === 'L' || cur === 'L' ? html`<select class="select" value=${cur === 'L' ? 'L' : String(cur)} onChange=${(e) => setVals(Object.assign({}, vals, { [p.id]: e.target.value === 'L' ? 'L' : +e.target.value }))} aria-label=${p.en}>${['L'].concat(Array.from({ length: 14 }, (_, i) => String(i))).map((o) => html`<option value=${o}>${o === 'L' ? 'Limit' : o}</option>`)}</select>`
-            : html`<input class="input num" inputmode="numeric" value=${cur} aria-label=${p.en} onInput=${(e) => { const v = parseInt(e.target.value, 10); setVals(Object.assign({}, vals, { [p.id]: isNaN(v) ? 0 : Math.max(0, Math.min(99, v)) })); }} />`;
-          return html`<div class="vrow"><span class="nm"><b>${p.zh}</b><span>${p.en}${p.note ? ' — ' + p.note : ''}</span></span>${control}</div>`;
-        })}`)}</div>
+      ${R.patterns.length ? html`<div class="sec"><h3>${R.fixedValues ? 'Values (fixed by the official rules)' : 'Pattern values (edit to match your table)'}</h3>
+        <${ValuesTable} R=${R} vals=${vals} setVals=${setVals} />
         ${!R.fixedValues ? html`<button type="button" class="link" onClick=${() => setVals({})}>Reset values to defaults</button>` : null}
       </div>` : null}
     <//>`;
@@ -2955,7 +3263,7 @@ button.tile:active{transform:translateY(1px)}
       <main class="wrap">
         ${game.example ? html`<div class="banner"><p><b>Example table.</b> Try recording a hand — nothing here is saved.</p><button type="button" class="btn small primary" onClick=${onNewGame}>Set up your table</button></div>` : null}
         <div style=${{ marginTop: '14px' }}><${TableHero} game=${game} /></div>
-        ${showKeep ? html`<div class="banner keep"><p><b>Only on this phone so far.</b> Clear the browser and ${hands === 1 ? 'this entry is' : 'these ' + hands + ' entries are'} gone. Keep the table and everyone at it can see and edit the same scorebook.</p><span class="row"><button type="button" class="btn small primary" onClick=${() => onSignIn('create')}>Keep this table</button><button type="button" class="btn small ghost" onClick=${() => { setKeepLater(true); lsSet('mjsb.keepLater', game.id); }}>Later</button></span></div>` : null}
+        ${showKeep ? html`<div class="banner keep"><p><b>Only on this phone so far.</b> Clear the browser and ${hands === 1 ? 'this entry is' : 'these ' + hands + ' entries are'} gone. Get a Game ID and everyone at the table can see and edit the same scorebook.</p><span class="row"><button type="button" class="btn small primary" onClick=${() => onSignIn()}>Get a Game ID</button><button type="button" class="btn small ghost" onClick=${() => { setKeepLater(true); lsSet('mjsb.keepLater', game.id); }}>Later</button></span></div>` : null}
         ${done && !game.finished ? html`<div class="banner gold"><p><b>Last round done.</b> Save the recap before this table is cleared — it has the final standings and every hand.</p><button type="button" class="btn small" onClick=${() => setSheet('end')}>Standings</button></div>` : null}
         <${Ledger} game=${game} />
         ${last ? html`<div class="row" style=${{ marginTop: '12px' }}><button type="button" class="btn small" onClick=${() => setSheet('undo')}>${I.undo}Undo last entry</button></div>` : null}
@@ -3010,11 +3318,11 @@ button.tile:active{transform:translateY(1px)}
         ${fresh ? html`<div class="rules-strip">${MJ.ORDER.map((id) => html`<span>${RULES[id].name}<b>${RULES[id].native.replace('麻雀', '').replace('麻将', '').replace('麻將', '') || RULES[id].native}</b></span>`)}</div>` : null}
         <div class="row" style=${{ width: '100%' }}>
           <button type="button" class=${'btn primary big' + (fresh ? ' block' : '')} onClick=${onNew}>${I.plus}${fresh ? 'Set up your table' : 'New game'}</button>
-          ${Store.user ? html`<button type="button" class="btn big" onClick=${onAccount}>${I.people}${displayName(Store.user)}</button>` : fresh ? null : html`<button type="button" class="btn big" onClick=${() => onSignIn('signin')}>${I.people}Sign in</button>`}
+          ${Store.user ? html`<button type="button" class="btn big" onClick=${onAccount}>${I.people}Game ID ${shortId(Store.user)}</button>` : fresh ? null : html`<button type="button" class="btn big" onClick=${() => onSignIn()}>${I.people}Game ID</button>`}
         </div>
-        ${fresh && !Store.user ? html`<p class="hint" style=${{ marginTop: '-2px' }}>No account needed to start. <button type="button" class="link" onClick=${() => onSignIn('signin')}>Already have a table? Sign in</button></p>` : null}
+        ${fresh && !Store.user ? html`<p class="hint" style=${{ marginTop: '-2px' }}>No account, no password. <button type="button" class="link" onClick=${() => onSignIn()}>Have a Game ID? Join your table</button></p>` : null}
       </header>
-      ${unsaved ? html`<div class="banner keep"><p><b>Your ${games.length === 1 ? 'game lives' : games.length + ' games live'} only in this browser.</b> Keep ${games.length === 1 ? 'it' : 'them'} in an account or guest table so nothing is lost and your whole table can join.</p><button type="button" class="btn small primary" onClick=${() => onSignIn('create')}>Keep my games</button></div>` : null}
+      ${unsaved ? html`<div class="banner keep"><p><b>Your ${games.length === 1 ? 'game lives' : games.length + ' games live'} only in this browser.</b> Get a Game ID so nothing is lost and your whole table can join.</p><button type="button" class="btn small primary" onClick=${() => onSignIn()}>Get a Game ID</button></div>` : null}
       ${active.length ? html`<div class="section-head"><h2>In progress</h2></div><div class="stack">${active.map((g) => html`<${GameCard} key=${g.id} game=${g} onOpen=${() => onOpen(g.id)} />`)}</div>` : null}
       ${!active.length ? html`<div class="section-head"><h2>See it in action</h2><span class="example-note">Example · not saved</span></div>
         <div class="stack"><${TableHero} game=${example} compact=${true} />
@@ -3022,9 +3330,9 @@ button.tile:active{transform:translateY(1px)}
       ${done.length ? html`<div class="section-head"><h2>Finished</h2></div><div class="stack">${done.map((g) => html`<${GameCard} key=${g.id} game=${g} onOpen=${() => onOpen(g.id)} />`)}</div>` : null}
       ${fresh ? html`<div class="section-head"><h2>How it works</h2></div>
         <div class="list">
-          <div class="cell">${I.people}<span class="ct">One scorebook per table<small>Everyone signs in with the same name and password, or the same guest id, and sees the same games. Other tables can’t see yours.</small></span></div>
+          <div class="cell">${I.people}<span class="ct">One Game ID per table<small>Everyone who enters the same Game ID sees and edits the same games. No accounts, no passwords. Other tables can’t see yours.</small></span></div>
           <div class="cell">${I.flag}<span class="ct">Points only<small>Scores are kept in points. Nothing is settled and nothing is owed.</small></span></div>
-          <div class="cell">${I.flag}<span class="ct">Kept for ${Store.inactiveDays} days<small>A table unused for ${Store.inactiveDays} days is deleted with its games. Save the recap image at the end of a match to keep it.</small></span></div>
+          <div class="cell">${I.flag}<span class="ct">Kept for ${Store.inactiveDays} days<small>A Game ID unused for ${Store.inactiveDays} days is deleted with its games. Save the recap image at the end of a match to keep it.</small></span></div>
           <div class="cell">${I.tiles}<span class="ct">Install it<small>Share → Add to Home Screen puts ${BRAND} on your phone like an app.</small></span></div>
         </div>` : null}
       <p class="store-note"><span class=${'dot dot-' + line.dot}></span>${Store.ready ? line.text : 'Checking where games are saved…'}</p>
@@ -3032,120 +3340,77 @@ button.tile:active{transform:translateY(1px)}
     </main>`;
   }
 
-  /* ------------------------------------------------ sign in & account */
-  function SignInSheet({ onClose, onDone, initialMode }) {
-    const [name, setName] = useState(lsGet('mjsb.name') || '');
-    const [pin, setPin] = useState('');
-    const [mode, setMode] = useState(initialMode || 'signin'); // signin | create | guest
-    const [guestCode, setGuestCode] = useState('');
+  /* ------------------------------------------------ game id */
+  const shortId = (u) => (u ? String(u.name || '').replace(/^guest-/, '').toUpperCase() : '');
+  function GameIdSheet({ onClose, onDone }) {
+    const [code, setCode] = useState('');
     const [busy, setBusy] = useState(false);
     const [err, setErr] = useState('');
-    const create = mode === 'create';
-    const ok = name.trim().length >= 2 && /^[^\s]{4,32}$/.test(pin);
-    async function go() {
-      if (!ok || busy) return;
-      setBusy(true); setErr('');
-      try {
-        await Store.signIn(name.trim(), pin, create);
-        lsSet('mjsb.name', name.trim());
-        onDone();
-      } catch (e) {
-        if (e.code === 'no_such_user') { setMode('create'); setErr('No account has that name yet. Tap “Create account” to start one with this name and password.'); }
-        else if (e.code === 'name_taken') { setMode('signin'); setErr('That name already has an account. Enter its password to sign in.'); }
-        else setErr(e.message || 'Could not sign in.');
-      }
-      setBusy(false);
-    }
-    async function guestNew() {
+    const hasLocal = Store.list().length > 0;
+    async function fresh() {
       if (busy) return;
       setBusy(true); setErr('');
-      try { const id = await Store.guestStart(); onDone('Your guest id is ' + id.replace(/^guest-/, '') + ' — share it with your table'); }
-      catch (e) { setErr(e.message || 'Could not start as a guest.'); }
+      try { const id = await Store.guestStart(); onDone('Your Game ID is ' + id.replace(/^guest-/, '') + ' — share it with your table'); }
+      catch (e) { setErr(e.code === 'offline' ? 'No connection. A Game ID needs the internet once to be created.' : (e.message || 'Could not create a Game ID.')); }
       setBusy(false);
     }
-    async function guestJoin() {
-      const code = 'guest-' + guestCode.trim().toUpperCase().replace(/^GUEST-/, '');
-      if (!/^guest-[A-Z2-9]{6}$/.test(code) || busy) { setErr('A guest id is 6 letters or numbers, like K7M2XQ.'); return; }
+    async function join() {
+      const id = 'guest-' + code.trim().toUpperCase().replace(/^GUEST-/, '').replace(/[^A-Z0-9]/g, '');
+      if (!/^guest-[A-Z2-9]{6}$/.test(id) || busy) { setErr('A Game ID is 6 letters or numbers, like K7M2XQ.'); return; }
       setBusy(true); setErr('');
-      try { await Store.signIn(code, code, false); onDone(); }
-      catch (e) { setErr(e.code === 'no_such_user' ? 'No table has that guest id (ids expire after ' + Store.inactiveDays + ' days without use).' : (e.message || 'Could not join.')); }
+      try { await Store.signIn(id, id, false); onDone('Joined Game ID ' + id.replace(/^guest-/, '')); }
+      catch (e) { setErr(e.code === 'no_such_user' ? 'No table has that Game ID (IDs expire after ' + Store.inactiveDays + ' days without use).' : e.code === 'offline' ? 'No connection.' : (e.message || 'Could not join.')); }
       setBusy(false);
     }
-    const guide = html`<div class="guide">
-      <p><b>Same scorebook for the whole table:</b> everyone who signs in with the same name and password (or the same guest id) sees and edits the same games. Other tables can’t see yours.</p>
-      <p><b>Kept for ${Store.inactiveDays} days:</b> an account that isn’t used for ${Store.inactiveDays} days is deleted with its games. Save the <b>recap image</b> (Standings → Save recap image) to keep a match for good.</p>
-    </div>`;
-    const hasLocal = Store.list().length > 0;
-    const modeSeg = html`<div class="sec" style=${{ paddingTop: '14px' }}><${Seg} label="How to keep your table" value=${mode} onChange=${(m) => { setMode(m); setErr(''); }} options=${[['create', 'New account'], ['signin', 'Sign in'], ['guest', 'Guest']]} /></div>`;
-    if (mode === 'guest') return html`<${Sheet} title=${hasLocal ? 'Keep your table' : 'Play as a guest'} sub="No account needed" onClose=${onClose}
-      foot=${html`<div class="row" style=${{ justifyContent: 'flex-end' }}><button type="button" class="btn primary" disabled=${busy} onClick=${guestNew}>${busy ? 'One moment…' : 'New guest table'}</button></div>`}>
-      ${modeSeg}
+    return html`<${Sheet} title=${hasLocal ? 'Keep your table' : 'Game ID'} sub="One ID per table — no account, no password" onClose=${onClose}>
       <div class="sec">
-        ${hasLocal ? html`<p class="hint">Your games on this phone move into the guest table the moment it is created.</p>` : null}
-        <p>A guest table gets a <b>6-character guest id</b>. Share it with the people at your table: anyone who enters it sees and edits the same scorebook.</p>
-        <div class="field"><label for="gj">Have a guest id already? Enter it to join</label><div class="row"><input id="gj" class="input num pinbox" style=${{ flex: '1 1 160px', textTransform: 'uppercase' }} maxlength="12" autocapitalize="characters" value=${guestCode} onInput=${(e) => setGuestCode(e.target.value)} onKeyDown=${(e) => { if (e.key === 'Enter') guestJoin(); }} placeholder="e.g. K7M2XQ" /><button type="button" class="btn" disabled=${busy} onClick=${guestJoin}>Join</button></div></div>
-        ${err ? html`<p class="err">${err}</p>` : null}
+        <div class="choice">
+          <button type="button" onClick=${fresh} disabled=${busy}>${I.plus}<span class="ct"><b>${busy ? 'One moment…' : 'New Game ID'}</b><small>${hasLocal ? 'Your games on this phone move into it straight away.' : 'Get a 6-character ID and share it with your table.'}</small></span></button>
+        </div>
       </div>
-      <div class="sec">${guide}</div>
-    <//>`;
-    return html`<${Sheet} title=${hasLocal && create ? 'Keep your table' : create ? 'Create account' : 'Sign in'} sub=${create ? 'Pick a name and password for your table' : 'The name and password you created'} onClose=${onClose}
-      foot=${html`<div class="row" style=${{ justifyContent: 'flex-end' }}>
-        <button type="button" class="btn primary" disabled=${!ok || busy} onClick=${go}>${busy ? 'One moment…' : create ? 'Create account' : 'Sign in'}</button></div>`}>
-      ${modeSeg}
-      <div class="sec">
-        ${hasLocal && create ? html`<p class="hint">Your games on this phone are saved to the account as soon as it exists.</p>` : null}
-        <div class="field"><label for="si-name">Name (your table or group)</label><input id="si-name" class="input" value=${name} maxlength="24" autocomplete="username" onInput=${(e) => setName(e.target.value)} onKeyDown=${(e) => { if (e.key === 'Enter') go(); }} placeholder="e.g. Table 3 or James" /></div>
-        <div class="field"><label for="si-pin">Password (4 to 32 characters)</label><input id="si-pin" class="input" type="password" maxlength="32" autocomplete=${create ? 'new-password' : 'current-password'} value=${pin} onInput=${(e) => setPin(e.target.value)} onKeyDown=${(e) => { if (e.key === 'Enter') go(); }} /></div>
-        ${err ? html`<p class="err">${err}</p>` : null}
-        ${create ? html`<p class="hint">There is no password reset, so note it somewhere safe. Give the same name and password to everyone at your table.</p>` : null}
+      <div class="sec"><h3>Or join a table</h3>
+        <div class="card" style=${{ padding: '12px 16px 14px' }}>
+          <div class="field"><label for="gj">Enter the table’s Game ID</label><div class="row"><input id="gj" class="input num pinbox" style=${{ flex: '1 1 160px', textTransform: 'uppercase' }} maxlength="12" autocapitalize="characters" autocomplete="off" value=${code} onInput=${(e) => setCode(e.target.value)} onKeyDown=${(e) => { if (e.key === 'Enter') join(); }} placeholder="e.g. K7M2XQ" /><button type="button" class="btn" disabled=${busy} onClick=${join}>Join</button></div></div>
+          ${err ? html`<p class="err" style=${{ marginTop: '8px' }}>${err}</p>` : null}
+        </div>
       </div>
-      <div class="sec">${guide}</div>
+      <div class="sec"><div class="guide">
+        <p><b>Same scorebook for the whole table:</b> everyone who enters the same Game ID sees and edits the same games. Other tables can’t see yours.</p>
+        <p><b>Kept for ${Store.inactiveDays} days:</b> a Game ID that isn’t used for ${Store.inactiveDays} days is deleted with its games. Save the <b>recap image</b> (Standings → Save recap image) to keep a match for good.</p>
+      </div></div>
     <//>`;
   }
-  function AccountSheet({ onClose, onToast }) {
-    const [mode, setMode] = useState('info');
-    const [pin, setPin] = useState(''), [pin2, setPin2] = useState('');
-    const [busy, setBusy] = useState(false), [err, setErr] = useState('');
+  function GameIdInfoSheet({ onClose, onToast }) {
+    const [leaving, setLeaving] = useState(false);
+    const [busy, setBusy] = useState(false);
     const u = Store.user;
-    async function changePin() {
-      if (!/^[^\s]{4,32}$/.test(pin) || !/^[^\s]{4,32}$/.test(pin2) || busy) return;
-      setBusy(true); setErr('');
-      try { await API.call('changePin', { pin, newPin: pin2 }); onToast('Password changed'); setMode('info'); setPin(''); setPin2(''); }
-      catch (e) { setErr(e.message || 'Could not change the password.'); }
-      setBusy(false);
-    }
-    async function signOut() { setBusy(true); await Store.signOut(); setBusy(false); onToast('Signed out'); onClose(); }
-    async function copyId() {
-      const id = u.name.replace(/^guest-/, '');
-      try { await navigator.clipboard.writeText(id); onToast('Guest id copied'); } catch (e) { onToast('Guest id: ' + id); }
-    }
     if (!u) return null;
-    const guest = isGuest(u);
+    const id = shortId(u);
+    async function copyId() {
+      try { await navigator.clipboard.writeText(id); onToast('Game ID copied'); } catch (e) { onToast('Game ID: ' + id); }
+    }
+    async function share() {
+      const text = 'Join our mahjong table: open ' + location.origin + location.pathname + ' and enter Game ID ' + id;
+      try { if (navigator.share) { await navigator.share({ text }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+      copyId();
+    }
+    async function leave() { setBusy(true); await Store.signOut(); setBusy(false); onToast('Left Game ID ' + id); onClose(); }
     const days = Store.expiresAt ? Math.max(0, Math.ceil((Store.expiresAt - Date.now()) / 86400000)) : Store.inactiveDays;
-    return html`<${Sheet} title="Account" sub=${displayName(u)} onClose=${onClose}>
-      ${mode === 'info' ? html`
+    return html`<${Sheet} title="Game ID" sub="This table’s scorebook" onClose=${onClose}>
+      ${!leaving ? html`
         <div class="sec">
-          ${guest ? html`<div class="guestbox"><span class="eyebrow">Your guest id</span><b class="num">${u.name.replace(/^guest-/, '')}</b><button type="button" class="btn small" onClick=${copyId}>Copy</button></div>
-            <p class="hint">Give this id to everyone at your table. On their phone: Play as a guest → enter the id → Join. They then see and edit the same games as you.</p>`
-          : html`<p class="hint">Everyone who signs in with <b>${u.name}</b> and the same password sees and edits the same games. Other tables can’t see yours.</p>`}
+          <div class="guestbox"><span class="eyebrow">Game ID</span><b class="num">${id}</b><span class="row" style=${{ gap: '6px' }}><button type="button" class="btn small" onClick=${copyId}>Copy</button><button type="button" class="btn small primary" onClick=${share}>Share</button></span></div>
+          <p class="hint">Everyone at your table: open the app, tap <b>Game ID</b>, enter <b>${id}</b>, Join. They then see and edit the same games as you.</p>
           ${Store.scans && !LITE ? html`<p class="acct">${Store.scans.today} of ${Store.scans.limit} photo reads used today</p>` : null}
-          <p class="warn">This ${guest ? 'guest table' : 'account'} is kept for ${Store.inactiveDays} days after its last use (about ${days} day${days === 1 ? '' : 's'} from now unless someone opens it again). After that it is deleted with all its games. Save each match as a <b>recap image</b> from Standings to keep it.</p>
+          <p class="warn">This Game ID is kept for ${Store.inactiveDays} days after its last use (about ${days} day${days === 1 ? '' : 's'} from now unless someone opens it again). After that it is deleted with all its games. Save each match as a <b>recap image</b> from Standings to keep it.</p>
         </div>
         <div class="menu">
-          ${guest ? null : html`<button type="button" onClick=${() => setMode('pin')}>${I.rules}<span>Change password</span></button>`}
-          <button type="button" onClick=${() => setMode('out')}>${I.people}<span>Sign out<small>${guest ? 'Keep the guest id if you want to come back' : 'Your games stay in the account'}</small></span></button>
-        </div>` : null}
-      ${mode === 'pin' ? html`<div class="sec">
-          <div class="field"><label for="cp-old">Current password</label><input id="cp-old" class="input" type="password" maxlength="32" value=${pin} onInput=${(e) => setPin(e.target.value)} /></div>
-          <div class="field"><label for="cp-new">New password (4 to 32 characters)</label><input id="cp-new" class="input" type="password" maxlength="32" value=${pin2} onInput=${(e) => setPin2(e.target.value)} /></div>
-          ${err ? html`<p class="err">${err}</p>` : null}
-          <div class="row" style=${{ justifyContent: 'flex-end' }}><button type="button" class="btn" onClick=${() => setMode('info')}>Cancel</button><button type="button" class="btn primary" disabled=${busy} onClick=${changePin}>Save password</button></div>
-        </div>` : null}
-      ${mode === 'out' ? html`<div class="sec">
-          <p>Sign out of <b>${displayName(u)}</b> on this device?</p>
-          <p class="hint">${guest ? 'Write down the guest id first — it is the only way back into this table.' : 'Games saved to the account are removed from this device and come back when you sign in again.'}</p>
-          <div class="row" style=${{ justifyContent: 'flex-end' }}><button type="button" class="btn" onClick=${() => setMode('info')}>Cancel</button><button type="button" class="btn danger" disabled=${busy} onClick=${signOut}>Sign out</button></div>
-        </div>` : null}
+          <button type="button" onClick=${() => setLeaving(true)}>${I.people}<span>Leave this Game ID<small>Write the ID down first — it is the only way back in</small></span></button>
+        </div>` : html`<div class="sec">
+          <p>Leave Game ID <b>${id}</b> on this phone?</p>
+          <p class="hint">The games stay in the Game ID for ${Store.inactiveDays} days; enter the ID again to come back. They are removed from this phone now.</p>
+          <div class="row" style=${{ justifyContent: 'flex-end' }}><button type="button" class="btn" onClick=${() => setLeaving(false)}>Cancel</button><button type="button" class="btn danger" disabled=${busy} onClick=${leave}>Leave</button></div>
+        </div>`}
     <//>`;
   }
 
@@ -3174,7 +3439,7 @@ button.tile:active{transform:translateY(1px)}
     const game = gid === 'example' ? example : gid ? Store.get(gid) : null;
     const open = (id) => { setGid(id); setView('game'); if (id !== 'example') lsSet('mjsb.last', id); };
     const commit = (g) => { if (g.example) setExample(g); else Store.save(g); };
-    const signIn = (m) => setModal(m === 'create' || m === 'guest' ? m : 'signin');
+    const signIn = () => setModal('gameid');
     let body;
     if (!Store.ready) body = html`<div class="boot">Opening ${BRAND}…</div>`;
     else if (view === 'setup') body = html`<${Setup} onCancel=${() => setView(game ? 'game' : 'home')} onCreate=${(g) => { Store.save(g); open(g.id); }} />`;
@@ -3182,8 +3447,8 @@ button.tile:active{transform:translateY(1px)}
       onDelete=${() => { Store.remove(game.id); setView('home'); setGid(null); setToastMsg('Game deleted'); }} onNewGame=${() => setView('setup')} toast=${setToastMsg} onSignIn=${signIn} />`;
     else body = html`<${Home} example=${example} onNew=${() => setView('setup')} onOpen=${open} onSignIn=${signIn} onAccount=${() => setModal('account')} onToast=${setToastMsg} />`;
     return html`${body}
-      ${modal === 'signin' || modal === 'create' || modal === 'guest' ? html`<${SignInSheet} initialMode=${modal} onClose=${() => setModal(null)} onDone=${(msg) => { setModal(null); setToastMsg(msg || ('Signed in as ' + displayName(Store.user))); }} />` : null}
-      ${modal === 'account' ? html`<${AccountSheet} onClose=${() => setModal(null)} onToast=${setToastMsg} />` : null}
+      ${modal === 'gameid' ? html`<${GameIdSheet} onClose=${() => setModal(null)} onDone=${(msg) => { setModal(null); setToastMsg(msg); }} />` : null}
+      ${modal === 'account' ? html`<${GameIdInfoSheet} onClose=${() => setModal(null)} onToast=${setToastMsg} />` : null}
       ${update ? html`<div class="toast" role="status">A new version is ready<button type="button" onClick=${() => location.reload()}>Reload</button></div>` : toastMsg ? html`<div class="toast" role="status">${toastMsg}</div>` : null}`;
   }
 
