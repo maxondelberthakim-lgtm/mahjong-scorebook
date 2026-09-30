@@ -46,7 +46,7 @@ function makeJpeg() {
   await page.goto('http://127.0.0.1:8080/', { waitUntil: 'load' });
   await page.waitForSelector('h1:has-text("Mahjong Scorebook")');
   ok('try first: set up a table without an account', await page.locator('button:has-text("Set up your table")').count() === 1);
-  eq('no sign-in wall', await page.locator('button:has-text("Continue as a guest")').count(), 0);
+  eq('no sign-in wall', await page.locator('button:has-text("Continue as a guest"), button:has-text("Sign in")').count(), 0);
   ok('example table (free sample)', await page.locator('.table').count() === 1);
   await page.screenshot({ path: path.join(SHOTS, '00-home-fresh.png') });
 
@@ -57,6 +57,13 @@ function makeJpeg() {
   eq('no stakes or currency anywhere in setup', await page.locator('#per, #sym').count(), 0);
   for (let i = 0; i < 4; i++) await page.fill('#pn' + i, ['Ah Mei', 'Budi', 'Chris', 'Dewi'][i]);
   ok('progress moves with names', /2 of 3/.test(await page.locator('.steps').innerText()));
+  // pattern values are editable right here, with defaults shown
+  await page.click('.card details summary:has-text("Default faan values")');
+  await page.waitForSelector('.vrow');
+  const spv = page.locator('.vrow:has-text("Seven pairs") input');
+  eq('seven pairs defaults to 4 faan', await spv.inputValue(), '4');
+  await spv.fill('5');
+  ok('value change is reflected in the summary', /1 value changed/.test(await page.locator('.card details summary:has-text("value")').innerText()));
   await page.click('button:has-text("Start the table")');
   await page.waitForSelector('button:has-text("Record hand")');
   ok('game view', await page.locator('.plate').count() === 4);
@@ -111,26 +118,40 @@ function makeJpeg() {
   eq('no winning-tile highlight in examples', await page.locator('.addrow .exrow .is-win').count(), 0);
   await page.click('.sheet-head button[aria-label="Close"]');
 
-  // 3b. IKEA effect: now that a hand is in, the nudge to keep the table appears (loss-aversion wording) → guest table
+  // 3a. a seven-pairs hand scores the value chosen at setup (5 faan) — nothing to tick
+  await page.click('button:has-text("Record hand")');
+  await page.click('.chip:has-text("Chris")');
+  await page.click('.sec:has(.flabel:has-text("Who discarded")) .chip:has-text("Budi")');
+  await page.waitForSelector('.board');
+  for (const l of ['1 Characters', '1 Characters', '2 Dots', '2 Dots', '3 Bamboo', '3 Bamboo', '4 Characters', '4 Characters', '5 Dots', '5 Dots', '6 Bamboo', '6 Bamboo', 'Red dragon', 'Red dragon']) await tap('', l);
+  await page.waitForSelector('.counter.ok');
+  ok('seven pairs recognised from the tiles', (await page.locator('.rrow:has-text("Seven pairs")').count()) === 1, await page.locator('.receipt').innerText());
+  eq('seven pairs worth the value set at setup', (await page.locator('.rrow:has-text("Seven pairs") .rval').innerText()).trim(), '5');
+  // situational fan are one tap, not a search: "Anything special about the win?"
+  ok('special-win chips', (await page.locator('.sec:has(.flabel:has-text("Anything special")) .chip').count()) >= 4);
+  await page.click('.sec:has(.flabel:has-text("Anything special")) .chip:has-text("last")');
+  ok('flag added to the receipt', (await page.locator('.rrow:has-text("last")').count()) === 1);
+  await page.click('.sheet-head button[aria-label="Close"]');
+
+  // 3b. IKEA effect: now that a hand is in, the nudge to keep the table appears (loss-aversion wording) → Game ID
   await page.waitForSelector('.banner.keep');
   ok('keep nudge names the loss', /gone/.test(await page.locator('.banner.keep').innerText()));
   await page.screenshot({ path: path.join(SHOTS, '03b-keep-nudge.png') });
-  await page.click('button:has-text("Keep this table")');
-  await page.waitForSelector('#si-name');
-  await page.click('.seg button:has-text("Guest")');
-  await page.waitForSelector('button:has-text("New guest table")');
-  await page.click('button:has-text("New guest table")');
-  await page.waitForSelector('text=Your guest id is');
+  await page.click('.banner.keep button:has-text("Get a Game ID")');
+  await page.waitForSelector('button:has-text("New Game ID")');
+  eq('no username or password fields', await page.locator('#si-name, #si-pin, input[type=password]').count(), 0);
+  await page.click('button:has-text("New Game ID")');
+  await page.waitForSelector('text=Your Game ID is');
   const guestToast = await page.locator('.toast').innerText();
-  const guestId = (guestToast.match(/guest id is ([A-Z2-9]{6})/) || [])[1];
-  ok('guest id shown', !!guestId, guestToast);
+  const guestId = (guestToast.match(/Game ID is ([A-Z2-9]{6})/) || [])[1];
+  ok('game id shown', !!guestId, guestToast);
   ok('still on the game after keeping it', await page.locator('button:has-text("Record hand")').count() === 1);
   eq('keep nudge gone once kept', await page.locator('.banner.keep').count(), 0);
   // smart defaults: a second table is pre-filled from the first
   await page.click('.backbtn');
   ok('home renders', await page.locator('button:has-text("New game")').count() === 1);
-  await page.waitForFunction(() => /Guest table/.test(document.querySelector('.store-note').textContent), null, { timeout: 10000 });
-  ok('store note names guest table', /Guest table/.test(await page.locator('.store-note').innerText()));
+  await page.waitForFunction(() => /Game ID/.test(document.querySelector('.store-note').textContent), null, { timeout: 10000 });
+  ok('store note names the game id', /Game ID/.test(await page.locator('.store-note').innerText()));
   await page.screenshot({ path: path.join(SHOTS, '01-home.png') });
   await page.click('button:has-text("New game")');
   await page.waitForSelector('#pn0');
@@ -150,44 +171,43 @@ function makeJpeg() {
   const ctx2 = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const p2 = await ctx2.newPage();
   await p2.goto('http://127.0.0.1:8080/', { waitUntil: 'load' });
-  await p2.click('button:has-text("Sign in")');
-  await p2.click('.seg button:has-text("Guest")');
+  await p2.click('button:has-text("Have a Game ID?")');
   await p2.fill('#gj', guestId.toLowerCase());
-  await p2.click('button:has-text("Join")');
+  await p2.click('.sheet button:has-text("Join")');
   await p2.waitForSelector('.gcard', { timeout: 10000 });
   eq('second phone sees the guest game', await p2.locator('.gcard').count(), 1);
   await ctx2.close();
-  // account sheet shows the guest id and the 7-day notice
+  // game id sheet shows the id and the 7-day notice; leaving and creating a second id
   await page.click('.backbtn');
-  await page.click('button:has-text("Guest ' + guestId + '")');
+  await page.click('button:has-text("Game ID ' + guestId + '")');
   await page.waitForSelector('.guestbox');
-  ok('guest id in account sheet', (await page.locator('.guestbox b').innerText()) === guestId);
+  ok('game id in its sheet', (await page.locator('.guestbox b').innerText()) === guestId);
   ok('7-day notice', /7 days/.test(await page.locator('.sheet-body').innerText()));
-  await page.screenshot({ path: path.join(SHOTS, '04-guest-account.png') });
-  await page.click('.menu button:has-text("Sign out")');
-  await page.click('.sec button:has-text("Sign out")');
+  await page.screenshot({ path: path.join(SHOTS, '04-game-id.png') });
+  await page.click('.menu button:has-text("Leave this Game ID")');
+  await page.click('.sec button:has-text("Leave")');
   await page.waitForSelector('button:has-text("Set up your table")');
-  await page.click('button:has-text("Sign in")');
-  await page.waitForSelector('#si-name');
-  await page.click('.seg button:has-text("New account")');
-  await page.fill('#si-name', 'E2E ' + stamp);
-  await page.fill('#si-pin', 'pass 2468');
-  eq('password with space rejected client-side', await page.locator('.sheet-foot button:has-text("Create account")').isDisabled(), true);
-  await page.fill('#si-pin', 'table2468');
-  await page.click('.sheet-foot button:has-text("Create account")');
-  await page.waitForSelector('text=Signed in as E2E');
-  // import the guest game into this account by JSON later; for now this account has no games
-  eq('fresh account has no games', await page.locator('.gcard').count(), 0);
+  await page.click('button:has-text("Have a Game ID?")');
+  await page.waitForSelector('button:has-text("New Game ID")');
+  await page.fill('#gj', 'ZZZZZZ');
+  await page.click('.sheet button:has-text("Join")');
+  await page.waitForSelector('text=No table has that Game ID');
+  await page.click('button:has-text("New Game ID")');
+  await page.waitForSelector('text=Your Game ID is');
+  const id2 = ((await page.locator('.toast').innerText()).match(/Game ID is ([A-Z2-9]{6})/) || [])[1];
+  ok('second game id', !!id2 && id2 !== guestId);
+  const stampName = 'guest-' + id2;
+  eq('fresh game id has no games', await page.locator('.gcard').count(), 0);
   // import the exported guest game so the rest of the flow has a game
   const gpath = path.join(SHOTS, 'guest-game.json');
   fs.writeFileSync(gpath, JSON.stringify(mine[0].game));
   await page.locator('input[type=file][accept=".json,application/json"]').setInputFiles(gpath);
   await page.waitForSelector('text=Imported 1 game');
-  await page.waitForFunction(() => /saved to your account/.test(document.querySelector('.store-note').textContent), null, { timeout: 10000 });
+  await page.waitForFunction(() => /Game ID [A-Z2-9]{6} ·/.test(document.querySelector('.store-note').textContent), null, { timeout: 10000 });
   await new Promise((r) => setTimeout(r, 800));
   const expA = await admin('export');
-  const acctGames = expA.games.filter((g) => !g.deleted && expA.users.find((u) => u.id === g.userId && u.name === 'E2E ' + stamp));
-  eq('imported game re-id’d into the new account', acctGames.length, 1);
+  const acctGames = expA.games.filter((g) => !g.deleted && expA.users.find((u) => u.id === g.userId && u.name === stampName));
+  eq('imported game re-id’d into the new game id', acctGames.length, 1);
   ok('and it kept its hand', acctGames[0].game.entries.length === 1 && acctGames[0].game.id !== gid);
   await page.screenshot({ path: path.join(SHOTS, '04-signed-in.png') });
 
@@ -256,21 +276,19 @@ function makeJpeg() {
   const exp2 = await admin('export');
   eq('cloud copy has 1 hand after undo', exp2.games.find((g) => g.game.id === gid2).game.entries.length, 1);
 
-  // 9. sign out removes cloud copies here; sign in brings them back
+  // 9. leaving removes cloud copies here; entering the id again brings them back
   await page.click('.backbtn');
-  await page.click('button:has-text("E2E ' + stamp + '")');
-  await page.click('.menu button:has-text("Sign out")');
-  await page.click('.sec button:has-text("Sign out")');
+  await page.click('button:has-text("Game ID ' + id2 + '")');
+  await page.click('.menu button:has-text("Leave this Game ID")');
+  await page.click('.sec button:has-text("Leave")');
   await page.waitForSelector('button:has-text("Set up your table")');
-  eq('cloud games leave this device after sign-out', await page.locator('.gcard').count(), 0);
-  await page.click('button:has-text("Sign in")');
-  await page.waitForSelector('#si-name');
-  await page.fill('#si-name', 'E2E ' + stamp);
-  await page.fill('#si-pin', 'table2468');
-  await page.click('.sheet-foot button:has-text("Sign in")');
-  await page.waitForSelector('text=Signed in as E2E');
+  eq('cloud games leave this device after leaving', await page.locator('.gcard').count(), 0);
+  await page.click('button:has-text("Have a Game ID?")');
+  await page.fill('#gj', id2);
+  await page.click('.sheet button:has-text("Join")');
+  await page.waitForSelector('text=Joined Game ID');
   await page.waitForSelector('.gcard', { timeout: 10000 });
-  eq('game back after sign-in', await page.locator('.gcard').count(), 1);
+  eq('game back after joining again', await page.locator('.gcard').count(), 1);
 
   // 10. import a backup (new id) → one more game
   backup.id = 'imp' + stamp; backup.updatedAt = Date.now();
