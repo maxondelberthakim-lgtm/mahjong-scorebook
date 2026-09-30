@@ -50,13 +50,13 @@ function makeJpeg() {
   ok('example table (free sample)', await page.locator('.table').count() === 1);
   await page.screenshot({ path: path.join(SHOTS, '00-home-fresh.png') });
 
-  // 2. new table (Hong Kong, 4 names, Rp 1,000 per point) — progress starts above zero
+  // 2. new table (Hong Kong, 4 names, points only) — progress starts above zero
   await page.click('button:has-text("Set up your table")');
   await page.waitForSelector('text=Rules');
-  ok('head start: 1 of 4 already done', /1 of 4/.test(await page.locator('.steps').innerText()));
+  ok('head start: 1 of 3 already done', /1 of 3/.test(await page.locator('.steps').innerText()));
+  eq('no stakes or currency anywhere in setup', await page.locator('#per, #sym').count(), 0);
   for (let i = 0; i < 4; i++) await page.fill('#pn' + i, ['Ah Mei', 'Budi', 'Chris', 'Dewi'][i]);
-  await page.fill('#per', '1000');
-  ok('progress moves with names and stakes', /3 of 4/.test(await page.locator('.steps').innerText()));
+  ok('progress moves with names', /2 of 3/.test(await page.locator('.steps').innerText()));
   await page.click('button:has-text("Start the table")');
   await page.waitForSelector('button:has-text("Record hand")');
   ok('game view', await page.locator('.plate').count() === 4);
@@ -135,8 +135,7 @@ function makeJpeg() {
   await page.click('button:has-text("New game")');
   await page.waitForSelector('#pn0');
   eq('smart defaults: names pre-filled', await page.inputValue('#pn1'), 'Budi');
-  eq('smart defaults: stakes pre-filled', await page.inputValue('#per'), '1000');
-  ok('head start with defaults: 3 of 4', /3 of 4/.test(await page.locator('.steps').innerText()));
+  ok('head start with defaults: 2 of 3', /2 of 3/.test(await page.locator('.steps').innerText()));
   await page.click('.backbtn');
   await page.click('.gcard');
   await page.waitForSelector('button:has-text("Record hand")');
@@ -220,13 +219,13 @@ function makeJpeg() {
   ok('correction (final) logged', sc && sc.final && sc.final.length > 10, sc && sc.final);
   ok('accuracy summary', scans.summary.compared >= 1 && scans.summary.tileAccuracy != null, scans.summary);
 
-  // 6. standings: settle up + export
+  // 6. standings: points only (no settle-up, no money) + export
   await page.click('button[aria-label="Game menu"]');
   await page.click('.menu button:has-text("Standings")');
-  await page.waitForSelector('text=Settle up');
-  const trows = await page.locator('.trow').count();
-  ok('settlement rows', trows >= 1 && trows <= 3, trows);
-  ok('settlement in Rupiah', /Rp/.test(await page.locator('.trow .ta').first().innerText()));
+  await page.waitForSelector('.srow');
+  const sheetText = await page.locator('.sheet').innerText();
+  ok('no settle-up or money in standings', !/Settle|pays|Rp|per point/i.test(sheetText), sheetText.slice(0, 200));
+  ok('no money on the table', !/Rp/.test(await page.locator('body').innerText()));
   ok('export buttons', (await page.locator('button:has-text("Full backup (JSON)")').count()) === 1);
   const dlr = page.waitForEvent('download');
   await page.click('button:has-text("Save recap image")');

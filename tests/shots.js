@@ -28,7 +28,6 @@ const server = http.createServer((req, res) => {
   await page.waitForSelector('#pn0');
   await shot('02-setup');
   for (let i = 0; i < 4; i++) await page.fill('#pn' + i, ['Ah Mei', 'Budi', 'Chris', 'Dewi'][i]);
-  await page.fill('#per', '1000');
   await shot('02b-setup-filled');
   await page.click('button:has-text("Start the table")');
   await page.waitForSelector('button:has-text("Record hand")');
@@ -65,7 +64,7 @@ const server = http.createServer((req, res) => {
   await page.click('button[aria-label="Game menu"]');
   await shot('08-menu');
   await page.click('.menu button:has-text("Standings")');
-  await page.waitForSelector('text=Settle up');
+  await page.waitForSelector('.srow');
   await shot('09-standings');
   await page.click('.sheet-head button[aria-label="Close"]');
   await page.click('.backbtn');
