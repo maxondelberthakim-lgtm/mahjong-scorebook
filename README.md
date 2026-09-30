@@ -1,6 +1,6 @@
 # Mahjong Scorebook
 
-A phone-first web app that keeps mahjong scores. Pick the rules (Hong Kong, Singapore, Japanese Riichi, Taiwanese 16-tile, Chinese Official, or custom points), enter the four players, and after each hand record who won, how, and with what. The app works out the faan / tai / han, splits the payments, rotates the dealer, and keeps the ledger. Photograph the winner's hand and it reads the tiles for you.
+A phone-first web app that keeps mahjong scores. Pick the rules (Hong Kong, Singapore, Japanese Riichi, Taiwanese 16-tile, Chinese Official, or custom points), enter the four players, and after each hand record who won, how, and with what. The app works out the faan / tai / han, moves the points between players, rotates the dealer, and keeps the ledger. Points only — there are no stakes, currencies or settlements anywhere in the app. Photograph the winner's hand and it reads the tiles for you.
 
 - **App:** https://maxondelberthakim-lgtm.github.io/mahjong-scorebook/ (installable: *Add to Home Screen*) · Lite (no photo reading): `/lite/`
 - **Branded copies (own free Cloudflare Pages addresses):** https://mahjongparlour.pages.dev · https://kawamahjong.pages.dev — built into `pages/`, published with `cloudflare/pages-deploy.sh`; table cards from `tools/qr.py`.
@@ -21,13 +21,13 @@ Phone browser ──► GitHub Pages PWA (docs/index.html: Preact UI + scoring e
 - Without an account the app still works: games live in the browser's storage. Signing in (name + 4–8 digit PIN) saves games to the account, syncs them to any phone you sign in on, and turns on photo reading.
 - One phone keeps score. Last write wins when the same game is edited from two phones.
 - Photo reading: the phone shrinks the photo to 1568 px, the Worker sends it to Claude with the ruleset's tile prompt and a strict JSON schema, the tiles land in the editor for checking, and when the hand is saved the corrected tiles are logged against the scan so accuracy can be measured per tile (`/admin/scans`, `tools/review.html`).
-- End of session: standings, **settle up** (fewest transfers in Rupiah or points), copy summary, CSV, JSON backup, JSON import.
+- End of session: standings in points, recap image, copy summary, CSV, JSON backup, JSON import.
 
 ## Repo map
 
 | Path | What |
 |---|---|
-| `src/engine.js` | Scoring engine, pure JS (UMD). Rules, hand decomposition, payments, dealer rotation, scan prompt + parser, settlement. |
+| `src/engine.js` | Scoring engine, pure JS (UMD). Rules, hand decomposition, point transfers, dealer rotation, scan prompt + parser. (`settle`/`moneyNets` remain in the engine but are unused by the app.) |
 | `src/app.src.html` | The UI (Preact + htm). Placeholders are filled by the build. |
 | `src/vendor/` | Preact 10.26.4, hooks, htm 3.1.1 (inlined at build time). |
 | `src/test.js`, `test2.js`, `test3.js` | Engine tests: 56 + 16 + 20 checks. `cd src && node test.js && node test2.js && node test3.js` |
@@ -41,7 +41,7 @@ Phone browser ──► GitHub Pages PWA (docs/index.html: Preact UI + scoring e
 | `tools/qr.py` | Table cards with QR codes for the branded addresses. |
 | `cloudflare/` | Worker source, D1 schema, `wrangler.jsonc`, `deploy.sh`, `DEPLOY.md`. `cloudflare/src/engine.js` and `schema.js` are generated. |
 | `tests/api.test.js` | 61 backend checks against `wrangler dev --local`. |
-| `tests/e2e.js` | 69 Playwright checks driving the built app end to end (sign-in, record by tiles, photo scan, settle, export, undo, sync, import). |
+| `tests/e2e.js` | 69 Playwright checks driving the built app end to end (sign-in, record by tiles, photo scan, export, undo, sync, import). |
 
 ## Change workflow
 
@@ -55,7 +55,7 @@ Phone browser ──► GitHub Pages PWA (docs/index.html: Preact UI + scoring e
 
 - Apple-style visual system: system font stack (SF on Apple devices), inset grouped lists, segmented controls, native-looking switches and sheets with a grabber, no borders — depth comes from soft shadows. Chinese glyphs on tiles use LXGW WenKai; UI Chinese uses the system CJK font.
 - Try first, sign in later: a table can be set up and scored with no account. After the first hand a nudge offers to keep the table (account or guest id), worded around what would be lost. Local games upload the moment an account or guest table exists.
-- Smart defaults: the new-table form is pre-filled from the last table (rules, names, stakes); settings sit behind a collapsed "usual defaults" row. The progress bar starts at 1 of 4 because the rules are already chosen.
+- Smart defaults: the new-table form is pre-filled from the last table (rules, names); settings sit behind a collapsed "usual defaults" row. The progress bar starts at 1 of 4 because the rules are already chosen.
 - Pattern examples are drawn as tidy sets with no winning tile singled out.
 
 ## Rules as implemented
