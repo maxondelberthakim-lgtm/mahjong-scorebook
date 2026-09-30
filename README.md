@@ -18,7 +18,7 @@ Phone browser ──► GitHub Pages PWA (docs/index.html: Preact UI + scoring e
       └─ Claude API (vision, JSON schema output) ← photo of the winning hand
 ```
 
-- Without an account the app still works: games live in the browser's storage. Signing in (name + 4–8 digit PIN) saves games to the account, syncs them to any phone you sign in on, and turns on photo reading.
+- Without an account the app still works: games live in the browser's storage. Signing in (name + password) saves games to the account, syncs them to any phone you sign in on, and turns on photo reading.
 - One phone keeps score. Last write wins when the same game is edited from two phones.
 - Photo reading: the phone shrinks the photo to 1568 px, the Worker sends it to Claude with the ruleset's tile prompt and a strict JSON schema, the tiles land in the editor for checking, and when the hand is saved the corrected tiles are logged against the scan so accuracy can be measured per tile (`/admin/scans`, `tools/review.html`).
 - End of session: standings in points, recap image, copy summary, CSV, JSON backup, JSON import.
@@ -55,13 +55,13 @@ Phone browser ──► GitHub Pages PWA (docs/index.html: Preact UI + scoring e
 
 - Apple-style visual system: system font stack (SF on Apple devices), inset grouped lists, segmented controls, native-looking switches and sheets with a grabber, no borders — depth comes from soft shadows. Chinese glyphs on tiles use LXGW WenKai; UI Chinese uses the system CJK font.
 - Try first, sign in later: a table can be set up and scored with no account. After the first hand a nudge offers to keep the table (account or guest id), worded around what would be lost. Local games upload the moment an account or guest table exists.
-- Smart defaults: the new-table form is pre-filled from the last table (rules, names); settings sit behind a collapsed "usual defaults" row. The progress bar starts at 1 of 4 because the rules are already chosen.
+- Smart defaults: the new-table form is pre-filled from the last table (rules, names); settings sit behind a collapsed "usual defaults" row. The progress bar starts at 1 of 3 because the rules are already chosen.
 - Pattern examples are drawn as tidy sets with no winning tile singled out.
 
 ## Rules as implemented
 
-Default values follow the common references (Hong Kong 3 faan to win with the half-spicy table, Singapore 1 tai and cap 5 with animals and instant payouts, Riichi with full fu/han and uma/oka, Taiwanese base 30 + 10 per tai with dealer streak tai, MCR 81 fan ticked by hand, custom points). Hong Kong, Singapore and Taiwanese pattern values are editable per game; Riichi and MCR follow their published standards. Liability (包) is a manual pick. Details and the engine model are in the header comments of `src/engine.js`.
+Default values follow the common references (Hong Kong 3 faan to win with the half-spicy table, Singapore 1 tai and cap 5 with animals and instant bonus points, Riichi with full fu/han and uma/oka, Taiwanese base 30 + 10 per tai with dealer streak tai, MCR 81 fan ticked by hand, custom points). Hong Kong, Singapore and Taiwanese pattern values are editable per game; Riichi and MCR follow their published standards. Liability (包) is a manual pick. Details and the engine model are in the header comments of `src/engine.js`.
 
 ## Roadmap
 
-Live table (all four phones see the same scoreboard), player profiles and stats across games, Bahasa Indonesia / Chinese UI, automatic pay-all triggers for Singapore and Hong Kong, more systems (Malaysian, Filipino, Sichuan, 3-player Riichi).
+Live table (all four phones see the same scoreboard), player profiles and stats across games, Bahasa Indonesia / Chinese UI, automatic liability (包) triggers for Singapore and Hong Kong, more systems (Malaysian, Filipino, Sichuan, 3-player Riichi).
