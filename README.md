@@ -2,7 +2,8 @@
 
 A phone-first web app that keeps mahjong scores. Pick the rules (Hong Kong, Singapore, Japanese Riichi, Taiwanese 16-tile, Chinese Official, or custom points), enter the four players, and after each hand record who won, how, and with what. The app works out the faan / tai / han, splits the payments, rotates the dealer, and keeps the ledger. Photograph the winner's hand and it reads the tiles for you.
 
-- **App:** https://maxondelberthakim-lgtm.github.io/mahjong-scorebook/ (installable: *Add to Home Screen*)
+- **App:** https://maxondelberthakim-lgtm.github.io/mahjong-scorebook/ (installable: *Add to Home Screen*) · Lite (no photo reading): `/lite/`
+- **Branded copies (own free Cloudflare Pages addresses):** https://mahjongparlour.pages.dev · https://kawamahjong.pages.dev — built into `pages/`, published with `cloudflare/pages-deploy.sh`; table cards from `tools/qr.py`.
 - **API:** https://mahjong-api.maxondelberthakim.workers.dev (Cloudflare Worker + D1 + KV, see `cloudflare/DEPLOY.md`)
 
 ## How it fits together
@@ -34,10 +35,12 @@ Phone browser ──► GitHub Pages PWA (docs/index.html: Preact UI + scoring e
 | `tools/api-url.txt` | The API URL baked into the app. |
 | `tools/sw.js`, `tools/manifest.webmanifest`, `tools/icons.py` | PWA pieces. |
 | `tools/review.html` | Scan accuracy review page (needs the admin key; open locally). |
-| `docs/` | **Generated.** What GitHub Pages serves. Never hand-edit. |
+| `docs/` | **Generated.** What GitHub Pages serves (`/`, `/lite/`, `/parlour/`, `/kawa/`). Never hand-edit. |
+| `pages/` | **Generated.** Self-contained copies of the branded apps for Cloudflare Pages (`parlour/`, `kawa/`). |
+| `tools/qr.py` | Table cards with QR codes for the branded addresses. |
 | `cloudflare/` | Worker source, D1 schema, `wrangler.jsonc`, `deploy.sh`, `DEPLOY.md`. `cloudflare/src/engine.js` and `schema.js` are generated. |
-| `tests/api.test.js` | 53 backend checks against `wrangler dev --local`. |
-| `tests/e2e.js` | 31 Playwright checks driving the built app end to end (sign-in, record by tiles, photo scan, settle, export, undo, sync, import). |
+| `tests/api.test.js` | 61 backend checks against `wrangler dev --local`. |
+| `tests/e2e.js` | 58 Playwright checks driving the built app end to end (sign-in, record by tiles, photo scan, settle, export, undo, sync, import). |
 
 ## Change workflow
 
@@ -45,7 +48,7 @@ Phone browser ──► GitHub Pages PWA (docs/index.html: Preact UI + scoring e
 2. `cd src && node test.js && node test2.js && node test3.js`
 3. Backend: `cd cloudflare && npx wrangler dev --port 8787 --local` then `node tests/api.test.js`.
 4. App: `python3 tools/build.py http://127.0.0.1:8787 && node tests/e2e.js`, then `python3 tools/build.py` to point `docs/` back at the real API.
-5. Commit and push `docs/` (GitHub Pages redeploys in about a minute). If the Worker changed: `bash deploy.sh` in the `mahjong-cloudflare` folder on the Mac.
+5. Commit and push `docs/` (GitHub Pages redeploys in about a minute). If the Worker changed: double-click `deploy.command` in the `mahjong-cloudflare` folder on the Mac. If a branded app changed: copy `pages/` there and double-click `pages-deploy.command`.
 
 ## Rules as implemented
 
