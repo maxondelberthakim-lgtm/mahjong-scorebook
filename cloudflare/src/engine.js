@@ -297,12 +297,12 @@ const module = { exports: {} };
   }
   const HK = {
     id: 'hk', name: 'Hong Kong', native: '香港麻雀', unit: 'faan', handSize: 13,
-    blurb: 'Faan, 3 to win, half-spicy payouts',
+    blurb: 'Faan, 3 to win, half-spicy scoring',
     settings: [
       { key: 'minFaan', label: 'Faan needed to win', zh: '起糊', type: 'int', min: 0, max: 8, def: 3 },
       { key: 'maxFaan', label: 'Limit', zh: '爆棚', type: 'int', min: 5, max: 13, def: 10 },
-      { key: 'table', label: 'Payout table', type: 'select', def: 'half', options: [['half', 'Half-spicy 半辣 — doubles every 2 faan above 4'], ['full', 'Full-spicy 全辣 — doubles every faan']] },
-      { key: 'pay', label: 'On a discard', type: 'select', def: 'full', options: [['full', 'Full-gun 全銃 — discarder pays all'], ['half', 'Half-gun 半銃 — discarder pays half, others a quarter each']] },
+      { key: 'table', label: 'Scoring table', type: 'select', def: 'half', options: [['half', 'Half-spicy 半辣 — doubles every 2 faan above 4'], ['full', 'Full-spicy 全辣 — doubles every faan']] },
+      { key: 'pay', label: 'On a discard', type: 'select', def: 'full', options: [['full', 'Full-gun 全銃 — discarder loses all the points'], ['half', 'Half-gun 半銃 — discarder loses half, others a quarter each']] },
       { key: 'flowers', label: 'Play with flowers', type: 'bool', def: true },
       { key: 'concealedWithFlowers', label: 'Count 門前清 even with flowers', type: 'bool', def: false },
       { key: 'keepOnDraw', label: 'Dealer stays on a draw', type: 'bool', def: true },
@@ -418,12 +418,12 @@ const module = { exports: {} };
     settings: [
       { key: 'minTai', label: 'Tai needed to win', type: 'int', min: 0, max: 4, def: 1 },
       { key: 'maxTai', label: 'Tai cap', type: 'int', min: 3, max: 10, def: 5 },
-      { key: 'pay', label: 'On a discard', type: 'select', def: 'standard', options: [['standard', 'Shooter pays double, others single'], ['all', 'Shooter pays for everyone'], ['only', 'Only the shooter pays (double)']] },
+      { key: 'pay', label: 'On a discard', type: 'select', def: 'standard', options: [['standard', 'Shooter loses double, others single'], ['all', 'Shooter loses the points for everyone'], ['only', 'Only the shooter loses points (double)']] },
       { key: 'strictPingHu', label: 'Ping Hu needs a plain pair and a two-sided wait', type: 'bool', def: true },
       { key: 'keepOnDraw', label: 'Dealer stays on a draw', type: 'bool', def: true },
     ],
     patterns: [
-      P('selfDraw', 'Self-draw', '自摸', 0, 'win', { src: 'how', note: 'Self-draw already doubles the payout. Some tables add 1 tai.' }),
+      P('selfDraw', 'Self-draw', '自摸', 0, 'win', { src: 'how', note: 'Self-draw already doubles the points. Some tables add 1 tai.' }),
       P('concealedSelfDraw', 'Fully concealed self-draw', '门清自摸', 0, 'win', { note: 'House rule, often 1 tai' }),
       P('lastTile', 'Win on the last tile', '海底捞月', 1, 'win', { flag: true }),
       P('robbingKong', 'Robbing a kong', '抢杠', 1, 'win', { flag: true }),
@@ -911,7 +911,7 @@ const module = { exports: {} };
     blurb: '81 fan, 8 to win. Tick the fan yourself',
     settings: [
       { key: 'minFan', label: 'Fan needed to win (flowers excluded)', type: 'int', min: 0, max: 20, def: 8 },
-      { key: 'base', label: 'Base points each opponent pays', type: 'int', min: 0, max: 100, def: 8 },
+      { key: 'base', label: 'Base points from each opponent', type: 'int', min: 0, max: 100, def: 8 },
     ],
     patterns: MCR_LIST.map(([id, en, zh, fan, max]) => P(id, en, zh, fan, 'f' + fan, { max: max || 1, src: id === 'selfDrawn' ? 'how' : undefined })),
     fixedValues: true,
@@ -945,10 +945,10 @@ const module = { exports: {} };
   /* ========================================================== CUSTOM */
   const CUSTOM = {
     id: 'custom', name: 'Custom points', native: '自訂', unit: 'pts', handSize: 13, manualOnly: true, valueEntry: true,
-    blurb: 'Type the hand value, choose who pays',
+    blurb: 'Type the hand value, choose who loses the points',
     settings: [
-      { key: 'discard', label: 'On a discard', type: 'select', def: 'discarder', options: [['discarder', 'Discarder pays the value'], ['double', 'Discarder pays double, others single']] },
-      { key: 'selfMult', label: 'Self-draw: each player pays × value', type: 'int', min: 1, max: 4, def: 1 },
+      { key: 'discard', label: 'On a discard', type: 'select', def: 'discarder', options: [['discarder', 'Discarder loses the value'], ['double', 'Discarder loses double, others single']] },
+      { key: 'selfMult', label: 'Self-draw: each player loses × value', type: 'int', min: 1, max: 4, def: 1 },
       { key: 'keepOnDraw', label: 'Dealer stays on a draw', type: 'bool', def: true },
     ],
     patterns: [],
