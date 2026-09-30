@@ -15,7 +15,9 @@ import { SCHEMA_SQL } from './schema.js';
 
 const VERSION = '1.0.0';
 const NAME_MIN = 2, NAME_MAX = 24;
-const PIN_RE = /^\d{4,8}$/;
+const PIN_RE = /^[^\s]{4,32}$/;   // a password: 4–32 characters, no spaces
+const GUEST_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const INACTIVE_DAYS = 7;
 const ID_RE = /^[A-Za-z0-9_-]{4,40}$/;
 const MEDIA = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_IMAGE_B64 = 7 * 1024 * 1024;   // ≈ 5 MB of JPEG, the API's own ceiling
@@ -87,14 +89,16 @@ function cleanName(raw) {
 }
 function cleanPin(raw) {
   const s = String(raw == null ? '' : raw).trim();
-  if (!PIN_RE.test(s)) throw new ApiError('bad_pin', 'The PIN must be 4 to 8 digits.');
+  if (!PIN_RE.test(s)) throw new ApiError('bad_pin', 'The password must be 4 to 32 characters with no spaces.');
   return s;
 }
 async function pinHash(env, salt, pin) {
   if (!env.PIN_PEPPER) throw new ApiError('not_configured', 'PIN_PEPPER is not set on the server.', 500);
   return sha256Hex(env.PIN_PEPPER + ':' + salt + ':' + pin);
 }
-const pubUser = (u) => ({ id: u.id, name: u.name, createdAt: u.created_at });
+const isGuestName = (n) => /^guest-[A-Z2-9]{6}$/.test(String(n || ''));
+const pubUser = (u) => ({ id: u.id, name: u.name, createdAt: u.created_at, guest: isGuestName(u.name) });
+function guestId() { const a = new Uint8Array(6); crypto.getRandomValues(a); return 'guest-' + Array.from(a, (b) => GUEST_ALPHABET[b % GUEST_ALPHABET.length]).join(''); }
 
 /* ------------------------------------------------------------ usage counters */
 async function bump(env, key, limit) {
@@ -117,7 +121,12 @@ async function userFromToken(env, token) {
   const s = await env.DB.prepare('SELECT s.token_hash, s.user_id, s.last_used, u.id, u.name, u.created_at FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = ?').bind(th).first();
   if (!s) return null;
   if (now() - s.last_used > SESSION_MS) { await env.DB.prepare('DELETE FROM sessions WHERE token_hash = ?').bind(th).run(); return null; }
-  if (now() - s.last_used > 3600 * 1000) await env.DB.prepare('UPDATE sessions SET last_used = ? WHERE token_hash = ?').bind(now(), th).run();
+  if (now() - s.last_used > 3600 * 1000) {
+    await env.DB.batch([
+      env.DB.prepare('UPDATE sessions SET last_used = ? WHERE token_hash = ?').bind(now(), th),
+      env.DB.prepare('UPDATE users SET last_seen = ? WHERE id = ?').bind(now(), s.user_id),
+    ]);
+  }
   return { id: s.id, name: s.name, created_at: s.created_at, token_hash: th };
 }
 async function requireUser(c) {
@@ -158,6 +167,23 @@ const RPC = {
     const token = await issueSession(c.env, u.id, c.agent);
     return { token, user: pubUser(u) };
   },
+  // A guest account: the id is both the name and the password, so anyone with the id shares the same scorebook.
+  async guestStart(_, c) {
+    await bump(c.env, 'signup', +c.env.SIGNUP_DAILY || 50);
+    let id, name;
+    for (let i = 0; i < 5; i++) {
+      name = guestId();
+      if (!(await c.env.DB.prepare('SELECT id FROM users WHERE name_key = ?').bind(name.toLowerCase()).first())) break;
+      name = null;
+    }
+    if (!name) throw new ApiError('server_error', 'Could not create a guest id. Try again.', 500);
+    id = 'u' + randomHex(8);
+    const salt = randomHex(8);
+    await c.env.DB.prepare('INSERT INTO users (id, name, name_key, pin_hash, salt, created_at, last_seen) VALUES (?, ?, ?, ?, ?, ?, ?)')
+      .bind(id, name, name.toLowerCase(), await pinHash(c.env, salt, name), salt, now(), now()).run();
+    const token = await issueSession(c.env, id, c.agent);
+    return { token, user: { id, name, createdAt: now(), guest: true }, guestId: name };
+  },
   async signout(_, c) {
     const u = await requireUser(c);
     await c.env.DB.prepare('DELETE FROM sessions WHERE token_hash = ?').bind(u.token_hash).run();
@@ -166,7 +192,9 @@ const RPC = {
   async me(_, c) {
     const u = await requireUser(c);
     const limit = +c.env.SCAN_DAILY_PER_USER || 60;
-    return { user: pubUser(u), scans: { today: await countToday(c.env, 'scan:' + u.id), limit }, canScan: !!(c.env.ANTHROPIC_API_KEY || c.env.MOCK_SCAN), serverTime: now() };
+    const row = await c.env.DB.prepare('SELECT last_seen FROM users WHERE id = ?').bind(u.id).first();
+    const lastSeen = (row && row.last_seen) || now();
+    return { user: pubUser(u), scans: { today: await countToday(c.env, 'scan:' + u.id), limit }, canScan: !!(c.env.ANTHROPIC_API_KEY || c.env.MOCK_SCAN), serverTime: now(), inactiveDays: INACTIVE_DAYS, expiresAt: lastSeen + INACTIVE_DAYS * 86400 * 1000 };
   },
   async changePin({ pin, newPin }, c) {
     const u = await requireUser(c);
@@ -374,6 +402,7 @@ const ADMIN = {
     }
     return { summary: { scans: rows.length, compared, exactHands: exact, tileAccuracy: tilesTotal ? Math.round((tilesRight / tilesTotal) * 1000) / 10 : null }, perTile: per, scans: rows };
   },
+  async cleanup(env) { return cleanup(env); },
   async migrate(env) {
     const stmts = SCHEMA_SQL.replace(/--[^\n]*/g, '').split(';').map((s) => s.trim()).filter(Boolean);
     await env.DB.batch(stmts.map((s) => env.DB.prepare(s)));
@@ -398,8 +427,30 @@ function tilesOfText(t) {
   return MJ.sortTiles(out);
 }
 
+/* ------------------------------------------------------------ housekeeping */
+// Accounts unused for INACTIVE_DAYS are deleted with everything they own; old tombstones and sessions go too.
+async function cleanup(env) {
+  const cutoff = now() - INACTIVE_DAYS * 86400 * 1000;
+  const stale = (await env.DB.prepare('SELECT id, name FROM users WHERE COALESCE(last_seen, created_at) < ?').bind(cutoff).all()).results || [];
+  for (const u of stale) {
+    await env.DB.batch([
+      env.DB.prepare('DELETE FROM sessions WHERE user_id = ?').bind(u.id),
+      env.DB.prepare('DELETE FROM games WHERE user_id = ?').bind(u.id),
+      env.DB.prepare('DELETE FROM scans WHERE user_id = ?').bind(u.id),
+      env.DB.prepare('DELETE FROM users WHERE id = ?').bind(u.id),
+    ]);
+  }
+  await env.DB.batch([
+    env.DB.prepare('DELETE FROM games WHERE deleted = 1 AND synced_at < ?').bind(now() - 30 * 86400 * 1000),
+    env.DB.prepare('DELETE FROM sessions WHERE last_used < ?').bind(now() - SESSION_MS),
+    env.DB.prepare('DELETE FROM usage WHERE day < ?').bind(new Date(now() - 40 * 86400 * 1000).toISOString().slice(0, 10)),
+  ]);
+  return { deletedUsers: stale.length };
+}
+
 /* ------------------------------------------------------------ router */
 export default {
+  async scheduled(event, env, ctx) { ctx.waitUntil(cleanup(env)); },
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
