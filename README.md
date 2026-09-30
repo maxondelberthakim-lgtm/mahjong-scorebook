@@ -37,10 +37,11 @@ Phone browser ──► GitHub Pages PWA (docs/index.html: Preact UI + scoring e
 | `tools/review.html` | Scan accuracy review page (needs the admin key; open locally). |
 | `docs/` | **Generated.** What GitHub Pages serves (`/`, `/lite/`, `/parlour/`, `/kawa/`). Never hand-edit. |
 | `pages/` | **Generated.** Self-contained copies of the branded apps for Cloudflare Pages (`parlour/`, `kawa/`). |
+| `tests/shots.js` | Screenshots of every main screen (light, or `DARK=1`) for a visual check. |
 | `tools/qr.py` | Table cards with QR codes for the branded addresses. |
 | `cloudflare/` | Worker source, D1 schema, `wrangler.jsonc`, `deploy.sh`, `DEPLOY.md`. `cloudflare/src/engine.js` and `schema.js` are generated. |
 | `tests/api.test.js` | 61 backend checks against `wrangler dev --local`. |
-| `tests/e2e.js` | 58 Playwright checks driving the built app end to end (sign-in, record by tiles, photo scan, settle, export, undo, sync, import). |
+| `tests/e2e.js` | 69 Playwright checks driving the built app end to end (sign-in, record by tiles, photo scan, settle, export, undo, sync, import). |
 
 ## Change workflow
 
@@ -49,6 +50,13 @@ Phone browser ──► GitHub Pages PWA (docs/index.html: Preact UI + scoring e
 3. Backend: `cd cloudflare && npx wrangler dev --port 8787 --local` then `node tests/api.test.js`.
 4. App: `python3 tools/build.py http://127.0.0.1:8787 && node tests/e2e.js`, then `python3 tools/build.py` to point `docs/` back at the real API.
 5. Commit and push `docs/` (GitHub Pages redeploys in about a minute). If the Worker changed: double-click `deploy.command` in the `mahjong-cloudflare` folder on the Mac. If a branded app changed: copy `pages/` there and double-click `pages-deploy.command`.
+
+## Design notes
+
+- Apple-style visual system: system font stack (SF on Apple devices), inset grouped lists, segmented controls, native-looking switches and sheets with a grabber, no borders — depth comes from soft shadows. Chinese glyphs on tiles use LXGW WenKai; UI Chinese uses the system CJK font.
+- Try first, sign in later: a table can be set up and scored with no account. After the first hand a nudge offers to keep the table (account or guest id), worded around what would be lost. Local games upload the moment an account or guest table exists.
+- Smart defaults: the new-table form is pre-filled from the last table (rules, names, stakes); settings sit behind a collapsed "usual defaults" row. The progress bar starts at 1 of 4 because the rules are already chosen.
+- Pattern examples are drawn as tidy sets with no winning tile singled out.
 
 ## Rules as implemented
 
