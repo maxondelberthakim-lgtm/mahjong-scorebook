@@ -15,159 +15,186 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@500;600&family=Young+Serif&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@700&display=swap&text=%E4%B8%80%E4%BA%8C%E4%B8%89%E5%9B%9B%E4%BA%94%E5%85%AD%E4%B8%83%E5%85%AB%E4%B9%9D%E8%90%AC%E6%9D%B1%E5%8D%97%E8%A5%BF%E5%8C%97%E4%B8%AD%E7%99%BC%E6%A2%85%E8%98%AD%E8%8F%8A%E7%AB%B9%E6%98%A5%E5%A4%8F%E7%A7%8B%E5%86%AC%E8%B2%93%E9%BC%A0%E9%9B%9E%E8%9A%A3%E8%8E%8A%E9%BA%BB%E9%9B%80%E7%AD%92%E7%B4%A2%E5%AD%97%E8%8A%B1%E9%A6%99%E6%B8%AF%E6%96%B0%E5%8A%A0%E5%9D%A1%E7%AB%8B%E7%9B%B4%E5%8F%B0%E7%81%A3%E5%9B%BD%E6%A0%87%E8%87%AA%E8%A8%82%E5%B0%86%E5%B0%87%E6%91%B8%E5%87%BA%E9%8A%83%E6%94%BE%E7%82%AE%E6%A7%8D%E3%83%84%E3%83%A2%E3%83%AD%E3%83%B3%E7%82%B9%E5%92%8C%E6%B5%81%E5%B1%80%E8%B5%B7%E7%B3%8A%E7%88%86%E6%A3%9A%E5%BA%95">
-<script>window.API_URL = 'https://mahjong-api.maxondelberthakim.workers.dev'; window.BUILD = '9d07a4e4fe'; window.LITE = true; window.BRAND = 'Mahjong Parlour';</script>
+<script>window.API_URL = 'https://mahjong-api.maxondelberthakim.workers.dev'; window.BUILD = '8659f7ad0d'; window.LITE = true; window.BRAND = 'Mahjong Parlour';</script>
 <style>
 :root{
-  --ground:#EDF1EC;--paper:#FBFCF9;--paper-2:#F2F5F0;--ink:#17231E;--ink-2:#3A4942;--muted:#5E6E67;
-  --line:#D5DDD7;--line-2:#BFCBC3;--accent:#1D5C47;--accent-ink:#FFFFFF;--accent-soft:#D9E9E0;
+  --ground:#F2F2F7;--paper:#FFFFFF;--paper-2:#F7F7FA;--fill:rgba(120,120,128,.12);--fill-2:rgba(120,120,128,.2);
+  --ink:#000000;--ink-2:#48484A;--muted:#8A8A8E;
+  --line:rgba(60,60,67,.24);--line-2:rgba(60,60,67,.32);
+  --accent:#1F7A5A;--accent-ink:#FFFFFF;--accent-soft:rgba(31,122,90,.12);
   --felt:#1F5A45;--felt-deep:#153F31;--felt-ink:#ECF5F0;--felt-muted:#A7C6B7;--plate:rgba(6,26,19,.34);
   --felt-gain:#A4E6C2;--felt-loss:#FFB6A9;
-  --gain:#15784A;--loss:#BE3A2C;--gold:#C8962F;
+  --gain:#1E8E4C;--loss:#D70015;--gold:#E9A800;--ios-green:#34C759;
   --bone:#F6F0DF;--bone-hi:#FFFDF6;--bone-edge:#DCD2B8;--tile-back:#2D7A5B;
-  --scrim:rgba(8,18,13,.48);
-  --shadow:0 1px 2px rgba(20,35,28,.08),0 8px 22px rgba(20,35,28,.07);
-  --f-ui:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;
-  --f-num:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
-  --f-display:"Young Serif",Georgia,"Times New Roman",serif;
-  --f-cjk:"LXGW WenKai TC","Kaiti TC","STKaiti","KaiTi","BiauKai","Noto Serif CJK TC","Noto Sans CJK TC","PingFang TC","Microsoft JhengHei",serif;
+  --scrim:rgba(0,0,0,.4);
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 6px 20px rgba(0,0,0,.06);
+  --f-ui:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue","Segoe UI",Roboto,system-ui,sans-serif;
+  --f-num:var(--f-ui);
+  --f-display:var(--f-ui);
+  --f-cjk:"LXGW WenKai TC","Kaiti TC","STKaiti","KaiTi","BiauKai","Noto Serif CJK TC","PingFang TC",serif;
+  --f-cjk-ui:"PingFang TC","PingFang SC","Hiragino Sans","Noto Sans CJK TC","Microsoft JhengHei",sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
-  --ground:#0D1411;--paper:#141E1A;--paper-2:#1A2621;--ink:#E5EDE8;--ink-2:#C1CFC8;--muted:#8EA197;
-  --line:#24322C;--line-2:#34463D;--accent:#5CC39B;--accent-ink:#0A1913;--accent-soft:#1B3A2E;
+  --ground:#000000;--paper:#1C1C1E;--paper-2:#2C2C2E;--fill:rgba(120,120,128,.24);--fill-2:rgba(120,120,128,.36);
+  --ink:#FFFFFF;--ink-2:#AEAEB2;--muted:#8E8E93;
+  --line:rgba(84,84,88,.6);--line-2:rgba(84,84,88,.8);
+  --accent:#5AD79F;--accent-ink:#04211A;--accent-soft:rgba(90,215,159,.16);
   --felt:#15402F;--felt-deep:#0B2A1F;--felt-ink:#E6F2EC;--felt-muted:#8DB6A3;--plate:rgba(0,0,0,.30);
   --felt-gain:#8FE0B5;--felt-loss:#FFA497;
-  --gain:#63D199;--loss:#F2796B;--gold:#E2B559;
+  --gain:#30D158;--loss:#FF453A;--gold:#FFD60A;--ios-green:#30D158;
   --bone:#E8E1CD;--bone-hi:#F3EDDC;--bone-edge:#B9AE90;--tile-back:#2A6B51;
-  --scrim:rgba(0,0,0,.6);--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 22px rgba(0,0,0,.35);}}
+  --scrim:rgba(0,0,0,.6);--shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);}}
 :root[data-theme="dark"]{color-scheme:dark;
-  --ground:#0D1411;--paper:#141E1A;--paper-2:#1A2621;--ink:#E5EDE8;--ink-2:#C1CFC8;--muted:#8EA197;
-  --line:#24322C;--line-2:#34463D;--accent:#5CC39B;--accent-ink:#0A1913;--accent-soft:#1B3A2E;
+  --ground:#000000;--paper:#1C1C1E;--paper-2:#2C2C2E;--fill:rgba(120,120,128,.24);--fill-2:rgba(120,120,128,.36);
+  --ink:#FFFFFF;--ink-2:#AEAEB2;--muted:#8E8E93;
+  --line:rgba(84,84,88,.6);--line-2:rgba(84,84,88,.8);
+  --accent:#5AD79F;--accent-ink:#04211A;--accent-soft:rgba(90,215,159,.16);
   --felt:#15402F;--felt-deep:#0B2A1F;--felt-ink:#E6F2EC;--felt-muted:#8DB6A3;--plate:rgba(0,0,0,.30);
   --felt-gain:#8FE0B5;--felt-loss:#FFA497;
-  --gain:#63D199;--loss:#F2796B;--gold:#E2B559;
+  --gain:#30D158;--loss:#FF453A;--gold:#FFD60A;--ios-green:#30D158;
   --bone:#E8E1CD;--bone-hi:#F3EDDC;--bone-edge:#B9AE90;--tile-back:#2A6B51;
-  --scrim:rgba(0,0,0,.6);--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 22px rgba(0,0,0,.35);}
+  --scrim:rgba(0,0,0,.6);--shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);}
 
 *,*::before,*::after{box-sizing:border-box}
 html,body{background:var(--ground)}
-body{margin:0;color:var(--ink);font-family:var(--f-ui);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
-button,input,select,textarea{font:inherit;color:inherit}
-button{cursor:pointer}
+body{margin:0;color:var(--ink);font-family:var(--f-ui);font-size:17px;line-height:1.35;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit;letter-spacing:inherit}
+button{cursor:pointer;-webkit-user-select:none;user-select:none}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-h1,h2,h3{margin:0;font-weight:400;text-wrap:balance}
+h1,h2,h3{margin:0;font-weight:700;text-wrap:balance;letter-spacing:-.01em}
 p{margin:0}
-.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
-.k{font-family:var(--f-cjk);font-weight:700}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.k{font-family:var(--f-cjk-ui);font-weight:600}
 .muted{color:var(--muted)}
-.wrap{max-width:680px;margin:0 auto;padding-inline:16px;padding-block:8px 132px}
+.wrap{max-width:680px;margin:0 auto;padding-inline:16px;padding-block:8px 140px}
 .stack{display:grid;gap:12px}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.eyebrow{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.eyebrow{font-size:13px;font-weight:400;letter-spacing:-.005em;text-transform:uppercase;color:var(--muted)}
 .boot{min-height:60vh;display:grid;place-items:center;color:var(--muted);padding-inline:16px;text-align:center}
 
 /* buttons, chips, controls */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 16px;border-radius:12px;border:1px solid var(--line-2);background:var(--paper);color:var(--ink);font-weight:700;font-size:15px;text-decoration:none;line-height:1.2}
-.btn svg{width:18px;height:18px;flex:none}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:50px;padding:10px 18px;border-radius:12px;border:0;background:var(--fill);color:var(--accent);font-weight:600;font-size:17px;text-decoration:none;line-height:1.2;letter-spacing:-.01em;transition:transform .12s ease,opacity .12s ease}
+.btn:active{transform:scale(.98);opacity:.85}
+.btn svg{width:19px;height:19px;flex:none}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
 .btn.big{min-height:52px;font-size:17px;padding-inline:22px;border-radius:14px}
-.btn.ghost{background:transparent;border-color:transparent}
-.btn.small{min-height:36px;padding:6px 12px;font-size:14px;border-radius:10px}
+.btn.ghost{background:transparent}
+.btn.small{min-height:34px;padding:5px 14px;font-size:15px;border-radius:10px}
 .btn.danger{color:var(--loss)}
-.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
 .btn.block{width:100%}
-.iconbtn{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:12px;border:0;background:transparent;color:var(--ink)}
+.iconbtn{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:12px;border:0;background:transparent;color:var(--accent)}
 .iconbtn svg{width:22px;height:22px}
-.link{border:0;background:none;padding:0;color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:3px;font-size:14px}
-.chip{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 12px;border-radius:999px;border:1px solid var(--line-2);background:var(--paper);font-weight:700;font-size:15px;max-width:100%}
-.chip .cw{font-family:var(--f-cjk);font-weight:700;color:var(--muted);font-size:14px}
-.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
-.chip[aria-pressed="true"] .cw{color:var(--accent)}
-.chip:disabled{opacity:.4}
+.link{border:0;background:none;padding:0;color:var(--accent);font-weight:500;text-decoration:none;font-size:15px}
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:6px 14px;border-radius:999px;border:0;background:var(--fill);color:var(--ink);font-weight:500;font-size:16px;max-width:100%;transition:background .12s ease,color .12s ease}
+.chip .cw{font-family:var(--f-cjk-ui);font-weight:600;color:var(--muted);font-size:14px}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.chip[aria-pressed="true"] .cw{color:var(--accent-ink);opacity:.8}
+.chip:disabled{opacity:.35}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.seg{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);background:var(--paper-2);border:1px solid var(--line);border-radius:13px;padding:3px;gap:3px}
-.seg button{min-height:44px;border:0;border-radius:10px;background:transparent;font-weight:700;font-size:15px;padding:6px 8px;color:var(--ink-2)}
-.seg button .cw{font-family:var(--f-cjk);font-weight:700;margin-left:6px;color:var(--muted)}
-.seg button[aria-pressed="true"]{background:var(--paper);box-shadow:var(--shadow);color:var(--ink)}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);background:var(--fill);border:0;border-radius:9px;padding:2px;gap:2px}
+.seg button{min-height:32px;border:0;border-radius:7px;background:transparent;font-weight:500;font-size:14px;padding:4px 6px;color:var(--ink);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seg button .cw{font-family:var(--f-cjk-ui);font-weight:600;margin-left:5px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--paper);box-shadow:0 3px 8px rgba(0,0,0,.12),0 3px 1px rgba(0,0,0,.04);font-weight:600}
+:root[data-theme="dark"] .seg button[aria-pressed="true"]{background:#636366}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .seg button[aria-pressed="true"]{background:#636366}}
 .seg button[aria-pressed="true"] .cw{color:var(--accent)}
 .field{display:grid;gap:6px}
-.field>label,.flabel{font-weight:700;font-size:14px;color:var(--ink-2)}
-.input,.select{width:100%;min-height:46px;padding:10px 12px;border-radius:11px;border:1px solid var(--line-2);background:var(--paper);color:var(--ink);font-size:16px}
+.field>label,.flabel{font-weight:400;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:-.005em;padding-left:4px}
+.input,.select{width:100%;min-height:44px;padding:10px 14px;border-radius:10px;border:0;background:var(--fill);color:var(--ink);font-size:17px}
+.input::placeholder{color:var(--muted)}
 .select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:34px}
-.input:focus,.select:focus{outline:2px solid var(--accent);outline-offset:0;border-color:var(--accent)}
-.stepper{display:inline-flex;align-items:center;border:1px solid var(--line-2);border-radius:11px;background:var(--paper);overflow:hidden}
-.stepper button{width:40px;height:40px;border:0;background:transparent;font-size:20px;line-height:1;color:var(--ink)}
-.stepper button:disabled{opacity:.35}
-.stepper .sv{min-width:44px;text-align:center;font-family:var(--f-num);font-weight:600}
-.switch{position:relative;width:48px;height:28px;border-radius:99px;border:1px solid var(--line-2);background:var(--paper-2);flex:none;padding:0}
-.switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--muted);transition:transform .15s ease,background .15s ease}
-.switch[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
-.switch[aria-checked="true"]::after{transform:translateX(20px);background:var(--accent-ink)}
+.input:focus,.select:focus{outline:2px solid var(--accent);outline-offset:0}
+.stepper{display:inline-flex;align-items:center;border:0;border-radius:8px;background:var(--fill);overflow:hidden}
+.stepper button{width:36px;height:32px;border:0;background:transparent;font-size:19px;line-height:1;color:var(--ink);font-weight:500}
+.stepper button:first-child{border-right:1px solid var(--line)}
+.stepper button:last-child{border-left:1px solid var(--line)}
+.stepper button:disabled{opacity:.3}
+.stepper .sv{min-width:40px;text-align:center;font-variant-numeric:tabular-nums;font-weight:600;font-size:15px}
+.switch{position:relative;width:51px;height:31px;border-radius:99px;border:0;background:var(--fill-2);flex:none;padding:0;transition:background .2s ease}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 3px 8px rgba(0,0,0,.15),0 1px 1px rgba(0,0,0,.16);transition:transform .2s ease}
+.switch[aria-checked="true"]{background:var(--ios-green)}
+.switch[aria-checked="true"]::after{transform:translateX(20px)}
 .toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
-.toggle-row .tl{display:grid;gap:2px}
+.toggle-row .tl{display:grid;gap:1px}
+.toggle-row .tl b{font-weight:400}
 .toggle-row .tl small{color:var(--muted);font-size:13px}
 
 /* top bar and dock */
-.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--ground);border-bottom:1px solid var(--line)}
-.topbar-in{max-width:680px;margin:0 auto;padding:6px 8px;display:flex;align-items:center;gap:4px;min-height:56px}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--ground) 82%,transparent);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line)}
+@supports not (color:color-mix(in srgb,red,blue)){.topbar{background:var(--ground)}}
+.topbar-in{max-width:680px;margin:0 auto;padding:4px 8px;display:flex;align-items:center;gap:4px;min-height:52px}
 .topbar .ttl{flex:1;min-width:0;text-align:center;display:grid;line-height:1.2}
-.topbar .ttl b{font-family:var(--f-display);font-weight:400;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.topbar .ttl span{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.backbtn{display:inline-flex;align-items:center;gap:2px;border:0;background:none;min-height:44px;padding:0 8px;font-weight:700;color:var(--accent);font-size:15px}
-.backbtn svg{width:20px;height:20px}
-.dock{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,var(--ground) 72%,rgba(0,0,0,0))}
+.topbar .ttl b{font-weight:600;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.01em}
+.topbar .ttl span{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.backbtn{display:inline-flex;align-items:center;gap:0;border:0;background:none;min-height:44px;padding:0 8px 0 2px;font-weight:400;color:var(--accent);font-size:17px;letter-spacing:-.01em}
+.backbtn svg{width:22px;height:22px}
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:color-mix(in srgb,var(--ground) 82%,transparent);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-top:1px solid var(--line)}
+@supports not (color:color-mix(in srgb,red,blue)){.dock{background:var(--ground)}}
 .dock-in{max-width:680px;margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:10px}
+.progress{height:4px;border-radius:2px;background:var(--fill);overflow:hidden}
+.progress i{display:block;height:100%;background:var(--accent);border-radius:2px;transition:width .35s ease}
+.steps{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13px;color:var(--muted);margin-bottom:6px}
+.steps b{color:var(--ink);font-weight:600}
 
 /* home */
-.hero{padding-block:28px 22px;display:grid;gap:14px;justify-items:start}
+.hero{padding-block:22px 18px;display:grid;gap:12px;justify-items:start}
 .brand{display:flex;align-items:center;gap:14px}
-.seal{display:grid;place-items:center;width:52px;height:52px;border-radius:9px;background:#C43B2C;color:#FFF3E8;font-family:var(--f-cjk);font-weight:700;font-size:19px;line-height:1.02;writing-mode:vertical-rl;transform:rotate(-5deg);box-shadow:inset 0 0 0 2px rgba(255,243,232,.55),inset 0 0 0 4px #C43B2C,inset 0 0 0 5px rgba(255,243,232,.35)}
-.hero h1{font-family:var(--f-display);font-size:34px;line-height:1.05}
-.hero .lede{color:var(--ink-2);max-width:48ch;font-size:16.5px}
+.seal{display:grid;place-items:center;width:50px;height:50px;border-radius:12px;background:linear-gradient(160deg,#D24A3A,#B73224);color:#FFF3E8;font-family:var(--f-cjk);font-weight:700;font-size:17px;line-height:1.02;writing-mode:vertical-rl;box-shadow:inset 0 0 0 1.5px rgba(255,243,232,.5),0 4px 12px rgba(183,50,36,.28)}
+.hero h1{font-size:34px;line-height:1.1;letter-spacing:-.02em}
+.hero .lede{color:var(--ink-2);max-width:46ch;font-size:17px}
 .rules-strip{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;color:var(--muted)}
-.rules-strip span b{font-family:var(--f-cjk);font-weight:700;color:var(--ink-2);margin-left:4px}
+.rules-strip span b{font-family:var(--f-cjk-ui);font-weight:600;color:var(--ink-2);margin-left:4px}
 .section-head{display:flex;align-items:baseline;justify-content:space-between;margin:26px 0 10px}
-.section-head h2{font-family:var(--f-display);font-size:22px}
-.gcard{display:grid;gap:10px;width:100%;text-align:left;padding:14px;border-radius:16px;border:1px solid var(--line);background:var(--paper);box-shadow:var(--shadow);color:var(--ink)}
+.section-head h2{font-size:22px;letter-spacing:-.02em}
+.gcard{display:grid;gap:10px;width:100%;text-align:left;padding:14px 16px;border-radius:14px;border:0;background:var(--paper);color:var(--ink);box-shadow:var(--shadow);transition:transform .12s ease}
+.gcard:active{transform:scale(.99)}
 .gcard .gtop{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
-.gcard .gname{font-weight:700;font-size:16px}
+.gcard .gname{font-weight:600;font-size:17px}
 .gcard .gmeta{font-size:13px;color:var(--muted)}
 .gscores{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 .gscores div{display:grid;gap:1px;min-width:0}
 .gscores span{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gscores b{font-family:var(--f-num);font-weight:600;font-size:15px}
+.gscores b{font-variant-numeric:tabular-nums;font-weight:600;font-size:16px}
 .store-note{margin-top:28px;font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
-.dot.ok{background:var(--gain)}.dot.warn{background:var(--gold)}.dot.bad{background:var(--loss)}
-.example-note{font-size:14px;color:var(--muted)}
+.dot-ok{background:var(--gain)}.dot-warn{background:var(--gold)}.dot-bad{background:var(--loss)}
+.example-note{font-size:13px;color:var(--muted)}
+.list{background:var(--paper);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+.list .cell{display:flex;align-items:center;gap:12px;min-height:50px;padding:10px 16px;font-size:17px;color:var(--ink);border:0;background:none;width:100%;text-align:left;position:relative}
+.list .cell+.cell::before{content:"";position:absolute;left:16px;right:0;top:0;border-top:1px solid var(--line)}
+.list .cell .ct{flex:1;min-width:0;display:grid;gap:1px}
+.list .cell small{font-size:13px;color:var(--muted)}
+.list .cell .chev{color:var(--muted);flex:none;width:8px;height:8px;border-right:2px solid currentColor;border-top:2px solid currentColor;transform:rotate(45deg);margin-right:4px}
+.list .cell svg{width:22px;height:22px;color:var(--accent);flex:none}
 
 /* the table */
-.table{border-radius:24px;padding:9px;background:var(--felt-deep);box-shadow:inset 0 0 0 1px rgba(255,255,255,.05),0 12px 30px rgba(10,30,22,.18)}
-.felt{position:relative;border-radius:17px;padding:12px;color:var(--felt-ink);
+.table{border-radius:22px;padding:8px;background:var(--felt-deep);box-shadow:inset 0 0 0 1px rgba(255,255,255,.05),0 10px 30px rgba(10,30,22,.16)}
+.felt{position:relative;border-radius:16px;padding:12px;color:var(--felt-ink);
   background:var(--felt);
   background:radial-gradient(120% 90% at 50% 42%,color-mix(in srgb,var(--felt) 86%,#ffffff) 0%,var(--felt) 58%,var(--felt-deep) 100%);
   display:grid;grid-template-columns:minmax(0,1fr) minmax(70px,.72fr) minmax(0,1fr);grid-template-rows:auto minmax(96px,1fr) auto;gap:8px;min-height:300px}
-.felt::before{content:"";position:absolute;inset:0;border-radius:17px;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07),inset 0 0 40px rgba(0,0,0,.18)}
+.felt::before{content:"";position:absolute;inset:0;border-radius:16px;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07),inset 0 0 40px rgba(0,0,0,.18)}
 .seat{min-width:0;display:flex}
 .seat.top{grid-column:1/4;grid-row:1;justify-content:center}
 .seat.bottom{grid-column:1/4;grid-row:3;justify-content:center}
 .seat.left{grid-column:1;grid-row:2;align-items:center}
 .seat.right{grid-column:3;grid-row:2;align-items:center;justify-content:flex-end}
-.plate{position:relative;width:100%;max-width:176px;min-width:0;padding:8px 10px 9px;border-radius:13px;background:var(--plate);border:1px solid rgba(255,255,255,.1);display:grid;gap:3px}
+.plate{position:relative;width:100%;max-width:176px;min-width:0;padding:8px 10px 9px;border-radius:12px;background:var(--plate);border:1px solid rgba(255,255,255,.1);display:grid;gap:3px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .plate .ph{display:flex;align-items:center;gap:7px;min-width:0}
-.plate .pn{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--felt-ink);min-width:0}
-.plate .ps{font-family:var(--f-num);font-weight:600;font-size:20px;line-height:1.1;white-space:nowrap}
+.plate .pn{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--felt-ink);min-width:0}
+.plate .ps{font-variant-numeric:tabular-nums;font-weight:600;font-size:21px;line-height:1.1;white-space:nowrap;letter-spacing:-.01em}
 .table.is-riichi .plate .ps{font-size:17px}
-.plate .pm{font-family:var(--f-num);font-size:12px;color:var(--felt-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plate .pm{font-variant-numeric:tabular-nums;font-size:12px;color:var(--felt-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .plate .ps.pos{color:var(--felt-gain)}.plate .ps.neg{color:var(--felt-loss)}
 .plate.is-dealer{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
 .dealer-mark{position:absolute;top:-9px;right:-7px;width:24px;height:24px;border-radius:50%;background:var(--gold);color:#2A1C05;display:grid;place-items:center;font-family:var(--f-cjk);font-weight:700;font-size:14px;box-shadow:0 2px 4px rgba(0,0,0,.3)}
 .center{grid-column:2;grid-row:2;display:grid;place-items:center;align-content:center;text-align:center;gap:4px}
 .center .rw{font-family:var(--f-cjk);font-weight:700;font-size:46px;line-height:1;color:var(--felt-ink);text-shadow:0 2px 0 rgba(0,0,0,.25)}
-.center .rl{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--felt-muted)}
-.sticks{display:flex;gap:10px;justify-content:center;font-family:var(--f-num);font-size:12px;color:var(--felt-ink)}
+.center .rl{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--felt-muted)}
+.sticks{display:flex;gap:10px;justify-content:center;font-variant-numeric:tabular-nums;font-size:12px;color:var(--felt-ink)}
 .stick{display:inline-flex;align-items:center;gap:4px}
 .stick i{display:inline-block;width:18px;height:5px;border-radius:3px;background:#F4EFE2;position:relative}
 .stick i::after{content:"";position:absolute;left:50%;top:50%;width:3px;height:3px;border-radius:50%;background:#C43B2C;transform:translate(-50%,-50%)}
@@ -177,88 +204,97 @@ p{margin:0}
 .table.compact .center .rw{font-size:34px}
 
 /* banners */
-.banner{margin:14px 0;padding:12px 14px;border-radius:14px;background:var(--paper);border:1px solid var(--line);display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-.banner p{font-size:14.5px;color:var(--ink-2);flex:1 1 220px}
-.banner.gold{border-color:var(--gold)}
+.banner{margin:14px 0;padding:14px 16px;border-radius:14px;background:var(--paper);border:0;box-shadow:var(--shadow);display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.banner p{font-size:15px;color:var(--ink-2);flex:1 1 220px}
+.banner p b{color:var(--ink);font-weight:600}
+.banner.gold{background:color-mix(in srgb,var(--gold) 14%,var(--paper))}
+.banner.keep{background:var(--accent-soft)}
+.banner .row{gap:6px}
 
 /* ledger */
 .ledger{margin-top:22px}
-.ledger h2{font-family:var(--f-display);font-size:21px}
-.lhead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:4px}
-.lrow{border-bottom:1px solid var(--line)}
-.lsum{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px;width:100%;padding:13px 0;background:none;border:0;text-align:left;color:var(--ink);align-items:start}
-.lno{font-family:var(--f-num);font-size:12.5px;color:var(--muted);padding-top:2px;min-width:28px}
-.lmain{display:grid;gap:4px;min-width:0}
-.lwho{font-weight:700;font-size:15.5px}
+.ledger h2{font-size:20px;letter-spacing:-.02em}
+.lhead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:6px}
+.lrows{background:var(--paper);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.lrow{position:relative}
+.lrow+.lrow::before{content:"";position:absolute;left:16px;right:0;top:0;border-top:1px solid var(--line)}
+.lsum{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px;width:100%;padding:12px 16px;background:none;border:0;text-align:left;color:var(--ink);align-items:start}
+.lno{font-variant-numeric:tabular-nums;font-size:12.5px;color:var(--muted);padding-top:3px;min-width:26px}
+.lmain{display:grid;gap:3px;min-width:0}
+.lwho{font-weight:600;font-size:16px}
 .lwho em{font-style:normal;font-weight:400;color:var(--muted)}
 .lpats{font-size:13.5px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lval{font-family:var(--f-num);font-size:13px;font-weight:600;color:var(--accent);text-align:right;white-space:nowrap;padding-top:2px}
-.ldeltas{grid-column:2/4;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;font-family:var(--f-num);font-size:12.5px}
+.lval{font-variant-numeric:tabular-nums;font-size:13px;font-weight:600;color:var(--accent);text-align:right;white-space:nowrap;padding-top:3px}
+.ldeltas{grid-column:2/4;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;font-variant-numeric:tabular-nums;font-size:12.5px}
 .ldeltas span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ldeltas small{font-family:var(--f-ui);color:var(--muted);margin-right:3px}
+.ldeltas small{color:var(--muted);margin-right:3px}
 .pos{color:var(--gain)}.neg{color:var(--loss)}.zero{color:var(--muted)}
-.ldetail{padding:0 0 14px 40px;display:grid;gap:10px}
+.ldetail{padding:0 16px 14px 54px;display:grid;gap:10px}
 .ltiles{display:flex;flex-wrap:wrap;gap:3px 3px;align-items:flex-end}
 .ltiles .gap{width:8px}
-.empty{padding:22px 0;color:var(--muted);font-size:15px}
+.empty{padding:22px 16px;color:var(--muted);font-size:15px}
 
 /* tiles */
 .tile{--tw:34px;position:relative;display:inline-block;width:var(--tw);aspect-ratio:30/40;padding:0;border:1px solid var(--bone-edge);border-radius:5px;background:linear-gradient(180deg,var(--bone-hi),var(--bone));box-shadow:0 2px 0 var(--tile-back),0 3px 5px rgba(0,0,0,.16);vertical-align:bottom;flex:none;transition:transform .12s ease}
 .tile svg{display:block;width:100%;height:100%}
 .tile.t-lg{--tw:42px;border-radius:6px}
 .tile.t-sm{--tw:25px;border-radius:4px;box-shadow:0 1.5px 0 var(--tile-back),0 2px 3px rgba(0,0,0,.14)}
-.tile.t-xs{--tw:19px;border-radius:3px;box-shadow:0 1px 0 var(--tile-back)}
+.tile.t-xs{--tw:18px;border-radius:3px;box-shadow:0 1px 0 var(--tile-back)}
 button.tile:active{transform:translateY(1px)}
 .tile[aria-pressed="true"]{transform:translateY(-5px);box-shadow:0 2px 0 var(--tile-back),0 0 0 2px var(--accent)}
 .tile.is-win{box-shadow:0 2px 0 var(--tile-back),0 0 0 2px var(--gold)}
 .tile.is-back{background:linear-gradient(180deg,#3E8C6C,var(--tile-back));border-color:#23654B}
-.tile .tb{position:absolute;top:-7px;right:-7px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--ink);color:var(--ground);font-family:var(--f-num);font-size:11px;line-height:17px;text-align:center}
+.tile .tb{position:absolute;top:-7px;right:-7px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--ink);color:var(--ground);font-variant-numeric:tabular-nums;font-size:11px;font-weight:600;line-height:17px;text-align:center}
 .zone-tiles .tile .tb{background:var(--loss);color:#fff;font-size:12px;font-weight:700}
 .tile:disabled{opacity:.35;cursor:not-allowed}
 .tf-k{font-family:var(--f-cjk);font-weight:700}
 .tf-idx{font-family:var(--f-ui);font-weight:700}
+/* pattern examples: sets touch, small gap between sets, bonus tiles a little apart */
+.exrow{display:flex;flex-wrap:wrap;gap:6px 5px;align-items:flex-end;padding:2px 0}
+.exg{display:inline-flex;gap:1px;align-items:flex-end}
+.exg.bonus{margin-left:4px;padding-left:7px;border-left:1px solid var(--line)}
 
 /* sheets */
-.scrim{position:fixed;inset:0;z-index:40;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center;padding-top:env(safe-area-inset-top,0px);animation:fade .16s ease}
-.sheet{width:100%;max-width:640px;max-height:calc(100% - 10px);background:var(--ground);border-radius:20px 20px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -12px 40px rgba(0,0,0,.28);animation:rise .2s ease}
-.sheet.tall{height:calc(100% - 10px)}
-.sheet-head{display:flex;align-items:center;gap:8px;padding:10px 8px 10px 16px;border-bottom:1px solid var(--line);background:var(--paper)}
+.scrim{position:fixed;inset:0;z-index:40;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center;padding-top:env(safe-area-inset-top,0px);animation:fade .18s ease}
+.sheet{position:relative;width:100%;max-width:640px;max-height:calc(100% - 12px);background:var(--ground);border-radius:14px 14px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 40px rgba(0,0,0,.22);animation:rise .28s cubic-bezier(.2,.8,.2,1)}
+.sheet.tall{height:calc(100% - 12px)}
+.sheet::before{content:"";position:absolute;top:6px;left:50%;width:36px;height:5px;border-radius:3px;background:var(--fill-2);transform:translateX(-50%);z-index:2}
+.sheet-head{display:flex;align-items:center;gap:8px;padding:16px 10px 8px 16px;border-bottom:1px solid var(--line)}
 .sheet-head .st{flex:1;min-width:0;display:grid;line-height:1.25}
-.sheet-head .st b{font-family:var(--f-display);font-weight:400;font-size:19px}
+.sheet-head .st b{font-weight:700;font-size:20px;letter-spacing:-.02em}
 .sheet-head .st span{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sheet-head .iconbtn{width:30px;height:30px;border-radius:50%;background:var(--fill);color:var(--ink-2);margin-top:-8px}
+.sheet-head .iconbtn svg{width:14px;height:14px;stroke-width:3}
 .sheet-body{flex:1;overflow-y:auto;padding:0 16px 28px;overscroll-behavior:contain}
-.sheet-foot{border-top:1px solid var(--line);background:var(--paper);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
-.sec{padding:18px 0;border-bottom:1px solid var(--line);display:grid;gap:10px}
-.sec:last-child{border-bottom:0}
-.sec>h3,.sec-h{font-family:var(--f-ui);font-size:12.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0}
+.sheet-foot{border-top:1px solid var(--line);background:color-mix(in srgb,var(--ground) 82%,transparent);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
+.sec{padding:18px 0 4px;display:grid;gap:10px}
+.sec>h3,.sec-h{font-family:var(--f-ui);font-size:13px;font-weight:400;letter-spacing:-.005em;text-transform:uppercase;color:var(--muted);margin:0;padding-left:4px}
 .hint{font-size:13.5px;color:var(--muted)}
-.err{font-size:14px;color:var(--loss);font-weight:700}
-.warn{font-size:14px;color:var(--ink-2);background:var(--paper-2);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
-@keyframes rise{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}
+.err{font-size:14px;color:var(--loss);font-weight:500}
+.warn{font-size:14px;color:var(--ink-2);background:var(--paper);border-radius:12px;padding:10px 14px;box-shadow:var(--shadow)}
+@keyframes rise{from{transform:translateY(40px);opacity:.6}to{transform:none;opacity:1}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
-.menu{display:grid}
-.menu button{display:flex;align-items:center;gap:12px;min-height:54px;padding:8px 4px;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;font-weight:700;font-size:16px;color:var(--ink)}
-.menu button svg{width:20px;height:20px;color:var(--muted)}
+.menu{display:grid;background:var(--paper);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);margin:14px 0}
+.menu button{position:relative;display:flex;align-items:center;gap:12px;min-height:52px;padding:8px 16px;border:0;background:none;text-align:left;font-weight:400;font-size:17px;color:var(--ink)}
+.menu button+button::before{content:"";position:absolute;left:50px;right:0;top:0;border-top:1px solid var(--line)}
+.menu button::after{content:"";width:8px;height:8px;border-right:2px solid var(--muted);border-top:2px solid var(--muted);transform:rotate(45deg);margin-left:auto;flex:none;opacity:.7}
+.menu button svg{width:22px;height:22px;color:var(--accent);flex:none}
 .menu button small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
 .menu button.danger{color:var(--loss)}
+.menu button.danger svg{color:var(--loss)}
 
 /* hand editor */
-.handbox{border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:12px;display:grid;gap:12px}
+.handbox{border:0;background:var(--paper);border-radius:14px;padding:14px;display:grid;gap:12px;box-shadow:var(--shadow)}
 .zone{display:grid;gap:6px}
-.zone-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13px;color:var(--muted);font-weight:700}
+.zone-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13px;color:var(--muted);font-weight:400;text-transform:uppercase}
 .zone-tiles{display:flex;flex-wrap:wrap;gap:8px 4px;align-items:flex-end;min-height:48px;padding:6px 0 4px}
 .zone-tiles .wingap{width:10px}
-.meld{display:inline-flex;gap:2px;align-items:flex-end;padding:4px 5px 4px;border-radius:9px;background:var(--paper-2);border:1px dashed var(--line-2)}
+.meld{display:inline-flex;gap:2px;align-items:flex-end;padding:4px 5px 4px;border-radius:9px;background:var(--fill)}
 .meld .mx{border:0;background:none;color:var(--muted);font-size:18px;width:26px;height:30px;padding:0}
-.meldtag{font-size:11px;font-weight:700;color:var(--muted);align-self:center;margin-right:3px;writing-mode:vertical-rl;letter-spacing:.06em;text-transform:uppercase}
+.meldtag{font-size:11px;font-weight:600;color:var(--muted);align-self:center;margin-right:3px;writing-mode:vertical-rl;letter-spacing:.06em;text-transform:uppercase}
 .selbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:14px}
 .modebar{display:flex;flex-wrap:wrap;gap:6px}
-.modebar .chip{min-height:36px;font-size:14px;white-space:nowrap}
-.tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;background:var(--paper-2);border-radius:12px;padding:3px;border:1px solid var(--line)}
-.tabs button{min-height:40px;border:0;border-radius:9px;background:transparent;display:grid;place-items:center;gap:0;line-height:1.1;padding:4px 2px}
-.tabs button b{font-family:var(--f-cjk);font-weight:700;font-size:17px}
-.tabs button span{font-size:11px;color:var(--muted);font-weight:700}
-.tabs button[aria-pressed="true"]{background:var(--paper);box-shadow:var(--shadow)}
+.modebar .chip{min-height:34px;font-size:14px;white-space:nowrap;padding-inline:12px}
 .palette{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px 4px;padding-top:4px}
 .palette.p7{grid-template-columns:repeat(7,minmax(0,1fr))}
 .palette.p4{grid-template-columns:repeat(4,minmax(0,1fr))}
@@ -266,106 +302,124 @@ button.tile:active{transform:translateY(1px)}
 .palette.p12{grid-template-columns:repeat(12,minmax(0,1fr))}
 .board{display:grid;gap:10px}
 .brow{display:grid;gap:4px}
-.blabel{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.blabel{font-size:12px;font-weight:400;letter-spacing:0;text-transform:uppercase;color:var(--muted)}
 .blabel b{font-size:14px;margin-right:4px;color:var(--ink-2);text-transform:none;letter-spacing:0}
 .palette .tile{width:100%;max-width:44px;justify-self:center}
-.counter{font-family:var(--f-num);font-size:13px;font-weight:600}
+.counter{font-variant-numeric:tabular-nums;font-size:13px;font-weight:600;text-transform:none}
 .counter.ok{color:var(--gain)}
 .scanrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .scanstate{display:flex;gap:12px;align-items:center}
-.thumb{width:64px;height:64px;border-radius:10px;object-fit:cover;border:1px solid var(--line);flex:none;background:var(--paper-2);padding:0}
-.thumb img{width:100%;height:100%;object-fit:cover;border-radius:9px;display:block}
-.spinner{width:18px;height:18px;border-radius:50%;border:2.5px solid var(--line-2);border-top-color:var(--accent);animation:spin .8s linear infinite;flex:none}
+.thumb{width:64px;height:64px;border-radius:10px;object-fit:cover;border:0;flex:none;background:var(--fill);padding:0}
+.thumb img{width:100%;height:100%;object-fit:cover;border-radius:10px;display:block}
+.spinner{width:18px;height:18px;border-radius:50%;border:2.5px solid var(--fill-2);border-top-color:var(--accent);animation:spin .8s linear infinite;flex:none}
 @keyframes spin{to{transform:rotate(360deg)}}
 .photo-view{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.88);display:grid;place-items:center;padding:16px}
 .photo-view img{max-width:100%;max-height:100%;border-radius:8px}
 
 /* scoring receipt */
-.receipt{display:grid}
-.rrow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px;padding:9px 0;border-bottom:1px dashed var(--line)}
+.receipt{display:grid;background:var(--paper);border-radius:14px;box-shadow:var(--shadow);padding:0 14px}
+.rrow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
 .rrow:last-child{border-bottom:0}
 .rname{display:grid;gap:1px;min-width:0}
-.rname .zh{font-weight:700;font-size:15.5px}
+.rname .zh{font-weight:600;font-size:16px;font-family:var(--f-cjk-ui)}
 .rname .en{font-size:13.5px;color:var(--ink-2)}
-.rname .tag{justify-self:start;font-size:11.5px;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:1px 7px;border-radius:6px;margin-top:3px}
+.rname .tag{justify-self:start;font-size:11.5px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:1px 7px;border-radius:6px;margin-top:3px}
 .rname .sub{font-size:12.5px;color:var(--muted)}
-.rval{font-family:var(--f-num);font-weight:600;font-size:15px;text-align:right;min-width:34px}
+.rval{font-variant-numeric:tabular-nums;font-weight:600;font-size:15px;text-align:right;min-width:34px}
 .rrow.is-excl .zh,.rrow.is-excl .rval{text-decoration:line-through;color:var(--muted)}
-.rx{width:36px;height:36px;border-radius:10px;border:0;background:transparent;color:var(--muted);font-size:20px;line-height:1;padding:0}
-.rrow .stepper button{width:32px;height:34px}
+.rx{width:30px;height:30px;border-radius:50%;border:0;background:var(--fill);color:var(--ink-2);font-size:16px;line-height:1;padding:0}
+.rrow .stepper button{width:32px;height:30px}
 .rrow .stepper .sv{min-width:26px}
-.addlist{border:1px solid var(--line);border-radius:14px;background:var(--paper);overflow:hidden}
-.addlist>summary{list-style:none;cursor:pointer;min-height:48px;padding:12px 14px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.addlist{border:0;border-radius:14px;background:var(--paper);overflow:hidden;box-shadow:var(--shadow)}
+.addlist>summary{list-style:none;cursor:pointer;min-height:50px;padding:12px 16px;font-weight:400;font-size:17px;display:flex;justify-content:space-between;align-items:center}
 .addlist>summary::-webkit-details-marker{display:none}
-.addlist>summary::after{content:"+";font-size:20px;color:var(--muted)}
-.addlist[open]>summary::after{content:"–"}
-.addbody{padding:0 14px 12px;display:grid;gap:4px}
-.addgrp{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:12px 0 2px}
-.addrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;min-height:44px;padding:6px 2px;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;color:var(--ink)}
+.addlist>summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--muted);border-top:2px solid var(--muted);transform:rotate(45deg);transition:transform .2s ease;margin-right:4px}
+.addlist[open]>summary::after{transform:rotate(135deg)}
+.addbody{padding:0 16px 12px;display:grid;gap:4px;border-top:1px solid var(--line)}
+.addgrp{font-size:13px;font-weight:400;letter-spacing:-.005em;text-transform:uppercase;color:var(--muted);margin:16px 0 2px}
+.addrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;min-height:44px;padding:8px 0;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;color:var(--ink)}
 .addrow:last-child{border-bottom:0}
-.addrow .plus{width:26px;height:26px;border-radius:8px;border:1px solid var(--line-2);display:grid;place-items:center;color:var(--accent);font-weight:700}
+.addrow .plus{width:26px;height:26px;border-radius:50%;background:var(--accent-soft);display:grid;place-items:center;color:var(--accent);font-weight:600;font-size:18px;line-height:1}
 .addrow .nm{display:grid;min-width:0}
-.addrow .nm b{font-weight:700;font-size:15px}
+.addrow .nm b{font-weight:600;font-size:16px;font-family:var(--f-cjk-ui)}
 .addrow .nm span{font-size:13px;color:var(--muted)}
-.addrow .v{font-family:var(--f-num);font-size:14px;color:var(--ink-2)}
+.addrow .v{font-variant-numeric:tabular-nums;font-size:14px;color:var(--ink-2)}
 .addrow{grid-template-rows:auto auto}
 .addrow .phelp{grid-column:2/4}
-.phelp{display:grid;gap:4px;padding:2px 0 4px}
-.phelp .ltiles{gap:2px 2px}
+.phelp{display:grid;gap:5px;padding:2px 0 4px}
 .pdesc{font-size:13px;color:var(--muted);margin:0}
 .rrow .phelp{grid-column:1/4}
 .rrow{grid-template-rows:auto auto}
-.fuchips .chip{min-height:36px;padding:4px 11px;font-family:var(--f-num);font-weight:600}
+.fuchips .chip{min-height:34px;padding:4px 12px;font-variant-numeric:tabular-nums;font-weight:600}
 
 /* summary footer */
 .sumrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .sumv{display:grid;gap:2px;min-width:0}
-.sumv b{font-family:var(--f-display);font-weight:400;font-size:22px;line-height:1.15}
+.sumv b{font-weight:700;font-size:22px;line-height:1.15;letter-spacing:-.02em}
 .sumv span{font-size:13px;color:var(--muted)}
-.pays{display:flex;flex-wrap:wrap;gap:3px 14px;font-family:var(--f-num);font-size:13px;margin-top:8px}
-.pays small{font-family:var(--f-ui);color:var(--muted);margin-right:3px}
+.pays{display:flex;flex-wrap:wrap;gap:3px 14px;font-variant-numeric:tabular-nums;font-size:13px;margin-top:8px}
+.pays small{color:var(--muted);margin-right:3px}
 
 /* setup */
 .rgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
-.rcard{display:grid;gap:3px;text-align:left;padding:12px;border-radius:14px;border:1px solid var(--line-2);background:var(--paper);color:var(--ink);min-height:92px;align-content:start}
-.rcard b{font-weight:700;font-size:15.5px}
-.rcard .kn{font-family:var(--f-cjk);font-weight:700;color:var(--muted);font-size:15px}
+.rcard{position:relative;display:grid;gap:3px;text-align:left;padding:12px 14px;border-radius:14px;border:0;background:var(--paper);color:var(--ink);min-height:92px;align-content:start;box-shadow:var(--shadow)}
+.rcard b{font-weight:600;font-size:16px}
+.rcard .kn{font-family:var(--f-cjk-ui);font-weight:600;color:var(--muted);font-size:14px}
 .rcard span{font-size:13px;color:var(--muted)}
-.rcard[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}
+.rcard[aria-pressed="true"]{box-shadow:0 0 0 2px var(--accent),var(--shadow)}
 .rcard[aria-pressed="true"] .kn{color:var(--accent)}
+.rcard[aria-pressed="true"]::after{content:"";position:absolute;top:12px;right:12px;width:20px;height:20px;border-radius:50%;background:var(--accent);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10.5l3.2 3.2L15 7' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
 .pgrid{display:grid;gap:8px}
 .prow{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
 .settings{display:grid;gap:14px}
+.card{background:var(--paper);border-radius:14px;padding:4px 16px;box-shadow:var(--shadow)}
+.card>details>summary{list-style:none;cursor:pointer;min-height:50px;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:17px}
+.card>details>summary::-webkit-details-marker{display:none}
+.card>details>summary small{color:var(--muted);font-size:13px;display:block}
+.card>details>summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--muted);border-top:2px solid var(--muted);transform:rotate(45deg);flex:none;margin-right:4px;transition:transform .2s ease}
+.card>details[open]>summary::after{transform:rotate(135deg)}
+.card>details>.settings{padding:6px 0 14px;border-top:1px solid var(--line)}
 .vtable{display:grid}
 .vrow{display:grid;grid-template-columns:minmax(0,1fr) 96px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
-.vrow .input,.vrow .select{min-height:40px;padding:6px 10px}
-.vrow .nm b{font-weight:700}
+.vrow .input,.vrow .select{min-height:38px;padding:6px 10px}
+.vrow .nm b{font-weight:600;font-family:var(--f-cjk-ui)}
 .vrow .nm span{display:block;font-size:13px;color:var(--muted)}
-.stand{display:grid}
+.stand{display:grid;background:var(--paper);border-radius:14px;box-shadow:var(--shadow);padding:0 16px}
+.sec.stand{gap:0;margin-top:18px}
 .srow{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
-.srank{font-family:var(--f-display);font-size:20px;color:var(--muted)}
-.srow .snm{font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.srow .sval{text-align:right;font-family:var(--f-num);font-weight:600}
-.srow .sval small{display:block;font-weight:500;color:var(--muted);font-size:12.5px}
-.copybox{width:100%;min-height:150px;font-family:var(--f-num);font-size:13px;padding:10px;border-radius:10px;border:1px solid var(--line-2);background:var(--paper)}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(90px + env(safe-area-inset-bottom,0px));z-index:70;background:var(--ink);color:var(--ground);padding:8px 8px 8px 16px;border-radius:12px;display:flex;gap:10px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:calc(100% - 32px);font-weight:700;font-size:14.5px}
-.toast button{border:0;background:rgba(255,255,255,.14);color:inherit;font-weight:700;border-radius:8px;min-height:36px;padding:0 12px}
+.srow:last-child{border-bottom:0}
+.srank{font-weight:700;font-size:20px;color:var(--muted);font-variant-numeric:tabular-nums}
+.srow .snm{font-weight:600;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.srow .sval{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.srow .sval small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+.copybox{width:100%;min-height:150px;font-variant-numeric:tabular-nums;font-size:13px;padding:10px;border-radius:10px;border:0;background:var(--fill)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:70;background:rgba(28,28,30,.92);color:#fff;padding:9px 10px 9px 16px;border-radius:14px;display:flex;gap:10px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:calc(100% - 32px);font-weight:500;font-size:15px;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);animation:rise .28s cubic-bezier(.2,.8,.2,1)}
+.toast button{border:0;background:rgba(255,255,255,.16);color:inherit;font-weight:600;border-radius:9px;min-height:34px;padding:0 12px}
 /* account & settlement */
 .acct{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;font-size:14px;color:var(--muted)}
 .acct b{color:var(--ink-2)}
-.pinbox{letter-spacing:.18em;font-family:var(--f-num)}
-.settle{display:grid;gap:8px}
-.trow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--paper);border:1px solid var(--line)}
-.trow .tw{font-weight:700;font-size:15px}
+.pinbox{letter-spacing:.18em;font-variant-numeric:tabular-nums}
+.settle{display:grid;background:var(--paper);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.trow{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 16px;border:0;background:none}
+.trow+.trow::before{content:"";position:absolute;left:16px;right:0;top:0;border-top:1px solid var(--line)}
+.trow .tw{font-weight:600;font-size:16px}
 .trow .tw em{font-style:normal;font-weight:400;color:var(--muted);margin:0 6px}
-.trow .ta{font-family:var(--f-num);font-weight:600;white-space:nowrap}
+.trow .ta{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
 .tips{font-size:13.5px;color:var(--muted);padding-left:18px;margin:0;display:grid;gap:2px}
 .hidden-input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 .welcome-actions{display:grid;gap:10px;margin-top:6px}
-.guide{display:grid;gap:10px;padding:14px 16px;border-radius:14px;background:var(--paper);border:1px solid var(--line);font-size:14.5px;color:var(--ink-2)}
+.guide{display:grid;gap:10px;padding:14px 16px;border-radius:14px;background:var(--paper);box-shadow:var(--shadow);font-size:15px;color:var(--ink-2)}
 .guide p{margin:0}
-.guestbox{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;border-radius:12px;background:var(--accent-soft);border:1px solid var(--accent)}
-.guestbox b{font-size:26px;letter-spacing:.12em;font-weight:600}
+.guide b{color:var(--ink);font-weight:600}
+.guestbox{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;border-radius:12px;background:var(--accent-soft)}
+.guestbox b{font-size:26px;letter-spacing:.12em;font-weight:600;font-variant-numeric:tabular-nums}
+.choice{display:grid;gap:8px}
+.choice button{display:flex;align-items:center;gap:12px;text-align:left;padding:12px 14px;border-radius:14px;border:0;background:var(--paper);color:var(--ink);box-shadow:var(--shadow);min-height:60px}
+.choice button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--accent),var(--shadow)}
+.choice button .ct{display:grid;gap:2px;flex:1;min-width:0}
+.choice button .ct b{font-weight:600;font-size:17px}
+.choice button .ct small{font-size:13px;color:var(--muted)}
+.choice button svg{width:24px;height:24px;color:var(--accent);flex:none}
 @media (min-width:720px){.hero h1{font-size:40px}.felt{min-height:340px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -2020,7 +2074,7 @@ button.tile:active{transform:translateY(1px)}
       if (n) return { dot: 'warn', text: 'Saving ' + n + ' game' + (n > 1 ? 's' : '') + ' to your account…' };
       return { dot: 'ok', text: (isGuest(Store.user) ? 'Guest table ' + Store.user.name.replace(/^guest-/, '') + ' · share the id so your table can join.' : 'Games are saved to your account (' + Store.user.name + ').') + ' Kept ' + Store.inactiveDays + ' days after last use — save recap images.' };
     }
-    if (Store.mode === 'local') return { dot: 'warn', text: 'Games are saved in this browser only. Sign in to keep them in your account' + (LITE ? '.' : ' and to read photos.') };
+    if (Store.mode === 'local') return { dot: 'warn', text: 'Games are kept in this browser only — clearing it loses them. Keep them in an account or guest table' + (LITE ? '.' : ', which also unlocks photo reading.') };
     return { dot: 'bad', text: 'This browser can’t keep games. Download a backup before you close it.' };
   }
 
@@ -2246,7 +2300,7 @@ button.tile:active{transform:translateY(1px)}
     const numbers = game.entries.map((e) => (e.kind === 'hand' ? ++handNo : null));
     return html`<section class="ledger" aria-label="Hands played">
       <div class="lhead"><h2>Hands</h2><span class="muted" style=${{ fontSize: '13px' }}>${handNo ? handNo + ' played' : ''}</span></div>
-      ${rows.length ? rows.map(({ e, i }) => {
+      ${rows.length ? html`<div class="lrows">${rows.map(({ e, i }) => {
         const isOpen = open === e.id;
         return html`<div class="lrow" key=${e.id}>
           <button type="button" class="lsum" aria-expanded=${isOpen ? 'true' : 'false'} onClick=${() => setOpen(isOpen ? null : e.id)}>
@@ -2264,7 +2318,7 @@ button.tile:active{transform:translateY(1px)}
             ${e.kind === 'hand' && e.outcome === 'win' ? html`<p style=${{ fontSize: '14px' }}><b>${e.text}</b>${e.liable != null ? ' · ' + pname(game, e.liable) + ' paid for everyone' : ''}</p>` : null}
           </div>` : null}
         </div>`;
-      }) : html`<p class="empty">No hands yet. Tap <b>Record hand</b> after each hand.</p>`}
+      })}</div>` : html`<p class="empty">No hands yet. Tap <b>Record hand</b> after each hand.</p>`}
     </section>`;
   }
 
@@ -2392,8 +2446,8 @@ button.tile:active{transform:translateY(1px)}
   const EX = (hand, win, extra) => Object.assign({ hand, win }, extra || {});
   const PATTERN_INFO = {
     selfDraw: { d: 'You drew the winning tile from the wall yourself instead of taking someone’s discard.' },
-    concealed: { d: 'No chow, pung or open kong taken from other players — the whole hand stayed in your rack until you won.', ex: EX('123m456p789s111z55z', '5z') },
-    concealedSelfDraw: { d: 'A fully concealed hand finished by drawing the winning tile yourself.', ex: EX('123m456p789s111z55z', '5z') },
+    concealed: { d: 'No chow, pung or open kong taken from other players — the whole hand stayed in your rack until you won.', ex: EX('123m 456p 789s 111z 55z', '5z') },
+    concealedSelfDraw: { d: 'A fully concealed hand finished by drawing the winning tile yourself.', ex: EX('123m 456p 789s 111z 55z', '5z') },
     lastTile: { d: 'Won with the very last tile of the wall (self-drawn) or the last discard of the hand.' },
     robbingKong: { d: 'Won by taking the tile another player was adding to a pung to make a kong.' },
     kongReplacement: { d: 'Won with the replacement tile drawn after declaring a kong.' },
@@ -2401,95 +2455,97 @@ button.tile:active{transform:translateY(1px)}
     earthly: { d: 'A non-dealer wins on the dealer’s very first discard, before anyone has called a tile.' },
     human: { d: 'A non-dealer wins on a discard in the first go-round, before drawing a tile.' },
     allFromOthers: { d: 'Every set was taken from discards (four chows/pungs/kongs exposed) and the last tile was a discard too.', ex: EX('55z', '5z', { melds: [{ type: 'chi', tile: '1m' }, { type: 'pon', tile: '5p' }, { type: 'chi', tile: '7s' }, { type: 'pon', tile: '1z' }] }) },
-    singleWait: { d: 'Only one tile could have completed the hand: the middle of a 2-4, an edge 1-2 / 8-9, or the pair.', ex: EX('123m456p789s11z345m', '4m') },
+    singleWait: { d: 'Only one tile could have completed the hand: the middle of a 2-4, an edge 1-2 / 8-9, or the pair.', ex: EX('123m 456p 789s 345m 11z', '4m') },
     noFlowers: { d: 'You have no flower or season tiles at all.' },
-    seatFlower: { d: 'A flower or season whose number matches your seat: 1 East, 2 South, 3 West, 4 North.', ex: EX('123m456p789s111z55z', '5z', { bonus: ['F1'] }) },
-    flowerSet: { d: 'All four flowers (梅蘭菊竹) or all four seasons (春夏秋冬).', ex: EX('123m456p789s111z55z', '5z', { bonus: ['F1', 'F2', 'F3', 'F4'] }) },
-    flowerKong: { d: 'All four flowers (梅蘭菊竹) or all four seasons (春夏秋冬).', ex: EX('123m456p789s111z55z', '5z', { bonus: ['S1', 'S2', 'S3', 'S4'] }) },
-    allFlowers: { d: 'All eight bonus tiles: four flowers and four seasons.', ex: EX('123m456p789s111z55z', '5z', { bonus: ['F1', 'F2', 'F3', 'F4', 'S1', 'S2', 'S3', 'S4'] }) },
-    eightFlowers: { d: 'All eight bonus tiles: four flowers and four seasons.', ex: EX('123m456p789s111z55z', '5z', { bonus: ['F1', 'F2', 'F3', 'F4', 'S1', 'S2', 'S3', 'S4'] }) },
+    seatFlower: { d: 'A flower or season whose number matches your seat: 1 East, 2 South, 3 West, 4 North.', ex: EX('123m 456p 789s 111z 55z', '5z', { bonus: ['F1'] }) },
+    flowerSet: { d: 'All four flowers (梅蘭菊竹) or all four seasons (春夏秋冬).', ex: EX('123m 456p 789s 111z 55z', '5z', { bonus: ['F1', 'F2', 'F3', 'F4'] }) },
+    flowerKong: { d: 'All four flowers (梅蘭菊竹) or all four seasons (春夏秋冬).', ex: EX('123m 456p 789s 111z 55z', '5z', { bonus: ['S1', 'S2', 'S3', 'S4'] }) },
+    allFlowers: { d: 'All eight bonus tiles: four flowers and four seasons.', ex: EX('123m 456p 789s 111z 55z', '5z', { bonus: ['F1', 'F2', 'F3', 'F4', 'S1', 'S2', 'S3', 'S4'] }) },
+    eightFlowers: { d: 'All eight bonus tiles: four flowers and four seasons.', ex: EX('123m 456p 789s 111z 55z', '5z', { bonus: ['F1', 'F2', 'F3', 'F4', 'S1', 'S2', 'S3', 'S4'] }) },
     sevenRobOne: { d: 'You hold seven flowers and the eighth is drawn by someone else — you claim it and win.' },
-    animal: { d: 'An animal tile (cat, mouse, rooster, centipede).', ex: EX('123m456p789s111z55z', '5z', { bonus: ['A1'] }) },
-    allAnimals: { d: 'All four animals: cat, mouse, rooster and centipede.', ex: EX('123m456p789s111z55z', '5z', { bonus: ['A1', 'A2', 'A3', 'A4'] }) },
-    dragonPung: { d: 'A pung or kong of one dragon: red 中, green 發 or white 白.', ex: EX('123m456p789s777z55m', '5m') },
-    seatWind: { d: 'A pung or kong of the wind of your seat (East for the dealer, then South, West, North going round).', ex: EX('123m456p789s222z55m', '5m') },
-    roundWind: { d: 'A pung or kong of the prevailing wind of the round (East in the first round, then South, West, North).', ex: EX('123m456p789s111z55m', '5m') },
-    allChows: { d: 'Four chows (runs of three) and a pair — no pungs or kongs anywhere.', ex: EX('123m456p789s234m55p', '5p') },
-    pingHu: { d: 'All chows and a pair with nothing else: no flowers, a plain pair (no dragon or scoring wind) and a two-sided wait.', ex: EX('123m456p789s234m55p', '5p') },
-    mixedTerminals: { d: 'Every set and the pair are made only of 1s, 9s and honours (winds and dragons).', ex: EX('111m999p111s111z99s', '9s') },
-    allPungs: { d: 'Four pungs or kongs and a pair — no chows.', ex: EX('111m222p333s111z55z', '5z') },
-    mixedSuit: { d: 'Half flush: every tile is from one suit plus winds/dragons.', ex: EX('123m456m789m111z55z', '5z') },
-    pureSuit: { d: 'Full flush: every tile is from one suit, no honours at all.', ex: EX('123m456m789m234m55m', '5m') },
-    smallDragons: { d: 'Two dragon pungs and a pair of the third dragon.', ex: EX('555z666z77z123m456p', '6p') },
-    bigDragons: { d: 'Pungs or kongs of all three dragons.', ex: EX('555z666z777z123m55p', '5p') },
-    smallWinds: { d: 'Three wind pungs and a pair of the fourth wind.', ex: EX('111z222z333z44z123m', '3m') },
-    bigWinds: { d: 'Pungs or kongs of all four winds.', ex: EX('111z222z333z444z55m', '5m') },
-    allHonors: { d: 'Every tile is a wind or a dragon.', ex: EX('111z222z555z666z77z', '7z') },
-    allTerminals: { d: 'Every tile is a 1 or a 9 — no honours, no middle numbers.', ex: EX('111m999m111p999p99s', '9s') },
-    thirteenOrphans: { d: 'One of each 1 and 9 of every suit, one of every wind and dragon, plus one duplicate of any of them.', ex: EX('19m19p19s12345677z', '7z') },
-    nineGates: { d: '1112345678999 of one suit, concealed, winning on any tile of that suit.', ex: EX('11123456789995m', '5m') },
-    threeConcealed: { d: 'Three pungs formed in your own hand, not called from discards.', ex: EX('111m222p333s456m55z', '5z') },
-    fourConcealed: { d: 'Four pungs formed in your own hand. Winning on a discard makes that last pung open, so finish on the pair or by self-draw.', ex: EX('111m222p333s444m55z', '5z') },
-    fiveConcealed: { d: 'Five pungs formed in your own hand (16-tile game).', ex: EX('111m222p333s444m555p6z6z', '6z') },
+    animal: { d: 'An animal tile (cat, mouse, rooster, centipede).', ex: EX('123m 456p 789s 111z 55z', '5z', { bonus: ['A1'] }) },
+    allAnimals: { d: 'All four animals: cat, mouse, rooster and centipede.', ex: EX('123m 456p 789s 111z 55z', '5z', { bonus: ['A1', 'A2', 'A3', 'A4'] }) },
+    dragonPung: { d: 'A pung or kong of one dragon: red 中, green 發 or white 白.', ex: EX('123m 456p 789s 777z 55m', '5m') },
+    seatWind: { d: 'A pung or kong of the wind of your seat (East for the dealer, then South, West, North going round).', ex: EX('123m 456p 789s 222z 55m', '5m') },
+    roundWind: { d: 'A pung or kong of the prevailing wind of the round (East in the first round, then South, West, North).', ex: EX('123m 456p 789s 111z 55m', '5m') },
+    allChows: { d: 'Four chows (runs of three) and a pair — no pungs or kongs anywhere.', ex: EX('123m 456p 789s 234m 55p', '5p') },
+    pingHu: { d: 'All chows and a pair with nothing else: no flowers, a plain pair (no dragon or scoring wind) and a two-sided wait.', ex: EX('123m 456p 789s 234m 55p', '5p') },
+    mixedTerminals: { d: 'Every set and the pair are made only of 1s, 9s and honours (winds and dragons).', ex: EX('111m 999p 111s 111z 99s', '9s') },
+    allPungs: { d: 'Four pungs or kongs and a pair — no chows.', ex: EX('111m 222p 333s 111z 55z', '5z') },
+    mixedSuit: { d: 'Half flush: every tile is from one suit plus winds/dragons.', ex: EX('123m 456m 789m 111z 55z', '5z') },
+    pureSuit: { d: 'Full flush: every tile is from one suit, no honours at all.', ex: EX('123m 456m 789m 234m 55m', '5m') },
+    smallDragons: { d: 'Two dragon pungs and a pair of the third dragon.', ex: EX('555z 666z 77z 123m 456p', '6p') },
+    bigDragons: { d: 'Pungs or kongs of all three dragons.', ex: EX('555z 666z 777z 123m 55p', '5p') },
+    smallWinds: { d: 'Three wind pungs and a pair of the fourth wind.', ex: EX('111z 222z 333z 44z 123m', '3m') },
+    bigWinds: { d: 'Pungs or kongs of all four winds.', ex: EX('111z 222z 333z 444z 55m', '5m') },
+    allHonors: { d: 'Every tile is a wind or a dragon.', ex: EX('111z 222z 555z 666z 77z', '7z') },
+    allTerminals: { d: 'Every tile is a 1 or a 9 — no honours, no middle numbers.', ex: EX('111m 999m 111p 999p 99s', '9s') },
+    thirteenOrphans: { d: 'One of each 1 and 9 of every suit, one of every wind and dragon, plus one duplicate of any of them.', ex: EX('19m 19p 19s 1234567z 7z', '7z') },
+    nineGates: { d: '1112345678999 of one suit, concealed, winning on any tile of that suit.', ex: EX('111m 2345678m 999m 5m', '5m') },
+    threeConcealed: { d: 'Three pungs formed in your own hand, not called from discards.', ex: EX('111m 222p 333s 456m 55z', '5z') },
+    fourConcealed: { d: 'Four pungs formed in your own hand. Winning on a discard makes that last pung open, so finish on the pair or by self-draw.', ex: EX('111m 222p 333s 444m 55z', '5z') },
+    fiveConcealed: { d: 'Five pungs formed in your own hand (16-tile game).', ex: EX('111m 222p 333s 444m 555p 66z', '6z') },
     fourKongs: { d: 'Four kongs and a pair.', ex: EX('55z', '5z', { melds: [{ type: 'kan', tile: '1m' }, { type: 'kan', tile: '2p' }, { type: 'kan', tile: '3s' }, { type: 'kan', tile: '1z', concealed: true }] }) },
-    sevenPairs: { d: 'Seven different pairs, fully concealed.', ex: EX('11m22p33s44m55p66s77z', '7z') },
+    sevenPairs: { d: 'Seven different pairs, fully concealed.', ex: EX('11m 22p 33s 44m 55p 66s 77z', '7z') },
     /* Riichi */
     riichi: { d: 'You declared riichi (bet 1,000 points) when your closed hand was one tile away, then won.' },
     doubleRiichi: { d: 'Riichi declared on your very first discard.' },
     ippatsu: { d: 'Won within one go-round after declaring riichi, with no calls in between.' },
-    menzenTsumo: { d: 'Closed hand finished by self-draw.', ex: EX('123m456p789s111z55z', '5z') },
+    menzenTsumo: { d: 'Closed hand finished by self-draw.', ex: EX('123m 456p 789s 111z 55z', '5z') },
     haitei: { d: 'Won on the last tile from the wall (haitei) or the last discard (houtei).' },
     rinshan: { d: 'Won with the replacement tile drawn after a kan.' },
     chankan: { d: 'Won by robbing the tile another player added to a pon to make a kan.' },
-    pinfu: { d: 'Closed hand of four sequences and a non-scoring pair, won on a two-sided wait.', ex: EX('234m567p678s234m44p', '4m') },
-    tanyao: { d: 'All simples: only 2–8 of the suits, no terminals or honours.', ex: EX('234m567p678s345m44p', '4p') },
-    iipeikou: { d: 'Two identical sequences in the same suit, closed hand.', ex: EX('223344m567p678s44p', '4p') },
-    yakuhaiSeat: { d: 'A triplet of your seat wind.', ex: EX('123m456p789s222z55m', '5m') },
-    yakuhaiRound: { d: 'A triplet of the round wind.', ex: EX('123m456p789s111z55m', '5m') },
-    haku: { d: 'A triplet of white dragons.', ex: EX('123m456p789s555z55m', '5m') },
-    hatsu: { d: 'A triplet of green dragons.', ex: EX('123m456p789s666z55m', '5m') },
-    chun: { d: 'A triplet of red dragons.', ex: EX('123m456p789s777z55m', '5m') },
-    chiitoitsu: { d: 'Seven different pairs, closed hand (always 25 fu).', ex: EX('11m22p33s44m55p66s77z', '7z') },
-    sanshoku: { d: 'The same sequence in all three suits.', ex: EX('234m234p234s678m44p', '4p') },
-    ittsu: { d: 'A straight 1-9 of one suit as three sequences (123, 456, 789).', ex: EX('123456789m567p44s', '4s') },
-    chanta: { d: 'Every set and the pair contains a terminal or an honour, with at least one sequence.', ex: EX('123m789p999s111z99m', '9m') },
-    toitoi: { d: 'Four triplets or kans and a pair.', ex: EX('111m222p333s111z55z', '5z') },
-    sanankou: { d: 'Three concealed triplets (not called).', ex: EX('111m222p333s456m55z', '5z') },
-    sanshokuDoukou: { d: 'The same triplet in all three suits.', ex: EX('222m222p222s456m55z', '5z') },
-    sankantsu: { d: 'Three kans.', ex: EX('456m55z', '5z', { melds: [{ type: 'kan', tile: '1m' }, { type: 'kan', tile: '2p' }, { type: 'kan', tile: '3s', concealed: true }] }) },
-    honroutou: { d: 'Only terminals and honours (so it is also toitoi or chiitoitsu).', ex: EX('111m999p111s111z99s', '9s') },
-    shousangen: { d: 'Two dragon triplets and a pair of the third dragon.', ex: EX('555z666z77z123m456p', '6p') },
-    honitsu: { d: 'Half flush: one suit plus honours.', ex: EX('123m456m789m111z55z', '5z') },
-    junchan: { d: 'Every set and the pair contains a terminal (1 or 9), no honours.', ex: EX('123m789p999s111m99m', '9m') },
-    ryanpeikou: { d: 'Two different pairs of identical sequences, closed hand.', ex: EX('223344m667788p55s', '5s') },
-    chinitsu: { d: 'Full flush: one suit only.', ex: EX('123m456m789m234m55m', '5m') },
-    kokushi: { d: 'Thirteen orphans: one of each terminal and honour plus a duplicate.', ex: EX('19m19p19s12345677z', '7z') },
-    suuankou: { d: 'Four concealed triplets. Finish on the pair or by self-draw.', ex: EX('111m222p333s444m55z', '5z') },
-    daisangen: { d: 'Triplets of all three dragons.', ex: EX('555z666z777z123m55p', '5p') },
-    shousuushii: { d: 'Three wind triplets and a pair of the fourth wind.', ex: EX('111z222z333z44z123m', '3m') },
-    daisuushii: { d: 'Triplets of all four winds.', ex: EX('111z222z333z444z55m', '5m') },
-    tsuuiisou: { d: 'All honours.', ex: EX('111z222z555z666z77z', '7z') },
-    chinroutou: { d: 'All terminals (1s and 9s only).', ex: EX('111m999m111p999p99s', '9s') },
-    ryuuiisou: { d: 'All green: only 2, 3, 4, 6, 8 of bamboo and green dragons.', ex: EX('234s666s888s666z22s', '2s') },
-    chuuren: { d: 'Nine gates: 1112345678999 of one suit, closed.', ex: EX('11123456789995m', '5m') },
+    pinfu: { d: 'Closed hand of four sequences and a non-scoring pair, won on a two-sided wait.', ex: EX('234m 567p 678s 234m 44p', '4m') },
+    tanyao: { d: 'All simples: only 2–8 of the suits, no terminals or honours.', ex: EX('234m 567p 678s 345m 44p', '4p') },
+    iipeikou: { d: 'Two identical sequences in the same suit, closed hand.', ex: EX('234m 234m 567p 678s 44p', '4p') },
+    yakuhaiSeat: { d: 'A triplet of your seat wind.', ex: EX('123m 456p 789s 222z 55m', '5m') },
+    yakuhaiRound: { d: 'A triplet of the round wind.', ex: EX('123m 456p 789s 111z 55m', '5m') },
+    haku: { d: 'A triplet of white dragons.', ex: EX('123m 456p 789s 555z 55m', '5m') },
+    hatsu: { d: 'A triplet of green dragons.', ex: EX('123m 456p 789s 666z 55m', '5m') },
+    chun: { d: 'A triplet of red dragons.', ex: EX('123m 456p 789s 777z 55m', '5m') },
+    chiitoitsu: { d: 'Seven different pairs, closed hand (always 25 fu).', ex: EX('11m 22p 33s 44m 55p 66s 77z', '7z') },
+    sanshoku: { d: 'The same sequence in all three suits.', ex: EX('234m 234p 234s 678m 44p', '4p') },
+    ittsu: { d: 'A straight 1-9 of one suit as three sequences (123, 456, 789).', ex: EX('123m 456m 789m 567p 44s', '4s') },
+    chanta: { d: 'Every set and the pair contains a terminal or an honour, with at least one sequence.', ex: EX('123m 789p 999s 111z 99m', '9m') },
+    toitoi: { d: 'Four triplets or kans and a pair.', ex: EX('111m 222p 333s 111z 55z', '5z') },
+    sanankou: { d: 'Three concealed triplets (not called).', ex: EX('111m 222p 333s 456m 55z', '5z') },
+    sanshokuDoukou: { d: 'The same triplet in all three suits.', ex: EX('222m 222p 222s 456m 55z', '5z') },
+    sankantsu: { d: 'Three kans.', ex: EX('456m 55z', '5z', { melds: [{ type: 'kan', tile: '1m' }, { type: 'kan', tile: '2p' }, { type: 'kan', tile: '3s', concealed: true }] }) },
+    honroutou: { d: 'Only terminals and honours (so it is also toitoi or chiitoitsu).', ex: EX('111m 999p 111s 111z 99s', '9s') },
+    shousangen: { d: 'Two dragon triplets and a pair of the third dragon.', ex: EX('555z 666z 77z 123m 456p', '6p') },
+    honitsu: { d: 'Half flush: one suit plus honours.', ex: EX('123m 456m 789m 111z 55z', '5z') },
+    junchan: { d: 'Every set and the pair contains a terminal (1 or 9), no honours.', ex: EX('123m 789p 999s 111m 99m', '9m') },
+    ryanpeikou: { d: 'Two different pairs of identical sequences, closed hand.', ex: EX('234m 234m 678p 678p 55s', '5s') },
+    chinitsu: { d: 'Full flush: one suit only.', ex: EX('123m 456m 789m 234m 55m', '5m') },
+    kokushi: { d: 'Thirteen orphans: one of each terminal and honour plus a duplicate.', ex: EX('19m 19p 19s 1234567z 7z', '7z') },
+    suuankou: { d: 'Four concealed triplets. Finish on the pair or by self-draw.', ex: EX('111m 222p 333s 444m 55z', '5z') },
+    daisangen: { d: 'Triplets of all three dragons.', ex: EX('555z 666z 777z 123m 55p', '5p') },
+    shousuushii: { d: 'Three wind triplets and a pair of the fourth wind.', ex: EX('111z 222z 333z 44z 123m', '3m') },
+    daisuushii: { d: 'Triplets of all four winds.', ex: EX('111z 222z 333z 444z 55m', '5m') },
+    tsuuiisou: { d: 'All honours.', ex: EX('111z 222z 555z 666z 77z', '7z') },
+    chinroutou: { d: 'All terminals (1s and 9s only).', ex: EX('111m 999m 111p 999p 99s', '9s') },
+    ryuuiisou: { d: 'All green: only 2, 3, 4, 6, 8 of bamboo and green dragons.', ex: EX('234s 666s 888s 666z 22s', '2s') },
+    chuuren: { d: 'Nine gates: 1112345678999 of one suit, closed.', ex: EX('111m 2345678m 999m 5m', '5m') },
     suukantsu: { d: 'Four kans.', ex: EX('55z', '5z', { melds: [{ type: 'kan', tile: '1m' }, { type: 'kan', tile: '2p' }, { type: 'kan', tile: '3s' }, { type: 'kan', tile: '1z', concealed: true }] }) },
     tenhou: { d: 'Dealer wins with the starting 14 tiles.' },
     chiihou: { d: 'Non-dealer wins on the first draw before any call.' },
-    flowers: { d: 'Each flower tile counts (Singapore/Malaysian-style riichi tables).', ex: EX('123m456p789s111z55z', '5z', { bonus: ['F1'] }) },
+    flowers: { d: 'Each flower tile counts (Singapore/Malaysian-style riichi tables).', ex: EX('123m 456p 789s 111z 55z', '5z', { bonus: ['F1'] }) },
   };
-  function exampleTiles(id) {
-    const info = PATTERN_INFO[id];
-    if (!info || !info.ex) return null;
-    const e = info.ex;
-    // The winning tile is deliberately not highlighted in examples: any tile of the hand may have been the last one.
-    return { hand: MJ.parse(e.hand), melds: e.melds || [], win: null, bonus: e.bonus || [] };
+  // Example hands are shown as tidy sets (chows, pungs, the pair) with no winning tile singled out: any tile may have been the last one.
+  function ExampleHand({ ex }) {
+    const groups = ex.hand.split(/\s+/).filter(Boolean).map((g) => MJ.parse(g));
+    const melds = ex.melds || [], bonus = ex.bonus || [];
+    return html`<div class="exrow" aria-label="Example hand">
+      ${groups.map((g, k) => html`<span class="exg" key=${k}>${g.map((c, j) => html`<${Tile} key=${j} code=${c} size="xs" />`)}</span>`)}
+      ${melds.map((m, k) => html`<span class="exg" key=${'m' + k}><${MeldTiles} m=${m} size="xs" /></span>`)}
+      ${bonus.length ? html`<span class="exg bonus">${MJ.sortTiles(bonus).map((c) => html`<${Tile} key=${c} code=${c} size="xs" />`)}</span>` : null}
+    </div>`;
   }
   function PatternHelp({ id, showDesc }) {
     const info = PATTERN_INFO[id];
     if (!info) return null;
-    const t = exampleTiles(id);
     return html`<div class="phelp">
-      ${t ? html`<${HandView} tiles=${t} size="xs" />` : null}
+      ${info.ex ? html`<${ExampleHand} ex=${info.ex} />` : null}
       ${showDesc && info.d ? html`<p class="pdesc">${info.d}</p>` : null}
     </div>`;
   }
@@ -2754,38 +2810,63 @@ button.tile:active{transform:translateY(1px)}
   }
 
   /* ------------------------------------------------ setup */
+  const PREF_KEY = 'mjsb.pref';
+  function loadPref() { try { return JSON.parse(lsGet(PREF_KEY) || '{}') || {}; } catch (e) { return {}; } }
   function Setup({ onCancel, onCreate }) {
-    const [rs, setRs] = useState('hk');
-    const [names, setNames] = useState(['', '', '', '']);
+    // Smart defaults: the last table's rules, names and stakes are already filled in, so this is "scan and adjust", not "fill in".
+    const pref = useMemo(loadPref, []);
+    const lastGame = useMemo(() => Store.list()[0] || null, []);
+    const [rs, setRs] = useState(pref.rs && RULES[pref.rs] ? pref.rs : 'hk');
+    const [names, setNames] = useState(() => (pref.names && pref.names.length === 4 ? pref.names.slice() : lastGame ? lastGame.players.map((p) => p.name) : ['', '', '', '']));
     const [settings, setSettings] = useState({});
-    const [per, setPer] = useState('');
-    const [sym, setSym] = useState('Rp');
+    const [per, setPer] = useState(pref.per != null ? String(pref.per || '') : '');
+    const [sym, setSym] = useState(pref.sym != null ? pref.sym : 'Rp');
+    const [stakesSeen, setStakesSeen] = useState(false);
     const R = RULES[rs];
     const S = Object.assign({}, MJ.newGame({ ruleset: rs, players: [{}, {}, {}, {}] }).settings, settings);
+    const namesDone = names.filter((n) => n.trim()).length >= 2;
+    const stakesDone = stakesSeen || per !== '';
+    // Head start: the rules are already chosen, so the bar never starts at zero.
+    const done = 1 + (namesDone ? 1 : 0) + (stakesDone ? 1 : 0);
+    const pct = Math.round((done / 4) * 100);
+    const prefilled = !!(pref.names && pref.names.some((n) => n)) || !!lastGame;
     function create() {
       const g = MJ.newGame({ ruleset: rs, players: names.map((n, i) => ({ name: n.trim() || 'Player ' + (i + 1) })), settings: S, money: { per: +per || 0, symbol: sym.trim() } });
+      lsSet(PREF_KEY, JSON.stringify({ rs, names: names.map((n) => n.trim()), per: +per || 0, sym: sym.trim() }));
       onCreate(g);
     }
-    return html`<div class="topbar"><div class="topbar-in"><button type="button" class="backbtn" onClick=${onCancel}>${I.back}Back</button><div class="ttl"><b>New game</b></div><span style=${{ width: '64px' }}></span></div></div>
+    return html`<div class="topbar"><div class="topbar-in"><button type="button" class="backbtn" onClick=${onCancel}>${I.back}Back</button><div class="ttl"><b>New table</b></div><span style=${{ width: '64px' }}></span></div></div>
       <main class="wrap">
-        <div class="sec"><h3>Rules</h3>
+        <div style=${{ marginTop: '12px' }}>
+          <div class="steps"><span><b>${done} of 4</b> ready</span><span>${done >= 3 ? 'Just tap Start' : namesDone ? 'Stakes are optional' : 'Add the players'}</span></div>
+          <div class="progress" role="progressbar" aria-valuenow=${pct} aria-valuemin="0" aria-valuemax="100"><i style=${{ width: pct + '%' }}></i></div>
+        </div>
+        <div class="sec"><h3>Rules ${pref.rs ? '· same as last time' : ''}</h3>
           <div class="rgrid">${MJ.ORDER.map((id) => { const r = RULES[id]; return html`<button type="button" class="rcard" aria-pressed=${rs === id ? 'true' : 'false'} onClick=${() => { setRs(id); setSettings({}); }}><b>${r.name}</b><span class="kn">${r.native}</span><span>${r.blurb}</span></button>`; })}</div>
         </div>
-        <div class="sec"><h3>Players</h3>
-          <p class="hint">Enter them in turn order, starting with the first dealer. Seats stay fixed; the dealer marker moves.</p>
-          <div class="pgrid">${[0, 1, 2, 3].map((i) => html`<div class="prow"><${Tile} code=${(i + 1) + 'z'} size="sm" label=${MJ.WINDS[i] + ' seat'} /><input id=${'pn' + i} class="input" value=${names[i]} placeholder=${i === 0 ? 'First dealer' : 'Player ' + (i + 1)} maxlength="24" onInput=${(e) => { const n = names.slice(); n[i] = e.target.value; setNames(n); }} aria-label=${'Player ' + (i + 1) + ' name'} /></div>`)}</div>
-        </div>
-        <div class="sec"><h3>${R.name} settings</h3>
-          <div class="settings">${R.settings.map((s) => html`<${SettingControl} s=${s} value=${S[s.key]} onChange=${(v) => setSettings(Object.assign({}, settings, { [s.key]: v }))} />`)}</div>
-          ${R.id === 'hk' || R.id === 'sg' || R.id === 'tw' ? html`<p class="hint">Pattern values can be changed per game from the game menu.</p>` : null}
-        </div>
-        <div class="sec"><h3>Stakes (optional)</h3>
-          <div class="row" style=${{ alignItems: 'end' }}>
-            <div class="field" style=${{ flex: '0 0 96px' }}><label for="sym">Currency</label><input id="sym" class="input" value=${sym} maxlength="4" onInput=${(e) => setSym(e.target.value)} /></div>
-            <div class="field" style=${{ flex: '1 1 160px' }}><label for="per">${rs === 'riichi' ? 'Money per 1,000 points' : 'Money per point'}</label><input id="per" class="input num" inputmode="decimal" value=${per} placeholder="Optional" onInput=${(e) => setPer(e.target.value)} /></div>
+        <div class="sec"><h3>Players ${prefilled && namesDone ? '· same as last time' : ''}</h3>
+          <div class="card" style=${{ padding: '10px 16px' }}>
+            <div class="pgrid">${[0, 1, 2, 3].map((i) => html`<div class="prow"><${Tile} code=${(i + 1) + 'z'} size="sm" label=${MJ.WINDS[i] + ' seat'} /><input id=${'pn' + i} class="input" value=${names[i]} placeholder=${i === 0 ? 'First dealer' : 'Player ' + (i + 1)} maxlength="24" onInput=${(e) => { const n = names.slice(); n[i] = e.target.value; setNames(n); }} aria-label=${'Player ' + (i + 1) + ' name'} /></div>`)}</div>
+            <p class="hint" style=${{ padding: '8px 0 4px' }}>In turn order, starting with the first dealer. Seats stay fixed; the dealer marker moves.</p>
           </div>
         </div>
-        <div class="sec"><button type="button" class="btn primary big block" onClick=${create}>Start game</button></div>
+        <div class="sec"><h3>${R.name} settings</h3>
+          <div class="card"><details>
+            <summary><span>Usual ${R.name} defaults<small>${R.settings.length} setting${R.settings.length === 1 ? '' : 's'} · tap to adjust</small></span></summary>
+            <div class="settings">${R.settings.map((s) => html`<${SettingControl} s=${s} value=${S[s.key]} onChange=${(v) => setSettings(Object.assign({}, settings, { [s.key]: v }))} />`)}
+            ${R.id === 'hk' || R.id === 'sg' || R.id === 'tw' ? html`<p class="hint">Pattern values can be changed per game from the game menu.</p>` : null}</div>
+          </details></div>
+        </div>
+        <div class="sec"><h3>Stakes · optional</h3>
+          <div class="card" style=${{ padding: '12px 16px 14px' }} onFocusCapture=${() => setStakesSeen(true)}>
+            <div class="row" style=${{ alignItems: 'end' }}>
+              <div class="field" style=${{ flex: '0 0 96px' }}><label for="sym">Currency</label><input id="sym" class="input" value=${sym} maxlength="4" onInput=${(e) => setSym(e.target.value)} /></div>
+              <div class="field" style=${{ flex: '1 1 160px' }}><label for="per">${rs === 'riichi' ? 'Per 1,000 points' : 'Per point'}</label><input id="per" class="input num" inputmode="decimal" value=${per} placeholder="Points only" onInput=${(e) => setPer(e.target.value)} /></div>
+            </div>
+            <p class="hint" style=${{ marginTop: '8px' }}>Leave it empty to score in points only. You can set it later from Rules and values.</p>
+          </div>
+        </div>
+        <div class="sec"><button type="button" class="btn primary big block" onClick=${create}>Start the table</button></div>
       </main>`;
   }
 
@@ -2892,13 +2973,16 @@ button.tile:active{transform:translateY(1px)}
         <button type="button" class="btn primary" onClick=${() => saveRecap(game, onToast).catch(() => onToast('Could not make the recap image'))}>Save recap image</button>
         <button type="button" class="btn" onClick=${() => exportFile('mahjong-' + stamp + '.csv', csvOf(game), 'text/csv')}>Hands as CSV</button>
         <button type="button" class="btn" onClick=${() => exportFile('mahjong-' + stamp + '.json', JSON.stringify(game, null, 1), 'application/json')}>Full backup (JSON)</button>
-      </div><p class="hint">The recap image has the standings, who pays whom and every hand — keep it, because accounts unused for ${Store.inactiveDays} days are deleted. ${share ? 'Files open the share sheet, so you can save them or send them to a friend.' : 'Files download to this device.'} A JSON backup can be imported again from the home screen.</p></div>
+      </div><p class="hint">Without a recap this match disappears: tables unused for ${Store.inactiveDays} days are deleted. The image keeps the standings, who pays whom and every hand. ${share ? 'Files open the share sheet, so you can save them or send them to a friend.' : 'Files download to this device.'} A JSON backup can be imported again from the home screen.</p></div>
     <//>`;
   }
 
   /* ------------------------------------------------ game view */
   function GameView({ game, onBack, commit, onDelete, onNewGame, toast, onSignIn }) {
     const [sheet, setSheet] = useState(null);
+    const [keepLater, setKeepLater] = useState(() => lsGet('mjsb.keepLater') === game.id);
+    const hands = game.entries.length;
+    const showKeep = !game.example && Store.authChecked && !Store.user && hands >= 1 && !keepLater;
     const R = RULES[game.ruleset];
     const done = MJ.gameComplete(game);
     const last = game.entries[game.entries.length - 1];
@@ -2914,9 +2998,10 @@ button.tile:active{transform:translateY(1px)}
         <button type="button" class="iconbtn" aria-label="Game menu" onClick=${() => setSheet('menu')}>${I.more}</button>
       </div></div>
       <main class="wrap">
-        ${game.example ? html`<div class="banner"><p>This is an example so you can see how it works. Hands you record here aren’t saved.</p><button type="button" class="btn small primary" onClick=${onNewGame}>Start a real game</button></div>` : null}
+        ${game.example ? html`<div class="banner"><p><b>Example table.</b> Try recording a hand — nothing here is saved.</p><button type="button" class="btn small primary" onClick=${onNewGame}>Set up your table</button></div>` : null}
         <div style=${{ marginTop: '14px' }}><${TableHero} game=${game} /></div>
-        ${done && !game.finished ? html`<div class="banner gold"><p>The last round is complete. Keep playing or see the final standings.</p><button type="button" class="btn small" onClick=${() => setSheet('end')}>Standings</button></div>` : null}
+        ${showKeep ? html`<div class="banner keep"><p><b>Only on this phone so far.</b> Clear the browser and ${hands === 1 ? 'this entry is' : 'these ' + hands + ' entries are'} gone. Keep the table and everyone at it can see and edit the same scorebook.</p><span class="row"><button type="button" class="btn small primary" onClick=${() => onSignIn('create')}>Keep this table</button><button type="button" class="btn small ghost" onClick=${() => { setKeepLater(true); lsSet('mjsb.keepLater', game.id); }}>Later</button></span></div>` : null}
+        ${done && !game.finished ? html`<div class="banner gold"><p><b>Last round done.</b> Save the recap before this table is cleared — it has the final scores and who pays whom.</p><button type="button" class="btn small" onClick=${() => setSheet('end')}>Standings</button></div>` : null}
         <${Ledger} game=${game} />
         ${last ? html`<div class="row" style=${{ marginTop: '12px' }}><button type="button" class="btn small" onClick=${() => setSheet('undo')}>${I.undo}Undo last entry</button></div>` : null}
       </main>
@@ -2961,22 +3046,32 @@ button.tile:active{transform:translateY(1px)}
       const f = e.target.files && e.target.files[0]; e.target.value = '';
       if (f) importGamesFromFile(f, (n) => onToast(n < 0 ? 'That file isn’t a scorebook backup' : n ? 'Imported ' + n + ' game' + (n > 1 ? 's' : '') : 'Nothing new to import'));
     };
+    const fresh = !games.length;
+    const unsaved = !Store.user && games.length > 0 && Store.authChecked;
     return html`<main class="wrap">
       <header class="hero">
-        <div class="brand"><span class="seal" aria-hidden="true">麻雀</span><h1>${BRAND}${LITE && IS_DEFAULT_BRAND ? html` <span class="k muted" style=${{ fontSize: '18px', fontFamily: 'var(--f-ui)' }}>Lite</span>` : null}</h1></div>
-        <p class="lede">Record who won, how, and with what. Tap the winning tiles on the board and it works out the patterns, the faan, tai or han, splits the payments and keeps the running score.${LITE ? '' : ' Or snap the winning hand and it reads the tiles for you.'}</p>
-        <div class="rules-strip">${MJ.ORDER.map((id) => html`<span>${RULES[id].name}<b>${RULES[id].native.replace('麻雀', '').replace('麻将', '').replace('麻將', '') || RULES[id].native}</b></span>`)}</div>
-        <div class="row">
-          <button type="button" class="btn primary big" onClick=${onNew}>${I.plus}New game</button>
-          ${Store.user ? html`<button type="button" class="btn big" onClick=${onAccount}>${I.people}${displayName(Store.user)}</button>` : html`<button type="button" class="btn big" onClick=${onSignIn}>${I.people}Sign in</button>`}
+        <div class="brand"><span class="seal" aria-hidden="true">麻雀</span><h1>${BRAND}${LITE && IS_DEFAULT_BRAND ? html` <span class="muted" style=${{ fontSize: '18px', fontWeight: 400 }}>Lite</span>` : null}</h1></div>
+        ${fresh ? html`<p class="lede">Tap the winning tiles, and the patterns, points and payments are worked out for you.${!LITE ? ' Or snap the winning hand and it reads the tiles.' : ''}</p>` : null}
+        ${fresh ? html`<div class="rules-strip">${MJ.ORDER.map((id) => html`<span>${RULES[id].name}<b>${RULES[id].native.replace('麻雀', '').replace('麻将', '').replace('麻將', '') || RULES[id].native}</b></span>`)}</div>` : null}
+        <div class="row" style=${{ width: '100%' }}>
+          <button type="button" class=${'btn primary big' + (fresh ? ' block' : '')} onClick=${onNew}>${I.plus}${fresh ? 'Set up your table' : 'New game'}</button>
+          ${Store.user ? html`<button type="button" class="btn big" onClick=${onAccount}>${I.people}${displayName(Store.user)}</button>` : fresh ? null : html`<button type="button" class="btn big" onClick=${() => onSignIn('signin')}>${I.people}Sign in</button>`}
         </div>
+        ${fresh && !Store.user ? html`<p class="hint" style=${{ marginTop: '-2px' }}>No account needed to start. <button type="button" class="link" onClick=${() => onSignIn('signin')}>Already have a table? Sign in</button></p>` : null}
       </header>
+      ${unsaved ? html`<div class="banner keep"><p><b>Your ${games.length === 1 ? 'game lives' : games.length + ' games live'} only in this browser.</b> Keep ${games.length === 1 ? 'it' : 'them'} in an account or guest table so nothing is lost and your whole table can join.</p><button type="button" class="btn small primary" onClick=${() => onSignIn('create')}>Keep my games</button></div>` : null}
       ${active.length ? html`<div class="section-head"><h2>In progress</h2></div><div class="stack">${active.map((g) => html`<${GameCard} key=${g.id} game=${g} onOpen=${() => onOpen(g.id)} />`)}</div>` : null}
       ${!active.length ? html`<div class="section-head"><h2>See it in action</h2><span class="example-note">Example · not saved</span></div>
         <div class="stack"><${TableHero} game=${example} compact=${true} />
-        <button type="button" class="btn" onClick=${() => onOpen('example')}>Open the example game</button></div>` : null}
+        <button type="button" class="btn" onClick=${() => onOpen('example')}>Open the example table</button></div>` : null}
       ${done.length ? html`<div class="section-head"><h2>Finished</h2></div><div class="stack">${done.map((g) => html`<${GameCard} key=${g.id} game=${g} onOpen=${() => onOpen(g.id)} />`)}</div>` : null}
-      <p class="store-note"><span class=${'dot ' + line.dot}></span>${Store.ready ? line.text : 'Checking where games are saved…'}</p>
+      ${fresh ? html`<div class="section-head"><h2>How it works</h2></div>
+        <div class="list">
+          <div class="cell">${I.people}<span class="ct">One scorebook per table<small>Everyone signs in with the same name and password, or the same guest id, and sees the same games. Other tables can’t see yours.</small></span></div>
+          <div class="cell">${I.flag}<span class="ct">Kept for ${Store.inactiveDays} days<small>A table unused for ${Store.inactiveDays} days is deleted with its games. Save the recap image at the end of a match to keep it.</small></span></div>
+          <div class="cell">${I.tiles}<span class="ct">Install it<small>Share → Add to Home Screen puts ${BRAND} on your phone like an app.</small></span></div>
+        </div>` : null}
+      <p class="store-note"><span class=${'dot dot-' + line.dot}></span>${Store.ready ? line.text : 'Checking where games are saved…'}</p>
       <p class="acct"><button type="button" class="link" onClick=${() => impRef.current && impRef.current.click()}>Import a backup (JSON)</button><input ref=${impRef} type="file" accept=".json,application/json" class="hidden-input" tabindex="-1" onChange=${onImport} />${window.BUILD ? html`<span>· build ${window.BUILD}</span>` : null}</p>
     </main>`;
   }
@@ -3024,25 +3119,29 @@ button.tile:active{transform:translateY(1px)}
       <p><b>Same scorebook for the whole table:</b> everyone who signs in with the same name and password (or the same guest id) sees and edits the same games. Other tables can’t see yours.</p>
       <p><b>Kept for ${Store.inactiveDays} days:</b> an account that isn’t used for ${Store.inactiveDays} days is deleted with its games. Save the <b>recap image</b> (Standings → Save recap image) to keep a match for good.</p>
     </div>`;
-    if (mode === 'guest') return html`<${Sheet} title="Play as a guest" sub="No account needed" onClose=${onClose}
-      foot=${html`<div class="row" style=${{ justifyContent: 'space-between' }}><button type="button" class="link" onClick=${() => { setMode('signin'); setErr(''); }}>Use an account instead</button><button type="button" class="btn primary" disabled=${busy} onClick=${guestNew}>${busy ? 'One moment…' : 'New guest table'}</button></div>`}>
+    const hasLocal = Store.list().length > 0;
+    const modeSeg = html`<div class="sec" style=${{ paddingTop: '14px' }}><${Seg} label="How to keep your table" value=${mode} onChange=${(m) => { setMode(m); setErr(''); }} options=${[['create', 'New account'], ['signin', 'Sign in'], ['guest', 'Guest']]} /></div>`;
+    if (mode === 'guest') return html`<${Sheet} title=${hasLocal ? 'Keep your table' : 'Play as a guest'} sub="No account needed" onClose=${onClose}
+      foot=${html`<div class="row" style=${{ justifyContent: 'flex-end' }}><button type="button" class="btn primary" disabled=${busy} onClick=${guestNew}>${busy ? 'One moment…' : 'New guest table'}</button></div>`}>
+      ${modeSeg}
       <div class="sec">
+        ${hasLocal ? html`<p class="hint">Your games on this phone move into the guest table the moment it is created.</p>` : null}
         <p>A guest table gets a <b>6-character guest id</b>. Share it with the people at your table: anyone who enters it sees and edits the same scorebook.</p>
         <div class="field"><label for="gj">Have a guest id already? Enter it to join</label><div class="row"><input id="gj" class="input num pinbox" style=${{ flex: '1 1 160px', textTransform: 'uppercase' }} maxlength="12" autocapitalize="characters" value=${guestCode} onInput=${(e) => setGuestCode(e.target.value)} onKeyDown=${(e) => { if (e.key === 'Enter') guestJoin(); }} placeholder="e.g. K7M2XQ" /><button type="button" class="btn" disabled=${busy} onClick=${guestJoin}>Join</button></div></div>
         ${err ? html`<p class="err">${err}</p>` : null}
       </div>
       <div class="sec">${guide}</div>
     <//>`;
-    return html`<${Sheet} title=${create ? 'Create account' : 'Sign in'} sub=${create ? 'Pick a name and password for your table' : 'The name and password you created'} onClose=${onClose}
-      foot=${html`<div class="row" style=${{ justifyContent: 'space-between' }}>
-        <button type="button" class="link" onClick=${() => { setMode(create ? 'signin' : 'create'); setErr(''); }}>${create ? 'I already have an account' : 'Create a new account'}</button>
+    return html`<${Sheet} title=${hasLocal && create ? 'Keep your table' : create ? 'Create account' : 'Sign in'} sub=${create ? 'Pick a name and password for your table' : 'The name and password you created'} onClose=${onClose}
+      foot=${html`<div class="row" style=${{ justifyContent: 'flex-end' }}>
         <button type="button" class="btn primary" disabled=${!ok || busy} onClick=${go}>${busy ? 'One moment…' : create ? 'Create account' : 'Sign in'}</button></div>`}>
+      ${modeSeg}
       <div class="sec">
+        ${hasLocal && create ? html`<p class="hint">Your games on this phone are saved to the account as soon as it exists.</p>` : null}
         <div class="field"><label for="si-name">Name (your table or group)</label><input id="si-name" class="input" value=${name} maxlength="24" autocomplete="username" onInput=${(e) => setName(e.target.value)} onKeyDown=${(e) => { if (e.key === 'Enter') go(); }} placeholder="e.g. Table 3 or James" /></div>
         <div class="field"><label for="si-pin">Password (4 to 32 characters)</label><input id="si-pin" class="input" type="password" maxlength="32" autocomplete=${create ? 'new-password' : 'current-password'} value=${pin} onInput=${(e) => setPin(e.target.value)} onKeyDown=${(e) => { if (e.key === 'Enter') go(); }} /></div>
         ${err ? html`<p class="err">${err}</p>` : null}
         ${create ? html`<p class="hint">There is no password reset, so note it somewhere safe. Give the same name and password to everyone at your table.</p>` : null}
-        <button type="button" class="link" style=${{ justifySelf: 'start' }} onClick=${() => { setMode('guest'); setErr(''); }}>Or continue as a guest</button>
       </div>
       <div class="sec">${guide}</div>
     <//>`;
@@ -3094,30 +3193,6 @@ button.tile:active{transform:translateY(1px)}
     <//>`;
   }
 
-  /* ------------------------------------------------ welcome (before sign-in) */
-  function Welcome({ onPick }) {
-    return html`<main class="wrap">
-      <header class="hero">
-        <div class="brand"><span class="seal" aria-hidden="true">麻雀</span><h1>${BRAND}</h1></div>
-        <p class="lede">Keeps the score for your mahjong table. Pick the rules, tap the winning tiles on a board, and it works out the patterns, the points and who pays whom.</p>
-        <div class="rules-strip">${MJ.ORDER.map((id) => html`<span>${RULES[id].name}<b>${RULES[id].native.replace('麻雀', '').replace('麻将', '').replace('麻將', '') || RULES[id].native}</b></span>`)}</div>
-      </header>
-      <div class="welcome-actions">
-        <button type="button" class="btn primary big block" onClick=${() => onPick('create')}>${I.plus}Create an account for your table</button>
-        <button type="button" class="btn big block" onClick=${() => onPick('signin')}>Sign in</button>
-        <button type="button" class="btn big block" onClick=${() => onPick('guest')}>Continue as a guest</button>
-      </div>
-      <div class="guide" style=${{ marginTop: '22px' }}>
-        <p class="eyebrow">How it works</p>
-        <p><b>One scorebook per table.</b> Sign in with the same name and password on every phone at your table — or share a guest id — and everyone sees and edits the same games. Other tables can’t see yours.</p>
-        <p><b>Kept for ${Store.inactiveDays} days.</b> An account or guest table that isn’t used for ${Store.inactiveDays} days is deleted with its games, so at the end of a match save the <b>recap image</b> (Standings → Save recap image): it has the final scores, who pays whom and every hand.</p>
-        <p><b>Install it:</b> Share → Add to Home Screen puts ${BRAND} on your phone like an app.</p>
-      </div>
-      ${Store.error ? html`<p class="store-note"><span class="dot bad"></span>${Store.error}</p>` : null}
-      ${window.BUILD ? html`<p class="acct">build ${window.BUILD}</p>` : null}
-    </main>`;
-  }
-
   /* ------------------------------------------------ app */
   function App() {
     const [, force] = useState(0);
@@ -3143,16 +3218,15 @@ button.tile:active{transform:translateY(1px)}
     const game = gid === 'example' ? example : gid ? Store.get(gid) : null;
     const open = (id) => { setGid(id); setView('game'); if (id !== 'example') lsSet('mjsb.last', id); };
     const commit = (g) => { if (g.example) setExample(g); else Store.save(g); };
-    const signIn = () => setModal('signin');
+    const signIn = (m) => setModal(m === 'create' || m === 'guest' ? m : 'signin');
     let body;
-    if (!Store.authChecked) body = html`<div class="boot">Opening ${BRAND}…</div>`;
-    else if (!Store.user) body = html`<${Welcome} onPick=${(m) => setModal(m === 'signin' ? 'signin' : m === 'create' ? 'create' : 'guest')} />`;
+    if (!Store.ready) body = html`<div class="boot">Opening ${BRAND}…</div>`;
     else if (view === 'setup') body = html`<${Setup} onCancel=${() => setView(game ? 'game' : 'home')} onCreate=${(g) => { Store.save(g); open(g.id); }} />`;
     else if (view === 'game' && game) body = html`<${GameView} key=${game.id} game=${game} onBack=${() => { setView('home'); setGid(null); }} commit=${commit}
       onDelete=${() => { Store.remove(game.id); setView('home'); setGid(null); setToastMsg('Game deleted'); }} onNewGame=${() => setView('setup')} toast=${setToastMsg} onSignIn=${signIn} />`;
     else body = html`<${Home} example=${example} onNew=${() => setView('setup')} onOpen=${open} onSignIn=${signIn} onAccount=${() => setModal('account')} onToast=${setToastMsg} />`;
     return html`${body}
-      ${modal === 'signin' || modal === 'create' || modal === 'guest' ? html`<${SignInSheet} initialMode=${modal} onClose=${() => setModal(null)} onDone=${(msg) => { setModal(null); setView('home'); setGid(null); setToastMsg(msg || ('Signed in as ' + displayName(Store.user))); }} />` : null}
+      ${modal === 'signin' || modal === 'create' || modal === 'guest' ? html`<${SignInSheet} initialMode=${modal} onClose=${() => setModal(null)} onDone=${(msg) => { setModal(null); setToastMsg(msg || ('Signed in as ' + displayName(Store.user))); }} />` : null}
       ${modal === 'account' ? html`<${AccountSheet} onClose=${() => setModal(null)} onToast=${setToastMsg} />` : null}
       ${update ? html`<div class="toast" role="status">A new version is ready<button type="button" onClick=${() => location.reload()}>Reload</button></div>` : toastMsg ? html`<div class="toast" role="status">${toastMsg}</div>` : null}`;
   }
