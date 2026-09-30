@@ -42,32 +42,25 @@ function makeJpeg() {
   const stamp = Date.now().toString(36);
   const T = (s) => page.getByText(s, { exact: false });
 
-  // 1. welcome → guest table
+  // 1. no sign-in wall: the home screen invites you to set up a table straight away
   await page.goto('http://127.0.0.1:8080/', { waitUntil: 'load' });
   await page.waitForSelector('h1:has-text("Mahjong Scorebook")');
-  ok('welcome gate', await page.locator('button:has-text("Continue as a guest")').count() === 1);
-  eq('no game UI before sign-in', await page.locator('button:has-text("New game")').count(), 0);
-  await page.screenshot({ path: path.join(SHOTS, '00-welcome.png') });
-  await page.click('button:has-text("Continue as a guest")');
-  await page.waitForSelector('button:has-text("New guest table")');
-  await page.click('button:has-text("New guest table")');
-  await page.waitForSelector('text=Your guest id is');
-  const guestToast = await page.locator('.toast').innerText();
-  const guestId = (guestToast.match(/guest id is ([A-Z2-9]{6})/) || [])[1];
-  ok('guest id shown', !!guestId, guestToast);
-  ok('home renders', await page.locator('button:has-text("New game")').count() === 1);
-  ok('example table', await page.locator('.table').count() === 1);
-  ok('store note names guest table', /Guest table/.test(await page.locator('.store-note').innerText()));
-  await page.screenshot({ path: path.join(SHOTS, '01-home.png') });
+  ok('try first: set up a table without an account', await page.locator('button:has-text("Set up your table")').count() === 1);
+  eq('no sign-in wall', await page.locator('button:has-text("Continue as a guest")').count(), 0);
+  ok('example table (free sample)', await page.locator('.table').count() === 1);
+  await page.screenshot({ path: path.join(SHOTS, '00-home-fresh.png') });
 
-  // 2. new game (Hong Kong, 4 names, Rp 1,000 per point)
-  await page.click('button:has-text("New game")');
+  // 2. new table (Hong Kong, 4 names, Rp 1,000 per point) — progress starts above zero
+  await page.click('button:has-text("Set up your table")');
   await page.waitForSelector('text=Rules');
+  ok('head start: 1 of 4 already done', /1 of 4/.test(await page.locator('.steps').innerText()));
   for (let i = 0; i < 4; i++) await page.fill('#pn' + i, ['Ah Mei', 'Budi', 'Chris', 'Dewi'][i]);
   await page.fill('#per', '1000');
-  await page.click('button:has-text("Start game")');
+  ok('progress moves with names and stakes', /3 of 4/.test(await page.locator('.steps').innerText()));
+  await page.click('button:has-text("Start the table")');
   await page.waitForSelector('button:has-text("Record hand")');
   ok('game view', await page.locator('.plate').count() === 4);
+  eq('no keep-nudge before any hand', await page.locator('.banner.keep').count(), 0);
   await page.screenshot({ path: path.join(SHOTS, '02-game.png') });
 
   // 3. record a hand by tapping tiles: 111m 222p 333s 111z 55z (all pungs), Budi wins off Dewi
@@ -99,8 +92,8 @@ function makeJpeg() {
   await page.screenshot({ path: path.join(SHOTS, '03-record.png') });
   // add-pattern list shows example tiles; the explain switch adds descriptions
   await page.click('details.addlist summary');
-  await page.waitForSelector('.addrow .phelp .ltiles');
-  ok('example tiles under patterns', (await page.locator('.addrow .phelp .ltiles').count()) >= 5);
+  await page.waitForSelector('.addrow .phelp .exrow');
+  ok('example tiles under patterns', (await page.locator('.addrow .phelp .exrow').count()) >= 5);
   eq('no descriptions yet', await page.locator('.pdesc').count(), 0);
   await page.click('.addbody .switch');
   ok('descriptions shown', (await page.locator('.pdesc').count()) >= 5);
@@ -110,6 +103,43 @@ function makeJpeg() {
   ok('ledger has 1 hand', (await page.locator('.lrow').count()) === 1);
   const scores = await page.locator('.plate .ps').allInnerTexts();
   ok('scores changed', scores.some((s) => s !== '0'), scores);
+  // example hands are tidy sets, no winning tile singled out
+  await page.click('button:has-text("Record hand")');
+  await page.click('details.addlist summary');
+  await page.waitForSelector('.addrow .exrow');
+  ok('examples grouped into sets', (await page.locator('.addrow .exrow .exg').count()) >= 10);
+  eq('no winning-tile highlight in examples', await page.locator('.addrow .exrow .is-win').count(), 0);
+  await page.click('.sheet-head button[aria-label="Close"]');
+
+  // 3b. IKEA effect: now that a hand is in, the nudge to keep the table appears (loss-aversion wording) → guest table
+  await page.waitForSelector('.banner.keep');
+  ok('keep nudge names the loss', /gone/.test(await page.locator('.banner.keep').innerText()));
+  await page.screenshot({ path: path.join(SHOTS, '03b-keep-nudge.png') });
+  await page.click('button:has-text("Keep this table")');
+  await page.waitForSelector('#si-name');
+  await page.click('.seg button:has-text("Guest")');
+  await page.waitForSelector('button:has-text("New guest table")');
+  await page.click('button:has-text("New guest table")');
+  await page.waitForSelector('text=Your guest id is');
+  const guestToast = await page.locator('.toast').innerText();
+  const guestId = (guestToast.match(/guest id is ([A-Z2-9]{6})/) || [])[1];
+  ok('guest id shown', !!guestId, guestToast);
+  ok('still on the game after keeping it', await page.locator('button:has-text("Record hand")').count() === 1);
+  eq('keep nudge gone once kept', await page.locator('.banner.keep').count(), 0);
+  // smart defaults: a second table is pre-filled from the first
+  await page.click('.backbtn');
+  ok('home renders', await page.locator('button:has-text("New game")').count() === 1);
+  await page.waitForFunction(() => /Guest table/.test(document.querySelector('.store-note').textContent), null, { timeout: 10000 });
+  ok('store note names guest table', /Guest table/.test(await page.locator('.store-note').innerText()));
+  await page.screenshot({ path: path.join(SHOTS, '01-home.png') });
+  await page.click('button:has-text("New game")');
+  await page.waitForSelector('#pn0');
+  eq('smart defaults: names pre-filled', await page.inputValue('#pn1'), 'Budi');
+  eq('smart defaults: stakes pre-filled', await page.inputValue('#per'), '1000');
+  ok('head start with defaults: 3 of 4', /3 of 4/.test(await page.locator('.steps').innerText()));
+  await page.click('.backbtn');
+  await page.click('.gcard');
+  await page.waitForSelector('button:has-text("Record hand")');
 
   // 4. the guest game is in the cloud; a second "phone" joins with the guest id; then create a real account
   await new Promise((r) => setTimeout(r, 1200));
@@ -121,7 +151,8 @@ function makeJpeg() {
   const ctx2 = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const p2 = await ctx2.newPage();
   await p2.goto('http://127.0.0.1:8080/', { waitUntil: 'load' });
-  await p2.click('button:has-text("Continue as a guest")');
+  await p2.click('button:has-text("Sign in")');
+  await p2.click('.seg button:has-text("Guest")');
   await p2.fill('#gj', guestId.toLowerCase());
   await p2.click('button:has-text("Join")');
   await p2.waitForSelector('.gcard', { timeout: 10000 });
@@ -136,9 +167,10 @@ function makeJpeg() {
   await page.screenshot({ path: path.join(SHOTS, '04-guest-account.png') });
   await page.click('.menu button:has-text("Sign out")');
   await page.click('.sec button:has-text("Sign out")');
-  await page.waitForSelector('button:has-text("Create an account for your table")');
-  await page.click('button:has-text("Create an account for your table")');
+  await page.waitForSelector('button:has-text("Set up your table")');
+  await page.click('button:has-text("Sign in")');
   await page.waitForSelector('#si-name');
+  await page.click('.seg button:has-text("New account")');
   await page.fill('#si-name', 'E2E ' + stamp);
   await page.fill('#si-pin', 'pass 2468');
   eq('password with space rejected client-side', await page.locator('.sheet-foot button:has-text("Create account")').isDisabled(), true);
@@ -230,9 +262,10 @@ function makeJpeg() {
   await page.click('button:has-text("E2E ' + stamp + '")');
   await page.click('.menu button:has-text("Sign out")');
   await page.click('.sec button:has-text("Sign out")');
-  await page.waitForSelector('button:has-text("Continue as a guest")');
-  eq('welcome again after sign-out', await page.locator('.gcard').count(), 0);
+  await page.waitForSelector('button:has-text("Set up your table")');
+  eq('cloud games leave this device after sign-out', await page.locator('.gcard').count(), 0);
   await page.click('button:has-text("Sign in")');
+  await page.waitForSelector('#si-name');
   await page.fill('#si-name', 'E2E ' + stamp);
   await page.fill('#si-pin', 'table2468');
   await page.click('.sheet-foot button:has-text("Sign in")');
