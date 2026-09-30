@@ -28,6 +28,16 @@ const game = (id, upd) => ({ id, v: 1, ruleset: 'hk', settings: {}, money: { per
   eq('bad fn', (await rpc('nope', {})).error, 'bad_fn');
   eq('short name', (await rpc('signup', { name: 'x', pin: '1234' })).error, 'bad_name');
   eq('bad pin', (await rpc('signup', { name: 'Valid Name', pin: '12' })).error, 'bad_pin');
+  eq('password with space', (await rpc('signup', { name: 'Valid Name', pin: 'has space' })).error, 'bad_pin');
+  // guest tables: the id is the credential; a second phone joins with it
+  const g1 = await rpc('guestStart', {});
+  ok('guest created', g1.token && /^guest-[A-Z2-9]{6}$/.test(g1.guestId) && g1.user.guest === true);
+  const g2 = await rpc('signin', { name: g1.guestId.toLowerCase(), pin: g1.guestId });
+  ok('guest join with id', g2.token && g2.user.id === g1.user.id);
+  const gm = await rpc('me', {}, g1.token);
+  ok('guest me has expiry', gm.user.guest && gm.expiresAt > Date.now() + 6 * 86400000 && gm.inactiveDays === 7);
+  await rpc('saveGame', { game: game('gg' + stamp, 100) }, g1.token);
+  eq('guest game visible to joiner', (await rpc('listGames', {}, g2.token)).games.length, 1);
   eq('unknown user', (await rpc('signin', { name, pin: '1234' })).error, 'no_such_user');
   // signup + duplicate
   const su = await rpc('signup', { name, pin: '2468' });
@@ -96,6 +106,10 @@ const game = (id, upd) => ({ id, v: 1, ruleset: 'hk', settings: {}, money: { per
   const exp = await admin('export');
   ok('admin export', Array.isArray(exp.games) && exp.games.some((g) => g.game.id === 'g1' + stamp));
   eq('admin migrate idempotent', (await admin('migrate')).ok, true);
+  // cleanup deletes only inactive accounts: age the guest, keep the others
+  await admin('cleanup');
+  ok('cleanup keeps active accounts', (await rpc('me', {}, g1.token)).user);
+
   // photo (KV) behind the admin key
   await new Promise((r) => setTimeout(r, 300));
   const ph = await fetch(BASE + '/photo/' + sc.scanId + '.jpg?k=' + ADMIN);
@@ -105,6 +119,8 @@ const game = (id, upd) => ({ id, v: 1, ruleset: 'hk', settings: {}, money: { per
   eq('changePin wrong', (await rpc('changePin', { pin: '0000', newPin: '4321' }, tok)).error, 'wrong_pin');
   eq('changePin', (await rpc('changePin', { pin: '1357', newPin: '4321' }, tok)).ok, true);
   ok('signin with new pin', (await rpc('signin', { name: name2, pin: '4321' })).token);
+  eq('changePin word password ok', (await rpc('changePin', { pin: '4321', newPin: 'mahjong!Night' }, tok)).ok, true);
+  ok('signin with word password', (await rpc('signin', { name: name2, pin: 'mahjong!Night' })).token);
   eq('signout', (await rpc('signout', {}, tok)).ok, true);
   eq('token dead', (await rpc('me', {}, tok)).error, 'signin_required');
   // CORS preflight

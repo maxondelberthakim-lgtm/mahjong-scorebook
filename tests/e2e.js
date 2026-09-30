@@ -42,12 +42,22 @@ function makeJpeg() {
   const stamp = Date.now().toString(36);
   const T = (s) => page.getByText(s, { exact: false });
 
-  // 1. home
+  // 1. welcome → guest table
   await page.goto('http://127.0.0.1:8080/', { waitUntil: 'load' });
   await page.waitForSelector('h1:has-text("Mahjong Scorebook")');
+  ok('welcome gate', await page.locator('button:has-text("Continue as a guest")').count() === 1);
+  eq('no game UI before sign-in', await page.locator('button:has-text("New game")').count(), 0);
+  await page.screenshot({ path: path.join(SHOTS, '00-welcome.png') });
+  await page.click('button:has-text("Continue as a guest")');
+  await page.waitForSelector('button:has-text("New guest table")');
+  await page.click('button:has-text("New guest table")');
+  await page.waitForSelector('text=Your guest id is');
+  const guestToast = await page.locator('.toast').innerText();
+  const guestId = (guestToast.match(/guest id is ([A-Z2-9]{6})/) || [])[1];
+  ok('guest id shown', !!guestId, guestToast);
   ok('home renders', await page.locator('button:has-text("New game")').count() === 1);
-  ok('sign-in button', await page.locator('button:has-text("Sign in")').count() === 1);
   ok('example table', await page.locator('.table').count() === 1);
+  ok('store note names guest table', /Guest table/.test(await page.locator('.store-note').innerText()));
   await page.screenshot({ path: path.join(SHOTS, '01-home.png') });
 
   // 2. new game (Hong Kong, 4 names, Rp 1,000 per point)
@@ -101,26 +111,56 @@ function makeJpeg() {
   const scores = await page.locator('.plate .ps').allInnerTexts();
   ok('scores changed', scores.some((s) => s !== '0'), scores);
 
-  // 4. sign in (create account)
-  await page.click('.backbtn');
-  await page.waitForSelector('h1');
-  await page.click('button:has-text("Sign in")');
-  await page.waitForSelector('#si-name');
-  await page.fill('#si-name', 'E2E ' + stamp);
-  await page.fill('#si-pin', '2468');
-  await page.click('.sheet-foot button:has-text("Sign in")');
-  await page.waitForSelector('text=No account has that name yet');
-  await page.click('.sheet-foot button:has-text("Create account")');
-  await page.waitForSelector('text=Signed in as E2E');
-  await page.waitForFunction(() => /saved to your account/.test(document.querySelector('.store-note').textContent), null, { timeout: 10000 });
-  ok('store note: account', true);
-  await page.screenshot({ path: path.join(SHOTS, '04-signed-in.png') });
+  // 4. the guest game is in the cloud; a second "phone" joins with the guest id; then create a real account
+  await new Promise((r) => setTimeout(r, 1200));
   const exp1 = await admin('export');
-  const mine = exp1.games.filter((g) => exp1.users.find((u) => u.id === g.userId && u.name === 'E2E ' + stamp));
-  eq('game uploaded on sign-in', mine.length, 1);
+  const mine = exp1.games.filter((g) => exp1.users.find((u) => u.id === g.userId && u.name === 'guest-' + guestId));
+  eq('guest game uploaded', mine.length, 1);
   eq('uploaded hand count', mine[0].game.entries.length, 1);
   const gid = mine[0].game.id;
+  const ctx2 = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const p2 = await ctx2.newPage();
+  await p2.goto('http://127.0.0.1:8080/', { waitUntil: 'load' });
+  await p2.click('button:has-text("Continue as a guest")');
+  await p2.fill('#gj', guestId.toLowerCase());
+  await p2.click('button:has-text("Join")');
+  await p2.waitForSelector('.gcard', { timeout: 10000 });
+  eq('second phone sees the guest game', await p2.locator('.gcard').count(), 1);
+  await ctx2.close();
+  // account sheet shows the guest id and the 7-day notice
+  await page.click('.backbtn');
+  await page.click('button:has-text("Guest ' + guestId + '")');
+  await page.waitForSelector('.guestbox');
+  ok('guest id in account sheet', (await page.locator('.guestbox b').innerText()) === guestId);
+  ok('7-day notice', /7 days/.test(await page.locator('.sheet-body').innerText()));
+  await page.screenshot({ path: path.join(SHOTS, '04-guest-account.png') });
+  await page.click('.menu button:has-text("Sign out")');
+  await page.click('.sec button:has-text("Sign out")');
+  await page.waitForSelector('button:has-text("Create an account for your table")');
+  await page.click('button:has-text("Create an account for your table")');
+  await page.waitForSelector('#si-name');
+  await page.fill('#si-name', 'E2E ' + stamp);
+  await page.fill('#si-pin', 'pass 2468');
+  eq('password with space rejected client-side', await page.locator('.sheet-foot button:has-text("Create account")').isDisabled(), true);
+  await page.fill('#si-pin', 'table2468');
+  await page.click('.sheet-foot button:has-text("Create account")');
+  await page.waitForSelector('text=Signed in as E2E');
+  // import the guest game into this account by JSON later; for now this account has no games
+  eq('fresh account has no games', await page.locator('.gcard').count(), 0);
+  // import the exported guest game so the rest of the flow has a game
+  const gpath = path.join(SHOTS, 'guest-game.json');
+  fs.writeFileSync(gpath, JSON.stringify(mine[0].game));
+  await page.locator('input[type=file][accept=".json,application/json"]').setInputFiles(gpath);
+  await page.waitForSelector('text=Imported 1 game');
+  await page.waitForFunction(() => /saved to your account/.test(document.querySelector('.store-note').textContent), null, { timeout: 10000 });
+  await new Promise((r) => setTimeout(r, 800));
+  const expA = await admin('export');
+  const acctGames = expA.games.filter((g) => !g.deleted && expA.users.find((u) => u.id === g.userId && u.name === 'E2E ' + stamp));
+  eq('imported game re-id’d into the new account', acctGames.length, 1);
+  ok('and it kept its hand', acctGames[0].game.entries.length === 1 && acctGames[0].game.id !== gid);
+  await page.screenshot({ path: path.join(SHOTS, '04-signed-in.png') });
 
+  const gid2 = acctGames[0].game.id;
   // 5. photo scan (mock reader) → tiles filled → save → correction logged
   await page.click('.gcard');
   await page.waitForSelector('button:has-text("Record hand")');
@@ -143,7 +183,7 @@ function makeJpeg() {
   await page.waitForSelector('text=Hand saved');
   await new Promise((r) => setTimeout(r, 800));
   const scans = await admin('scans', { limit: 5 });
-  const sc = scans.scans.find((x) => x.game_id === gid);
+  const sc = scans.scans.find((x) => x.game_id === gid2);
   ok('scan row stored with parsed tiles', sc && sc.parsed && sc.status === 'ok', sc && sc.status);
   ok('correction (final) logged', sc && sc.final && sc.final.length > 10, sc && sc.final);
   ok('accuracy summary', scans.summary.compared >= 1 && scans.summary.tileAccuracy != null, scans.summary);
@@ -156,13 +196,17 @@ function makeJpeg() {
   ok('settlement rows', trows >= 1 && trows <= 3, trows);
   ok('settlement in Rupiah', /Rp/.test(await page.locator('.trow .ta').first().innerText()));
   ok('export buttons', (await page.locator('button:has-text("Full backup (JSON)")').count()) === 1);
+  const dlr = page.waitForEvent('download');
+  await page.click('button:has-text("Save recap image")');
+  const recap = await dlr; const recapPath = path.join(SHOTS, 'recap.png'); await recap.saveAs(recapPath);
+  ok('recap png saved', fs.statSync(recapPath).size > 20000, fs.statSync(recapPath).size);
   const dl = page.waitForEvent('download');
   await page.click('button:has-text("Full backup (JSON)")');
   const d = await dl;
   const backupPath = path.join(SHOTS, 'backup.json');
   await d.saveAs(backupPath);
   const backup = JSON.parse(fs.readFileSync(backupPath, 'utf8'));
-  eq('backup is the game', [backup.id, backup.entries.length], [gid, 2]);
+  eq('backup is the game', [backup.id, backup.entries.length], [gid2, 2]);
   await page.screenshot({ path: path.join(SHOTS, '06-standings.png') });
   await page.click('.sheet-head button[aria-label="Close"]');
 
@@ -179,18 +223,18 @@ function makeJpeg() {
   await page.waitForFunction(() => !/Saving/.test(document.body.textContent), null, { timeout: 10000 }).catch(() => {});
   await new Promise((r) => setTimeout(r, 1200));
   const exp2 = await admin('export');
-  eq('cloud copy has 1 hand after undo', exp2.games.find((g) => g.game.id === gid).game.entries.length, 1);
+  eq('cloud copy has 1 hand after undo', exp2.games.find((g) => g.game.id === gid2).game.entries.length, 1);
 
   // 9. sign out removes cloud copies here; sign in brings them back
   await page.click('.backbtn');
   await page.click('button:has-text("E2E ' + stamp + '")');
   await page.click('.menu button:has-text("Sign out")');
   await page.click('.sec button:has-text("Sign out")');
-  await page.waitForSelector('text=Signed out');
-  eq('no game cards after sign-out', await page.locator('.gcard').count(), 0);
+  await page.waitForSelector('button:has-text("Continue as a guest")');
+  eq('welcome again after sign-out', await page.locator('.gcard').count(), 0);
   await page.click('button:has-text("Sign in")');
   await page.fill('#si-name', 'E2E ' + stamp);
-  await page.fill('#si-pin', '2468');
+  await page.fill('#si-pin', 'table2468');
   await page.click('.sheet-foot button:has-text("Sign in")');
   await page.waitForSelector('text=Signed in as E2E');
   await page.waitForSelector('.gcard', { timeout: 10000 });
