@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mahjong Scorebook</title>
-<meta name="description" content="Keep mahjong scores for Hong Kong, Singapore, Riichi, Taiwanese and Chinese Official rules. Photograph the winning hand and it reads the tiles.">
+<meta name="description" content="Keep mahjong scores in points for Hong Kong, Singapore, Riichi, Taiwanese and Chinese Official rules. Photograph the winning hand and it reads the tiles.">
 <meta name="theme-color" content="#1D5C47">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@700&display=swap&text=%E4%B8%80%E4%BA%8C%E4%B8%89%E5%9B%9B%E4%BA%94%E5%85%AD%E4%B8%83%E5%85%AB%E4%B9%9D%E8%90%AC%E6%9D%B1%E5%8D%97%E8%A5%BF%E5%8C%97%E4%B8%AD%E7%99%BC%E6%A2%85%E8%98%AD%E8%8F%8A%E7%AB%B9%E6%98%A5%E5%A4%8F%E7%A7%8B%E5%86%AC%E8%B2%93%E9%BC%A0%E9%9B%9E%E8%9A%A3%E8%8E%8A%E9%BA%BB%E9%9B%80%E7%AD%92%E7%B4%A2%E5%AD%97%E8%8A%B1%E9%A6%99%E6%B8%AF%E6%96%B0%E5%8A%A0%E5%9D%A1%E7%AB%8B%E7%9B%B4%E5%8F%B0%E7%81%A3%E5%9B%BD%E6%A0%87%E8%87%AA%E8%A8%82%E5%B0%86%E5%B0%87%E6%91%B8%E5%87%BA%E9%8A%83%E6%94%BE%E7%82%AE%E6%A7%8D%E3%83%84%E3%83%A2%E3%83%AD%E3%83%B3%E7%82%B9%E5%92%8C%E6%B5%81%E5%B1%80%E8%B5%B7%E7%B3%8A%E7%88%86%E6%A3%9A%E5%BA%95">
-<script>window.API_URL = 'https://mahjong-api.maxondelberthakim.workers.dev'; window.BUILD = '8659f7ad0d'; window.LITE = false; window.BRAND = 'Mahjong Scorebook';</script>
+<script>window.API_URL = 'https://mahjong-api.maxondelberthakim.workers.dev'; window.BUILD = '15a87ec594'; window.LITE = false; window.BRAND = 'Mahjong Scorebook';</script>
 <style>
 :root{
   --ground:#F2F2F7;--paper:#FFFFFF;--paper-2:#F7F7FA;--fill:rgba(120,120,128,.12);--fill-2:rgba(120,120,128,.2);
@@ -395,7 +395,7 @@ button.tile:active{transform:translateY(1px)}
 .copybox{width:100%;min-height:150px;font-variant-numeric:tabular-nums;font-size:13px;padding:10px;border-radius:10px;border:0;background:var(--fill)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:70;background:rgba(28,28,30,.92);color:#fff;padding:9px 10px 9px 16px;border-radius:14px;display:flex;gap:10px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:calc(100% - 32px);font-weight:500;font-size:15px;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);animation:rise .28s cubic-bezier(.2,.8,.2,1)}
 .toast button{border:0;background:rgba(255,255,255,.16);color:inherit;font-weight:600;border-radius:9px;min-height:34px;padding:0 12px}
-/* account & settlement */
+/* account */
 .acct{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;font-size:14px;color:var(--muted)}
 .acct b{color:var(--ink-2)}
 .pinbox{letter-spacing:.18em;font-variant-numeric:tabular-nums}
@@ -735,12 +735,12 @@ button.tile:active{transform:translateY(1px)}
   }
   const HK = {
     id: 'hk', name: 'Hong Kong', native: '香港麻雀', unit: 'faan', handSize: 13,
-    blurb: 'Faan, 3 to win, half-spicy payouts',
+    blurb: 'Faan, 3 to win, half-spicy scoring',
     settings: [
       { key: 'minFaan', label: 'Faan needed to win', zh: '起糊', type: 'int', min: 0, max: 8, def: 3 },
       { key: 'maxFaan', label: 'Limit', zh: '爆棚', type: 'int', min: 5, max: 13, def: 10 },
-      { key: 'table', label: 'Payout table', type: 'select', def: 'half', options: [['half', 'Half-spicy 半辣 — doubles every 2 faan above 4'], ['full', 'Full-spicy 全辣 — doubles every faan']] },
-      { key: 'pay', label: 'On a discard', type: 'select', def: 'full', options: [['full', 'Full-gun 全銃 — discarder pays all'], ['half', 'Half-gun 半銃 — discarder pays half, others a quarter each']] },
+      { key: 'table', label: 'Scoring table', type: 'select', def: 'half', options: [['half', 'Half-spicy 半辣 — doubles every 2 faan above 4'], ['full', 'Full-spicy 全辣 — doubles every faan']] },
+      { key: 'pay', label: 'On a discard', type: 'select', def: 'full', options: [['full', 'Full-gun 全銃 — discarder loses all the points'], ['half', 'Half-gun 半銃 — discarder loses half, others a quarter each']] },
       { key: 'flowers', label: 'Play with flowers', type: 'bool', def: true },
       { key: 'concealedWithFlowers', label: 'Count 門前清 even with flowers', type: 'bool', def: false },
       { key: 'keepOnDraw', label: 'Dealer stays on a draw', type: 'bool', def: true },
@@ -856,12 +856,12 @@ button.tile:active{transform:translateY(1px)}
     settings: [
       { key: 'minTai', label: 'Tai needed to win', type: 'int', min: 0, max: 4, def: 1 },
       { key: 'maxTai', label: 'Tai cap', type: 'int', min: 3, max: 10, def: 5 },
-      { key: 'pay', label: 'On a discard', type: 'select', def: 'standard', options: [['standard', 'Shooter pays double, others single'], ['all', 'Shooter pays for everyone'], ['only', 'Only the shooter pays (double)']] },
+      { key: 'pay', label: 'On a discard', type: 'select', def: 'standard', options: [['standard', 'Shooter loses double, others single'], ['all', 'Shooter loses the points for everyone'], ['only', 'Only the shooter loses points (double)']] },
       { key: 'strictPingHu', label: 'Ping Hu needs a plain pair and a two-sided wait', type: 'bool', def: true },
       { key: 'keepOnDraw', label: 'Dealer stays on a draw', type: 'bool', def: true },
     ],
     patterns: [
-      P('selfDraw', 'Self-draw', '自摸', 0, 'win', { src: 'how', note: 'Self-draw already doubles the payout. Some tables add 1 tai.' }),
+      P('selfDraw', 'Self-draw', '自摸', 0, 'win', { src: 'how', note: 'Self-draw already doubles the points. Some tables add 1 tai.' }),
       P('concealedSelfDraw', 'Fully concealed self-draw', '门清自摸', 0, 'win', { note: 'House rule, often 1 tai' }),
       P('lastTile', 'Win on the last tile', '海底捞月', 1, 'win', { flag: true }),
       P('robbingKong', 'Robbing a kong', '抢杠', 1, 'win', { flag: true }),
@@ -1349,7 +1349,7 @@ button.tile:active{transform:translateY(1px)}
     blurb: '81 fan, 8 to win. Tick the fan yourself',
     settings: [
       { key: 'minFan', label: 'Fan needed to win (flowers excluded)', type: 'int', min: 0, max: 20, def: 8 },
-      { key: 'base', label: 'Base points each opponent pays', type: 'int', min: 0, max: 100, def: 8 },
+      { key: 'base', label: 'Base points from each opponent', type: 'int', min: 0, max: 100, def: 8 },
     ],
     patterns: MCR_LIST.map(([id, en, zh, fan, max]) => P(id, en, zh, fan, 'f' + fan, { max: max || 1, src: id === 'selfDrawn' ? 'how' : undefined })),
     fixedValues: true,
@@ -1383,10 +1383,10 @@ button.tile:active{transform:translateY(1px)}
   /* ========================================================== CUSTOM */
   const CUSTOM = {
     id: 'custom', name: 'Custom points', native: '自訂', unit: 'pts', handSize: 13, manualOnly: true, valueEntry: true,
-    blurb: 'Type the hand value, choose who pays',
+    blurb: 'Type the hand value, choose who loses the points',
     settings: [
-      { key: 'discard', label: 'On a discard', type: 'select', def: 'discarder', options: [['discarder', 'Discarder pays the value'], ['double', 'Discarder pays double, others single']] },
-      { key: 'selfMult', label: 'Self-draw: each player pays × value', type: 'int', min: 1, max: 4, def: 1 },
+      { key: 'discard', label: 'On a discard', type: 'select', def: 'discarder', options: [['discarder', 'Discarder loses the value'], ['double', 'Discarder loses double, others single']] },
+      { key: 'selfMult', label: 'Self-draw: each player loses × value', type: 'int', min: 1, max: 4, def: 1 },
       { key: 'keepOnDraw', label: 'Dealer stays on a draw', type: 'bool', def: true },
     ],
     patterns: [],
@@ -1750,12 +1750,6 @@ button.tile:active{transform:translateY(1px)}
   const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const WZ = MJ.WINDS_ZH;
-  function moneyFor(g, pts) {
-    const m = g.money || {};
-    if (!+m.per) return '';
-    const v = g.ruleset === 'riichi' ? (pts / 1000) * m.per : pts * m.per;
-    return (v > 0.004 ? '+' : v < -0.004 ? '−' : '') + (m.symbol ? m.symbol + ' ' : '') + fmt(Math.abs(v));
-  }
   function ago(ts) {
     const s = Math.max(0, (Date.now() - ts) / 1000);
     if (s < 60) return 'just now';
@@ -1802,7 +1796,7 @@ button.tile:active{transform:translateY(1px)}
     image: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 16l5-5 4 4 3-3 4 4"/><circle cx="15.5" cy="9" r="1.4"/></svg>`,
     tiles: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3.5" y="5" width="7" height="10" rx="1.5"/><rect x="13.5" y="5" width="7" height="10" rx="1.5"/><path d="M4 18.5h16"/></svg>`,
     rules: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 5h14M5 12h14M5 19h9"/></svg>`,
-    coins: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="7" rx="7" ry="3"/><path d="M5 7v5c0 1.7 3.1 3 7 3s7-1.3 7-3V7M5 12v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5"/></svg>`,
+    adjust: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 8h6M8 5v6M13 16h6"/><circle cx="12" cy="12" r="9.5"/></svg>`,
     people: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6"/><circle cx="17" cy="9" r="2.6"/><path d="M16 14.6c2.2 0 3.8 1.3 4.5 3.9"/></svg>`,
     flag: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 21V4h11l-2 4 2 4H5"/></svg>`,
     trash: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>`,
@@ -2081,12 +2075,12 @@ button.tile:active{transform:translateY(1px)}
   /* ------------------------------------------------ names & recap image */
   const isGuest = (u) => !!(u && (u.guest || /^guest-/.test(u.name || '')));
   const displayName = (u) => (u ? (isGuest(u) ? 'Guest ' + u.name.replace(/^guest-/, '') : u.name) : '');
-  // Draws the whole match (standings, settlement, every hand) onto a canvas and returns a PNG blob.
+  // Draws the whole match (standings, every hand) onto a canvas and returns a PNG blob.
   async function recapImage(game) {
     const R = RULES[game.ruleset], rows = MJ.standings(game), riichi = game.ruleset === 'riichi';
     const hands = game.entries;
     const W = 1080, pad = 48, lh = 40, lh2 = 66;
-    const H = 420 + rows.length * 52 + 40 + Math.max(1, hands.length) * (lh2 + 6) + 160;
+    const H = 360 + rows.length * 52 + 40 + Math.max(1, hands.length) * (lh2 + 6) + 120;
     const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
     const x = cv.getContext('2d');
     x.fillStyle = '#FBFCF9'; x.fillRect(0, 0, W, H);
@@ -2102,18 +2096,9 @@ button.tile:active{transform:translateY(1px)}
       x.fillStyle = '#5E6E67'; x.fillText(String(i + 1), pad, y);
       x.fillStyle = '#17231E'; x.fillText(pname(game, r.p), pad + 50, y);
       const main = riichi ? fmt(r.points) + ' pts (' + (r.final > 0 ? '+' : '') + r.final + ')' : signed(r.points) + ' pts';
-      const m = riichi ? moneyFor(game, (r.final || 0) * 1000) : moneyFor(game, r.points);
       x.textAlign = 'right'; x.fillStyle = (riichi ? r.final : r.points) >= 0 ? '#15784A' : '#BE3A2C';
-      x.fillText(main + (m ? '   ' + m : ''), W - pad, y); x.textAlign = 'left';
+      x.fillText(main, W - pad, y); x.textAlign = 'left';
     });
-    const hasMoney = +(game.money && game.money.per) > 0;
-    const nets = hasMoney ? MJ.moneyNets(game) : (riichi ? rows.reduce((a, r) => { a[r.p] = (r.final || 0) * 1000; return a; }, [0, 0, 0, 0]) : MJ.totals(game));
-    const transfers = MJ.settle(nets);
-    if (transfers.length) {
-      y += 60; x.fillStyle = '#17231E'; x.font = '700 30px system-ui, sans-serif'; x.fillText('Settle up', pad, y);
-      x.font = '400 26px system-ui, sans-serif';
-      transfers.forEach((t) => { y += 38; x.fillStyle = '#3A4942'; x.fillText(pname(game, t.from) + ' pays ' + pname(game, t.to) + '  ' + (hasMoney ? moneyText(game, t.amount) : riichi ? fmt(t.amount / 1000) : fmt(t.amount) + ' pts'), pad, y); });
-    }
     y += 70; x.fillStyle = '#17231E'; x.font = '700 30px system-ui, sans-serif'; x.fillText('Every hand', pad, y); y += 14;
     x.font = '400 22px system-ui, sans-serif';
     const cols = [pad, pad + 60, pad + 200, pad + 520];
@@ -2124,7 +2109,7 @@ button.tile:active{transform:translateY(1px)}
     for (const e of hands) {
       y += lh; x.fillStyle = '#17231E'; x.font = '400 22px system-ui, sans-serif';
       let sub = '';
-      if (e.kind === 'side') { x.fillText('·', cols[0], y); x.fillText('Payout', cols[1], y); x.fillText(e.label.slice(0, 40), cols[2], y); }
+      if (e.kind === 'side') { x.fillText('·', cols[0], y); x.fillText('Adjustment', cols[1], y); x.fillText(e.label.slice(0, 40), cols[2], y); }
       else {
         n++; x.fillText(String(n), cols[0], y); x.fillText(MJ.roundLabel(game, e.before).replace(' · ', ' '), cols[1], y);
         const who = e.outcome === 'draw' ? 'Draw' : pname(game, e.winner) + (e.how === 'self' ? ' self-drew' : ' won off ' + pname(game, e.discarder));
@@ -2192,7 +2177,7 @@ button.tile:active{transform:translateY(1px)}
 
   /* ------------------------------------------------ example game */
   function exampleGame() {
-    const g = MJ.newGame({ ruleset: 'hk', players: [{ name: 'Ah Mei' }, { name: 'Budi' }, { name: 'Chris' }, { name: 'Dewi' }], money: { per: 1000, symbol: 'Rp' } });
+    const g = MJ.newGame({ ruleset: 'hk', players: [{ name: 'Ah Mei' }, { name: 'Budi' }, { name: 'Chris' }, { name: 'Dewi' }] });
     g.example = true; g.name = 'Example game';
     const T = (s, win, melds, bonus) => ({ hand: MJ.parse(s), melds: melds || [], win, bonus: bonus || [] });
     const hands = [
@@ -2261,12 +2246,10 @@ button.tile:active{transform:translateY(1px)}
     const plate = (p) => {
       const seat = MJ.seatOf(game, p), dealer = st.dealer === p;
       const net = t[p] - start;
-      const m = moneyFor(game, net);
       return html`<div class=${'plate' + (dealer ? ' is-dealer' : '')}>
         ${dealer ? html`<span class="dealer-mark" title="Dealer" aria-label="Dealer">莊</span>` : null}
         <span class="ph"><${Tile} code=${(seat + 1) + 'z'} size="xs" label=${MJ.WINDS[seat] + ' seat'} /><span class="pn">${pname(game, p)}</span></span>
         <span class=${'ps ' + (riichi ? '' : cls(net))}>${riichi ? fmt(t[p]) : signed(t[p])}</span>
-        ${m ? html`<span class="pm">${m}</span>` : null}
       </div>`;
     };
     return html`<div class=${'table' + (compact ? ' compact' : '') + (riichi ? ' is-riichi' : '')}>
@@ -2315,7 +2298,7 @@ button.tile:active{transform:translateY(1px)}
           ${isOpen ? html`<div class="ldetail">
             ${e.kind === 'hand' ? html`<p class="hint">${MJ.roundLabel(game, e.before)} · dealer ${pname(game, e.before.dealer)} · ${new Date(e.at).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</p>` : null}
             ${e.tiles ? html`<${HandView} tiles=${e.tiles} size="sm" />` : null}
-            ${e.kind === 'hand' && e.outcome === 'win' ? html`<p style=${{ fontSize: '14px' }}><b>${e.text}</b>${e.liable != null ? ' · ' + pname(game, e.liable) + ' paid for everyone' : ''}</p>` : null}
+            ${e.kind === 'hand' && e.outcome === 'win' ? html`<p style=${{ fontSize: '14px' }}><b>${e.text}</b>${e.liable != null ? ' · ' + pname(game, e.liable) + ' covered the whole hand' : ''}</p>` : null}
           </div>` : null}
         </div>`;
       })}</div>` : html`<p class="empty">No hands yet. Tap <b>Record hand</b> after each hand.</p>`}
@@ -2488,7 +2471,7 @@ button.tile:active{transform:translateY(1px)}
     fourKongs: { d: 'Four kongs and a pair.', ex: EX('55z', '5z', { melds: [{ type: 'kan', tile: '1m' }, { type: 'kan', tile: '2p' }, { type: 'kan', tile: '3s' }, { type: 'kan', tile: '1z', concealed: true }] }) },
     sevenPairs: { d: 'Seven different pairs, fully concealed.', ex: EX('11m 22p 33s 44m 55p 66s 77z', '7z') },
     /* Riichi */
-    riichi: { d: 'You declared riichi (bet 1,000 points) when your closed hand was one tile away, then won.' },
+    riichi: { d: 'You declared riichi (put 1,000 points on the table as a stick) when your closed hand was one tile away, then won.' },
     doubleRiichi: { d: 'Riichi declared on your very first discard.' },
     ippatsu: { d: 'Won within one go-round after declaring riichi, with no calls in between.' },
     menzenTsumo: { d: 'Closed hand finished by self-draw.', ex: EX('123m 456p 789s 111z 55z', '5z') },
@@ -2629,7 +2612,7 @@ button.tile:active{transform:translateY(1px)}
     const summary = () => {
       if (!win) {
         const any = pays.some((x) => Math.abs(x) > 0.004);
-        return html`<div class="sumv"><b>Draw</b><span>${any ? 'Tenpai payments and riichi sticks below' : 'No payments'}</span></div>`;
+        return html`<div class="sumv"><b>Draw</b><span>${any ? 'Tenpai points and riichi sticks below' : 'No points change hands'}</span></div>`;
       }
       if (!res.valid) return html`<div class="sumv"><b>${res.text || 'Not ready'}</b><span class="err">${res.reason}</span></div>`;
       return html`<div class="sumv"><b>${res.text}</b><span>${res.detail || ''}</span></div>`;
@@ -2741,7 +2724,7 @@ button.tile:active{transform:translateY(1px)}
             </div>
           </details>
         </div>` : null}
-        ${R.id !== 'riichi' && R.id !== 'mcr' ? html`<div class="sec"><details><summary class="flabel" style=${{ cursor: 'pointer', minHeight: '32px' }}>One player pays for everyone (包)</summary>
+        ${R.id !== 'riichi' && R.id !== 'mcr' ? html`<div class="sec"><details><summary class="flabel" style=${{ cursor: 'pointer', minHeight: '32px' }}>One player covers the whole hand (包)</summary>
           <p class="hint" style=${{ margin: '8px 0' }}>Use when a player is liable, for example they fed the tile that completed a limit hand.</p>
           <div class="chips">
             <button type="button" class="chip" aria-pressed=${d.liable == null ? 'true' : 'false'} onClick=${() => up({ liable: null })}>Nobody</button>
@@ -2750,14 +2733,14 @@ button.tile:active{transform:translateY(1px)}
       ` : html`
         <div class="sec">${riichi ? html`<h3>Who was tenpai?</h3>
           <${PlayerChips} game=${game} multi=${true} value=${d.draw.tenpai} onPick=${(p) => up((prev) => ({ draw: Object.assign({}, prev.draw, { tenpai: toggleIn(prev.draw.tenpai, p) }) }))} />
-          <div class="toggle-row"><span class="tl"><b>Abortive draw</b><small>No tenpai payments; dealer stays</small></span><${Switch} on=${d.draw.abortive} onChange=${(v) => up((prev) => ({ draw: Object.assign({}, prev.draw, { abortive: v }) }))} label="Abortive draw" /></div>`
-          : html`<p>No one won. Nothing is paid.</p><p class="hint">${R.id === 'mcr' ? 'The dealer passes to the next seat.' : R.id === 'tw' || game.settings.keepOnDraw ? 'The dealer stays for the next hand.' : 'The dealer passes to the next seat.'}</p>`}</div>`}
+          <div class="toggle-row"><span class="tl"><b>Abortive draw</b><small>No tenpai points; dealer stays</small></span><${Switch} on=${d.draw.abortive} onChange=${(v) => up((prev) => ({ draw: Object.assign({}, prev.draw, { abortive: v }) }))} label="Abortive draw" /></div>`
+          : html`<p>No one won. No points change hands.</p><p class="hint">${R.id === 'mcr' ? 'The dealer passes to the next seat.' : R.id === 'tw' || game.settings.keepOnDraw ? 'The dealer stays for the next hand.' : 'The dealer passes to the next seat.'}</p>`}</div>`}
       ${viewPhoto && scan ? html`<div class="photo-view" role="dialog" aria-label="Photo" onClick=${() => setViewPhoto(false)}><img src=${scan.url} alt="Photo of the hand" /></div>` : null}
     <//>`;
   }
 
-  /* ------------------------------------------------ payout / adjustment */
-  function PayoutSheet({ game, onClose, onSaved }) {
+  /* ------------------------------------------------ point adjustment */
+  function AdjustSheet({ game, onClose, onSaved }) {
     const R = RULES[game.ruleset];
     const [mode, setMode] = useState('each');
     const [who, setWho] = useState(null);
@@ -2776,22 +2759,22 @@ button.tile:active{transform:translateY(1px)}
     function save() {
       if (!ok) return;
       const g = clone(game);
-      const txt = label.trim() || (mode === 'each' ? pname(game, who) + ' collects ' + fmt(a) + ' from each' : mode === 'all' ? pname(game, who) + ' pays ' + fmt(a) + ' to each' : pname(game, other) + ' pays ' + pname(game, who));
+      const txt = label.trim() || (mode === 'each' ? pname(game, who) + ' +' + fmt(a) + ' from each player' : mode === 'all' ? pname(game, who) + ' −' + fmt(a) + ' to each player' : pname(game, other) + ' −' + fmt(a) + ' to ' + pname(game, who));
       MJ.recordSide(g, deltas, txt);
       onSaved(g);
     }
-    return html`<${Sheet} title="Payout or adjustment" sub="Kong money, bites, penalties, corrections" onClose=${onClose}
+    return html`<${Sheet} title="Adjust points" sub="Kong bonuses, penalties, corrections" onClose=${onClose}
       foot=${html`<div class="sumrow"><div class="pays" style=${{ marginTop: 0 }}>${ok ? deltas.map((x, p) => html`<span class=${cls(x)}><small>${pname(game, p)}</small>${signed(x)}</span>`) : html`<span class="muted">Pick a player and an amount</span>`}</div><button type="button" class="btn primary" disabled=${!ok} onClick=${save}>Save</button></div>`}>
-      ${R.instant ? html`<div class="sec"><h3>Instant payouts</h3><div class="chips">${R.instant.map((x) => html`<button type="button" class="chip" onClick=${() => { setMode('each'); setAmt(String(x.each)); setLabel(x.en + (x.zh ? ' ' + x.zh : '')); }}>${x.zh ? html`<span class="cw">${x.zh}</span>` : null}${x.en} · ${x.each}</button>`)}</div><p class="hint">Each other player pays the winner of the bonus. Amounts are editable below.</p></div>` : null}
+      ${R.instant ? html`<div class="sec"><h3>Bonus points</h3><div class="chips">${R.instant.map((x) => html`<button type="button" class="chip" onClick=${() => { setMode('each'); setAmt(String(x.each)); setLabel(x.en + (x.zh ? ' ' + x.zh : '')); }}>${x.zh ? html`<span class="cw">${x.zh}</span>` : null}${x.en} · ${x.each}</button>`)}</div><p class="hint">Each other player gives the points to the player who earned the bonus. Amounts can be changed below.</p></div>` : null}
       <div class="sec"><h3>Type</h3>
-        <${Seg} label="Payment type" value=${mode} onChange=${setMode} options=${[['each', 'Everyone pays one'], ['all', 'One pays everyone'], ['one', 'One pays one']]} />
+        <${Seg} label="Adjustment type" value=${mode} onChange=${setMode} options=${[['each', 'One gains from all'], ['all', 'One gives to all'], ['one', 'One to one']]} />
       </div>
-      <div class="sec"><h3>${mode === 'each' ? 'Who collects' : mode === 'all' ? 'Who pays' : 'Who receives'}</h3>
+      <div class="sec"><h3>${mode === 'all' ? 'Who gives the points' : 'Who gains the points'}</h3>
         <${PlayerChips} game=${game} value=${who} onPick=${setWho} />
-        ${mode === 'one' ? html`<p class="flabel">Who pays</p><${PlayerChips} game=${game} value=${other} exclude=${who} onPick=${setOther} />` : null}
+        ${mode === 'one' ? html`<p class="flabel">Who gives them</p><${PlayerChips} game=${game} value=${other} exclude=${who} onPick=${setOther} />` : null}
       </div>
       <div class="sec">
-        <div class="field"><label for="pa">Amount ${mode === 'one' ? '' : 'per player'} (${unit})</label><input id="pa" class="input num" inputmode="decimal" value=${amt} onInput=${(e) => setAmt(e.target.value)} placeholder="e.g. 2" /></div>
+        <div class="field"><label for="pa">Points ${mode === 'one' ? '' : 'per player'} (${unit})</label><input id="pa" class="input num" inputmode="decimal" value=${amt} onInput=${(e) => setAmt(e.target.value)} placeholder="e.g. 2" /></div>
         <div class="field"><label for="pl">Note (optional)</label><input id="pl" class="input" value=${label} onInput=${(e) => setLabel(e.target.value.slice(0, 60))} placeholder="e.g. 詐糊 false win" /></div>
       </div>
     <//>`;
@@ -2813,32 +2796,28 @@ button.tile:active{transform:translateY(1px)}
   const PREF_KEY = 'mjsb.pref';
   function loadPref() { try { return JSON.parse(lsGet(PREF_KEY) || '{}') || {}; } catch (e) { return {}; } }
   function Setup({ onCancel, onCreate }) {
-    // Smart defaults: the last table's rules, names and stakes are already filled in, so this is "scan and adjust", not "fill in".
+    // Smart defaults: the last table's rules and names are already filled in, so this is "scan and adjust", not "fill in".
     const pref = useMemo(loadPref, []);
     const lastGame = useMemo(() => Store.list()[0] || null, []);
     const [rs, setRs] = useState(pref.rs && RULES[pref.rs] ? pref.rs : 'hk');
     const [names, setNames] = useState(() => (pref.names && pref.names.length === 4 ? pref.names.slice() : lastGame ? lastGame.players.map((p) => p.name) : ['', '', '', '']));
     const [settings, setSettings] = useState({});
-    const [per, setPer] = useState(pref.per != null ? String(pref.per || '') : '');
-    const [sym, setSym] = useState(pref.sym != null ? pref.sym : 'Rp');
-    const [stakesSeen, setStakesSeen] = useState(false);
     const R = RULES[rs];
     const S = Object.assign({}, MJ.newGame({ ruleset: rs, players: [{}, {}, {}, {}] }).settings, settings);
     const namesDone = names.filter((n) => n.trim()).length >= 2;
-    const stakesDone = stakesSeen || per !== '';
     // Head start: the rules are already chosen, so the bar never starts at zero.
-    const done = 1 + (namesDone ? 1 : 0) + (stakesDone ? 1 : 0);
-    const pct = Math.round((done / 4) * 100);
+    const done = 1 + (namesDone ? 1 : 0);
+    const pct = Math.round((done / 3) * 100);
     const prefilled = !!(pref.names && pref.names.some((n) => n)) || !!lastGame;
     function create() {
-      const g = MJ.newGame({ ruleset: rs, players: names.map((n, i) => ({ name: n.trim() || 'Player ' + (i + 1) })), settings: S, money: { per: +per || 0, symbol: sym.trim() } });
-      lsSet(PREF_KEY, JSON.stringify({ rs, names: names.map((n) => n.trim()), per: +per || 0, sym: sym.trim() }));
+      const g = MJ.newGame({ ruleset: rs, players: names.map((n, i) => ({ name: n.trim() || 'Player ' + (i + 1) })), settings: S });
+      lsSet(PREF_KEY, JSON.stringify({ rs, names: names.map((n) => n.trim()) }));
       onCreate(g);
     }
     return html`<div class="topbar"><div class="topbar-in"><button type="button" class="backbtn" onClick=${onCancel}>${I.back}Back</button><div class="ttl"><b>New table</b></div><span style=${{ width: '64px' }}></span></div></div>
       <main class="wrap">
         <div style=${{ marginTop: '12px' }}>
-          <div class="steps"><span><b>${done} of 4</b> ready</span><span>${done >= 3 ? 'Just tap Start' : namesDone ? 'Stakes are optional' : 'Add the players'}</span></div>
+          <div class="steps"><span><b>${done} of 3</b> ready</span><span>${done >= 2 ? 'Just tap Start' : 'Add the players'}</span></div>
           <div class="progress" role="progressbar" aria-valuenow=${pct} aria-valuemin="0" aria-valuemax="100"><i style=${{ width: pct + '%' }}></i></div>
         </div>
         <div class="sec"><h3>Rules ${pref.rs ? '· same as last time' : ''}</h3>
@@ -2856,15 +2835,6 @@ button.tile:active{transform:translateY(1px)}
             <div class="settings">${R.settings.map((s) => html`<${SettingControl} s=${s} value=${S[s.key]} onChange=${(v) => setSettings(Object.assign({}, settings, { [s.key]: v }))} />`)}
             ${R.id === 'hk' || R.id === 'sg' || R.id === 'tw' ? html`<p class="hint">Pattern values can be changed per game from the game menu.</p>` : null}</div>
           </details></div>
-        </div>
-        <div class="sec"><h3>Stakes · optional</h3>
-          <div class="card" style=${{ padding: '12px 16px 14px' }} onFocusCapture=${() => setStakesSeen(true)}>
-            <div class="row" style=${{ alignItems: 'end' }}>
-              <div class="field" style=${{ flex: '0 0 96px' }}><label for="sym">Currency</label><input id="sym" class="input" value=${sym} maxlength="4" onInput=${(e) => setSym(e.target.value)} /></div>
-              <div class="field" style=${{ flex: '1 1 160px' }}><label for="per">${rs === 'riichi' ? 'Per 1,000 points' : 'Per point'}</label><input id="per" class="input num" inputmode="decimal" value=${per} placeholder="Points only" onInput=${(e) => setPer(e.target.value)} /></div>
-            </div>
-            <p class="hint" style=${{ marginTop: '8px' }}>Leave it empty to score in points only. You can set it later from Rules and values.</p>
-          </div>
         </div>
         <div class="sec"><button type="button" class="btn primary big block" onClick=${create}>Start the table</button></div>
       </main>`;
@@ -2909,7 +2879,7 @@ button.tile:active{transform:translateY(1px)}
     const lines = [head.map(esc).join(',')];
     let n = 0;
     for (const e of game.entries) {
-      if (e.kind === 'side') { lines.push([''].concat(['', 'Payout', '', '', '', '', e.label]).concat(e.deltas).map(esc).join(',')); continue; }
+      if (e.kind === 'side') { lines.push([''].concat(['', 'Adjustment', '', '', '', '', e.label]).concat(e.deltas).map(esc).join(',')); continue; }
       n++;
       lines.push([n, MJ.roundLabel(game, e.before), e.outcome, e.winner != null ? pname(game, e.winner) : '', e.how || '', e.discarder != null ? pname(game, e.discarder) : '', e.outcome === 'win' ? e.text : '', (e.patterns || []).join(' + ')].concat(e.deltas).map(esc).join(','));
     }
@@ -2924,15 +2894,10 @@ button.tile:active{transform:translateY(1px)}
     rows.forEach((r, i) => {
       const riichi = game.ruleset === 'riichi';
       const main = riichi ? fmt(r.points) + ' (' + (r.final > 0 ? '+' : '') + r.final + ')' : signed(r.points);
-      const m = riichi ? moneyFor(game, (r.final || 0) * 1000) : moneyFor(game, r.points);
-      out.push((i + 1) + '. ' + pname(game, r.p) + '  ' + main + (m ? '  ' + m : ''));
+      out.push((i + 1) + '. ' + pname(game, r.p) + '  ' + main);
     });
     out.push(game.entries.filter((e) => e.kind === 'hand').length + ' hands');
     return out.join('\n');
-  }
-  function moneyText(game, v) {
-    const m = game.money || {};
-    return (m.symbol ? m.symbol + ' ' : '') + fmt(Math.abs(v));
   }
   function EndSheet({ game, onClose, onSaved, onToast }) {
     const rows = MJ.standings(game);
@@ -2951,29 +2916,19 @@ button.tile:active{transform:translateY(1px)}
       } catch (e) { if (!(e && e.name === 'AbortError')) { try { downloadText(name, data, type); onToast('Download started'); } catch (e2) { onToast('That export didn’t work here'); } } }
     }
     const stamp = new Date(game.createdAt).toISOString().slice(0, 10);
-    const hasMoney = +(game.money && game.money.per) > 0;
-    const nets = hasMoney ? MJ.moneyNets(game) : (riichi ? rows.reduce((a, r) => { a[r.p] = (r.final || 0) * 1000; return a; }, [0, 0, 0, 0]) : MJ.totals(game));
-    const transfers = MJ.settle(nets);
-    const amountText = (v) => hasMoney ? moneyText(game, v) : riichi ? fmt(v / 1000) : fmt(v) + ' pts';
     return html`<${Sheet} title="Standings" sub=${RULES[game.ruleset].name + (game.finished ? ' · finished' : ' · in progress')} onClose=${onClose}
       foot=${html`<div class="row" style=${{ justifyContent: 'space-between' }}>
         <button type="button" class="btn" onClick=${() => { const g = clone(game); g.finished = !g.finished; onSaved(g); }}>${game.finished ? 'Reopen game' : 'Finish game'}</button>
         <button type="button" class="btn primary" onClick=${copy}>Copy summary</button></div>`}>
       <div class="sec stand">${rows.map((r, i) => html`<div class="srow"><span class="srank">${i + 1}</span><span class="snm">${pname(game, r.p)}</span>
-        <span class="sval">${riichi ? html`${(r.final > 0 ? '+' : '') + r.final}<small>${fmt(r.points)} pts</small>` : html`<span class=${cls(r.points)}>${signed(r.points)}</span>`}
-        ${riichi ? (moneyFor(game, (r.final || 0) * 1000) ? html`<small>${moneyFor(game, (r.final || 0) * 1000)}</small>` : null) : moneyFor(game, r.points) ? html`<small>${moneyFor(game, r.points)}</small>` : null}</span></div>`)}
+        <span class="sval">${riichi ? html`${(r.final > 0 ? '+' : '') + r.final}<small>${fmt(r.points)} pts</small>` : html`<span class=${cls(r.points)}>${signed(r.points)}</span>`}</span></div>`)}
       ${riichi ? html`<p class="hint" style=${{ marginTop: '10px' }}>Final = (points − ${fmt(game.settings.returnPoints)}) ÷ 1,000 + uma, with the oka and any sticks left on the table to first place.</p>` : null}</div>
-      <div class="sec"><h3>Settle up</h3>
-        ${transfers.length ? html`<div class="settle">${transfers.map((t, k) => html`<div class="trow" key=${k}><span class="tw">${pname(game, t.from)}<em>pays</em>${pname(game, t.to)}</span><span class="ta">${amountText(t.amount)}</span></div>`)}</div>
-          <p class="hint">${hasMoney ? 'The fewest transfers that settle everyone at ' + moneyText(game, game.money.per) + (riichi ? ' per 1,000 points.' : ' per point.') : 'No stakes were set for this game, so this is in ' + (riichi ? 'final score units.' : 'points.') + ' Set money per point under Rules and values.'}</p>`
-        : html`<p class="hint">Nobody owes anything yet.</p>`}
-      </div>
       ${copyText ? html`<div class="sec"><p class="hint">Copying isn’t allowed here. Select the text and copy it yourself.</p><textarea class="copybox" readonly value=${copyText} onFocus=${(e) => e.target.select()}></textarea></div>` : null}
       <div class="sec"><h3>Export</h3><div class="row">
         <button type="button" class="btn primary" onClick=${() => saveRecap(game, onToast).catch(() => onToast('Could not make the recap image'))}>Save recap image</button>
         <button type="button" class="btn" onClick=${() => exportFile('mahjong-' + stamp + '.csv', csvOf(game), 'text/csv')}>Hands as CSV</button>
         <button type="button" class="btn" onClick=${() => exportFile('mahjong-' + stamp + '.json', JSON.stringify(game, null, 1), 'application/json')}>Full backup (JSON)</button>
-      </div><p class="hint">Without a recap this match disappears: tables unused for ${Store.inactiveDays} days are deleted. The image keeps the standings, who pays whom and every hand. ${share ? 'Files open the share sheet, so you can save them or send them to a friend.' : 'Files download to this device.'} A JSON backup can be imported again from the home screen.</p></div>
+      </div><p class="hint">Without a recap this match disappears: tables unused for ${Store.inactiveDays} days are deleted. The image keeps the standings and every hand. ${share ? 'Files open the share sheet, so you can save them or send them to a friend.' : 'Files download to this device.'} A JSON backup can be imported again from the home screen.</p></div>
     <//>`;
   }
 
@@ -3001,25 +2956,25 @@ button.tile:active{transform:translateY(1px)}
         ${game.example ? html`<div class="banner"><p><b>Example table.</b> Try recording a hand — nothing here is saved.</p><button type="button" class="btn small primary" onClick=${onNewGame}>Set up your table</button></div>` : null}
         <div style=${{ marginTop: '14px' }}><${TableHero} game=${game} /></div>
         ${showKeep ? html`<div class="banner keep"><p><b>Only on this phone so far.</b> Clear the browser and ${hands === 1 ? 'this entry is' : 'these ' + hands + ' entries are'} gone. Keep the table and everyone at it can see and edit the same scorebook.</p><span class="row"><button type="button" class="btn small primary" onClick=${() => onSignIn('create')}>Keep this table</button><button type="button" class="btn small ghost" onClick=${() => { setKeepLater(true); lsSet('mjsb.keepLater', game.id); }}>Later</button></span></div>` : null}
-        ${done && !game.finished ? html`<div class="banner gold"><p><b>Last round done.</b> Save the recap before this table is cleared — it has the final scores and who pays whom.</p><button type="button" class="btn small" onClick=${() => setSheet('end')}>Standings</button></div>` : null}
+        ${done && !game.finished ? html`<div class="banner gold"><p><b>Last round done.</b> Save the recap before this table is cleared — it has the final standings and every hand.</p><button type="button" class="btn small" onClick=${() => setSheet('end')}>Standings</button></div>` : null}
         <${Ledger} game=${game} />
         ${last ? html`<div class="row" style=${{ marginTop: '12px' }}><button type="button" class="btn small" onClick=${() => setSheet('undo')}>${I.undo}Undo last entry</button></div>` : null}
       </main>
       <div class="dock"><div class="dock-in">
         <button type="button" class="btn primary big" onClick=${() => setSheet('record')} disabled=${game.finished}>${I.plus}Record hand</button>
-        <button type="button" class="btn big" onClick=${() => setSheet('payout')} disabled=${game.finished} aria-label="Payout or adjustment">${I.coins}</button>
+        <button type="button" class="btn big" onClick=${() => setSheet('adjust')} disabled=${game.finished} aria-label="Adjust points">${I.adjust}</button>
       </div></div>
       ${sheet === 'record' ? html`<${RecordSheet} game=${game} onClose=${close} onSaved=${(g) => saved(g, 'Hand saved')} onSignIn=${onSignIn} />` : null}
-      ${sheet === 'payout' ? html`<${PayoutSheet} game=${game} onClose=${close} onSaved=${(g) => saved(g, 'Payout saved')} />` : null}
+      ${sheet === 'adjust' ? html`<${AdjustSheet} game=${game} onClose=${close} onSaved=${(g) => saved(g, 'Adjustment saved')} />` : null}
       ${sheet === 'rules' ? html`<${RulesSheet} game=${game} onClose=${close} onSaved=${(g) => saved(g, 'Rules updated')} />` : null}
       ${sheet === 'names' ? html`<${NamesSheet} game=${game} onClose=${close} onSaved=${(g) => saved(g, 'Names updated')} />` : null}
       ${sheet === 'end' ? html`<${EndSheet} game=${game} onClose=${close} onSaved=${(g) => saved(g)} onToast=${toast} />` : null}
-      ${sheet === 'undo' && last ? html`<${Confirm} title="Undo last entry?" body=${'This removes ' + (last.kind === 'side' ? 'the payout “' + last.label + '”' : last.outcome === 'draw' ? 'the draw' : pname(game, last.winner) + '’s ' + last.text.split(' · ')[0] + ' hand') + ' and puts the scores and dealer back.'} action="Undo" onYes=${undoLast} onNo=${close} />` : null}
+      ${sheet === 'undo' && last ? html`<${Confirm} title="Undo last entry?" body=${'This removes ' + (last.kind === 'side' ? 'the adjustment “' + last.label + '”' : last.outcome === 'draw' ? 'the draw' : pname(game, last.winner) + '’s ' + last.text.split(' · ')[0] + ' hand') + ' and puts the scores and dealer back.'} action="Undo" onYes=${undoLast} onNo=${close} />` : null}
       ${sheet === 'delete' ? html`<${Confirm} title="Delete this game?" body="The game and every hand in it will be deleted. This can’t be undone." action="Delete game" danger=${true} onYes=${onDelete} onNo=${close} />` : null}
       ${sheet === 'menu' ? html`<${Sheet} title="Game" sub=${R.name} onClose=${close}><div class="menu">
-        <button type="button" onClick=${() => setSheet('end')}>${I.flag}<span>Standings and export<small>Final scores, copy for chat, CSV</small></span></button>
-        <button type="button" onClick=${() => setSheet('rules')}>${I.rules}<span>Rules and values<small>Minimums, limits, payouts, pattern values</small></span></button>
-        <button type="button" onClick=${() => setSheet('payout')}>${I.coins}<span>Payout or adjustment<small>Kong money, animal bites, penalties</small></span></button>
+        <button type="button" onClick=${() => setSheet('end')}>${I.flag}<span>Standings and export<small>Final standings, recap image, CSV</small></span></button>
+        <button type="button" onClick=${() => setSheet('rules')}>${I.rules}<span>Rules and values<small>Minimums, limits, pattern values</small></span></button>
+        <button type="button" onClick=${() => setSheet('adjust')}>${I.adjust}<span>Adjust points<small>Kong bonuses, penalties, corrections</small></span></button>
         <button type="button" onClick=${() => setSheet('names')}>${I.people}<span>Player names</span></button>
         ${game.example ? null : html`<button type="button" class="danger" onClick=${() => setSheet('delete')}>${I.trash}<span>Delete game</span></button>`}
       </div><//>` : null}`;
@@ -3051,7 +3006,7 @@ button.tile:active{transform:translateY(1px)}
     return html`<main class="wrap">
       <header class="hero">
         <div class="brand"><span class="seal" aria-hidden="true">麻雀</span><h1>${BRAND}${LITE && IS_DEFAULT_BRAND ? html` <span class="muted" style=${{ fontSize: '18px', fontWeight: 400 }}>Lite</span>` : null}</h1></div>
-        ${fresh ? html`<p class="lede">Tap the winning tiles, and the patterns, points and payments are worked out for you.${!LITE ? ' Or snap the winning hand and it reads the tiles.' : ''}</p>` : null}
+        ${fresh ? html`<p class="lede">Tap the winning tiles, and the patterns and points are worked out for you.${!LITE ? ' Or snap the winning hand and it reads the tiles.' : ''}</p>` : null}
         ${fresh ? html`<div class="rules-strip">${MJ.ORDER.map((id) => html`<span>${RULES[id].name}<b>${RULES[id].native.replace('麻雀', '').replace('麻将', '').replace('麻將', '') || RULES[id].native}</b></span>`)}</div>` : null}
         <div class="row" style=${{ width: '100%' }}>
           <button type="button" class=${'btn primary big' + (fresh ? ' block' : '')} onClick=${onNew}>${I.plus}${fresh ? 'Set up your table' : 'New game'}</button>
@@ -3068,6 +3023,7 @@ button.tile:active{transform:translateY(1px)}
       ${fresh ? html`<div class="section-head"><h2>How it works</h2></div>
         <div class="list">
           <div class="cell">${I.people}<span class="ct">One scorebook per table<small>Everyone signs in with the same name and password, or the same guest id, and sees the same games. Other tables can’t see yours.</small></span></div>
+          <div class="cell">${I.flag}<span class="ct">Points only<small>Scores are kept in points. Nothing is settled and nothing is owed.</small></span></div>
           <div class="cell">${I.flag}<span class="ct">Kept for ${Store.inactiveDays} days<small>A table unused for ${Store.inactiveDays} days is deleted with its games. Save the recap image at the end of a match to keep it.</small></span></div>
           <div class="cell">${I.tiles}<span class="ct">Install it<small>Share → Add to Home Screen puts ${BRAND} on your phone like an app.</small></span></div>
         </div>` : null}
