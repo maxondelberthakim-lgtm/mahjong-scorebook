@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@700&display=swap&text=__KAI_TEXT__">
-<script>window.API_URL = '__API_URL__'; window.BUILD = '__BUILD__'; window.LITE = __LITE__; window.BRAND = '__BRAND__';</script>
+<script>window.API_URL = '__API_URL__'; window.BUILD = '__BUILD__'; window.LITE = __LITE__; window.BRAND = '__BRAND__'; window.BRAND_INFO = /*__BRAND_INFO__*/null;</script>
 <style>
 :root{
   --ground:#F2F2F7;--paper:#FFFFFF;--paper-2:#F7F7FA;--fill:rgba(120,120,128,.12);--fill-2:rgba(120,120,128,.2);
@@ -149,6 +149,12 @@ p{margin:0}
 .hero{padding-block:22px 18px;display:grid;gap:12px;justify-items:start}
 .brand{display:flex;align-items:center;gap:14px}
 .seal{display:grid;place-items:center;width:50px;height:50px;border-radius:12px;background:linear-gradient(160deg,#D24A3A,#B73224);color:#FFF3E8;font-family:var(--f-cjk);font-weight:700;font-size:17px;line-height:1.02;writing-mode:vertical-rl;box-shadow:inset 0 0 0 1.5px rgba(255,243,232,.5),0 4px 12px rgba(183,50,36,.28)}
+.venue-logo{width:100%;display:grid;place-items:center;padding:14px 12px 6px;border-radius:22px;background:#FFFFFF;box-shadow:var(--shadow)}
+.venue-logo img{display:block;width:min(64vw,260px);height:auto}
+.vh{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.list a.cell{text-decoration:none;-webkit-tap-highlight-color:transparent}
+.list a.cell:active{background:var(--fill)}
+.list .cell .go{flex:none;font-size:15px;font-weight:600;color:var(--accent)}
 .hero h1{font-size:34px;line-height:1.1;letter-spacing:-.02em}
 .hero .lede{color:var(--ink-2);max-width:46ch;font-size:17px}
 .rules-strip{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;color:var(--muted)}
@@ -455,6 +461,7 @@ button.tile:active{transform:translateY(1px)}
   const LITE = !!window.LITE;
   const BRAND = window.BRAND || 'Mahjong Scorebook';
   const IS_DEFAULT_BRAND = BRAND === 'Mahjong Scorebook';
+  const VENUE = window.BRAND_INFO || null; // a parlour's own logo, address and Instagram (set per brand in tools/build.py)
 
   /* ------------------------------------------------ helpers */
   const clone = (o) => JSON.parse(JSON.stringify(o));
@@ -518,6 +525,8 @@ button.tile:active{transform:translateY(1px)}
     flag: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 21V4h11l-2 4 2 4H5"/></svg>`,
     trash: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>`,
     undo: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7L4 12l5 5"/><path d="M4 12h10a6 6 0 010 12h-2" transform="translate(0 -6)"/></svg>`,
+    pin: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 21s-6.5-6.2-6.5-11.2a6.5 6.5 0 0113 0C18.5 14.8 12 21 12 21z"/><circle cx="12" cy="9.8" r="2.3"/></svg>`,
+    insta: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></svg>`,
     plus: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>`,
   };
 
@@ -1726,6 +1735,13 @@ button.tile:active{transform:translateY(1px)}
       <span class="gmeta">${hands} hand${hands === 1 ? '' : 's'} · ${game.finished ? 'finished' : MJ.roundLabel(game)}</span>
     </button>`;
   }
+  function VenueCard() {
+    return html`<div class="section-head"><h2>Find us</h2></div>
+      <div class="list venue">
+        ${VENUE.address ? html`<a class="cell" href=${VENUE.maps} target="_blank" rel="noopener">${I.pin}<span class="ct">${VENUE.place || VENUE.name}<small>${VENUE.address}</small></span><span class="go">Directions</span></a>` : null}
+        ${VENUE.instagram ? html`<a class="cell" href=${'https://www.instagram.com/' + VENUE.instagram + '/'} target="_blank" rel="noopener">${I.insta}<span class="ct">Instagram<small>@${VENUE.instagram}</small></span><span class="go">Follow</span></a>` : null}
+      </div>`;
+  }
   function Home({ onNew, onOpen, example, onSignIn, onAccount, onToast }) {
     const games = Store.list();
     const active = games.filter((g) => !g.finished), done = games.filter((g) => g.finished);
@@ -1739,7 +1755,7 @@ button.tile:active{transform:translateY(1px)}
     const unsaved = !Store.user && games.length > 0 && Store.authChecked;
     return html`<main class="wrap">
       <header class="hero">
-        <div class="brand"><span class="seal" aria-hidden="true">麻雀</span><h1>${BRAND}${LITE && IS_DEFAULT_BRAND ? html` <span class="muted" style=${{ fontSize: '18px', fontWeight: 400 }}>Lite</span>` : null}</h1></div>
+        ${VENUE && VENUE.logo ? html`<div class="venue-logo"><img src=${VENUE.logo} alt=${VENUE.name || BRAND} width="522" height="560" /></div><h1 class="vh">${BRAND}</h1>` : html`<div class="brand"><span class="seal" aria-hidden="true">麻雀</span><h1>${BRAND}${LITE && IS_DEFAULT_BRAND ? html` <span class="muted" style=${{ fontSize: '18px', fontWeight: 400 }}>Lite</span>` : null}</h1></div>`}
         ${fresh ? html`<p class="lede">Tap the winning tiles, and the patterns and points are worked out for you.${!LITE ? ' Or snap the winning hand and it reads the tiles.' : ''}</p>` : null}
         ${fresh ? html`<div class="rules-strip">${MJ.ORDER.map((id) => html`<span>${RULES[id].name}<b>${RULES[id].native.replace('麻雀', '').replace('麻将', '').replace('麻將', '') || RULES[id].native}</b></span>`)}</div>` : null}
         <div class="row" style=${{ width: '100%' }}>
@@ -1753,6 +1769,7 @@ button.tile:active{transform:translateY(1px)}
       ${!active.length ? html`<div class="section-head"><h2>See it in action</h2><span class="example-note">Example · not saved</span></div>
         <div class="stack"><${TableHero} game=${example} compact=${true} />
         <button type="button" class="btn" onClick=${() => onOpen('example')}>Open the example table</button></div>` : null}
+      ${VENUE ? html`<${VenueCard} />` : null}
       ${done.length ? html`<div class="section-head"><h2>Finished</h2></div><div class="stack">${done.map((g) => html`<${GameCard} key=${g.id} game=${g} onOpen=${() => onOpen(g.id)} />`)}</div>` : null}
       ${fresh ? html`<div class="section-head"><h2>How it works</h2></div>
         <div class="list">
