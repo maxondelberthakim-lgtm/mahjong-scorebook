@@ -24,8 +24,8 @@ for fname, brand, url, colour in CARDS:
     qi = qi.resize((820, 820)); img.paste(qi, ((W - 820) // 2, 330))
     y = 1190
     for line, size, bold in (('Scan to keep score at this table', 48, True), (url.replace('https://', ''), 44, False),
-                             ('Create an account, sign in, or play as a guest.', 36, False),
-                             ('Same name + password on every phone = one scorebook.', 36, False),
+                             ('Tap Game ID → New Game ID, then share the ID.', 36, False),
+                             ('Same Game ID on every phone = one scorebook. No accounts.', 36, False),
                              ('Tables unused for 7 days are deleted — save the recap image.', 36, False)):
         f = font(size, bold); tw = d.textlength(line, font=f); d.text(((W - tw) / 2, y), line, font=f, fill='#222' if bold else '#444'); y += size + 34
     img.save(OUT / fname); print('wrote', OUT / fname)
