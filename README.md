@@ -13,12 +13,12 @@ Phone browser ──► GitHub Pages PWA (docs/index.html: Preact UI + scoring e
                      │ POST /rpc  text/plain {fn, args, token}   (no CORS preflight)
                      ▼
     Cloudflare Worker "mahjong-api"
-      ├─ D1 "mahjong-db": users (name + PIN), sessions, games (one JSON row each), scans, daily counters
+      ├─ D1 "mahjong-db": users (Game IDs), sessions, games (one JSON row each), scans, daily counters
       ├─ KV "mahjong-photos": scanned photos, 60-day expiry, for accuracy review
       └─ Claude API (vision, JSON schema output) ← photo of the winning hand
 ```
 
-- Without an account the app still works: games live in the browser's storage. Signing in (name + password) saves games to the account, syncs them to any phone you sign in on, and turns on photo reading.
+- No accounts or passwords: a table gets a 6-character **Game ID** (server-side it is a `guest-XXXXXX` user whose id is also its credential). Everyone who enters the same Game ID sees and edits the same games; the ID and its games are deleted after 7 days without use. Without a Game ID the app still works with games kept in the browser only.
 - One phone keeps score. Last write wins when the same game is edited from two phones.
 - Photo reading: the phone shrinks the photo to 1568 px, the Worker sends it to Claude with the ruleset's tile prompt and a strict JSON schema, the tiles land in the editor for checking, and when the hand is saved the corrected tiles are logged against the scan so accuracy can be measured per tile (`/admin/scans`, `tools/review.html`).
 - End of session: standings in points, recap image, copy summary, CSV, JSON backup, JSON import.
@@ -30,7 +30,7 @@ Phone browser ──► GitHub Pages PWA (docs/index.html: Preact UI + scoring e
 | `src/engine.js` | Scoring engine, pure JS (UMD). Rules, hand decomposition, point transfers, dealer rotation, scan prompt + parser. (`settle`/`moneyNets` remain in the engine but are unused by the app.) |
 | `src/app.src.html` | The UI (Preact + htm). Placeholders are filled by the build. |
 | `src/vendor/` | Preact 10.26.4, hooks, htm 3.1.1 (inlined at build time). |
-| `src/test.js`, `test2.js`, `test3.js` | Engine tests: 56 + 16 + 20 checks. `cd src && node test.js && node test2.js && node test3.js` |
+| `src/test.js` … `test4.js` | Engine tests: 56 + 16 + 20 + 59 checks (test4 = every Chinese Official fan read from tiles). `cd src && node test.js && node test2.js && node test3.js && node test4.js` |
 | `tools/build.py` | Builds `docs/` (PWA) and the Worker's `engine.js` / `schema.js`. `python3 tools/build.py [api-url]` |
 | `tools/api-url.txt` | The API URL baked into the app. |
 | `tools/sw.js`, `tools/manifest.webmanifest`, `tools/icons.py` | PWA pieces. |
@@ -41,12 +41,12 @@ Phone browser ──► GitHub Pages PWA (docs/index.html: Preact UI + scoring e
 | `tools/qr.py` | Table cards with QR codes for the branded addresses. |
 | `cloudflare/` | Worker source, D1 schema, `wrangler.jsonc`, `deploy.sh`, `DEPLOY.md`. `cloudflare/src/engine.js` and `schema.js` are generated. |
 | `tests/api.test.js` | 61 backend checks against `wrangler dev --local`. |
-| `tests/e2e.js` | 69 Playwright checks driving the built app end to end (sign-in, record by tiles, photo scan, export, undo, sync, import). |
+| `tests/e2e.js` | 76 Playwright checks driving the built app end to end (Game ID, record by tiles, setup values, photo scan, export, undo, sync, import). |
 
 ## Change workflow
 
 1. Edit `src/` or `cloudflare/src/worker.js`; add tests.
-2. `cd src && node test.js && node test2.js && node test3.js`
+2. `cd src && node test.js && node test2.js && node test3.js && node test4.js`
 3. Backend: `cd cloudflare && npx wrangler dev --port 8787 --local` then `node tests/api.test.js`.
 4. App: `python3 tools/build.py http://127.0.0.1:8787 && node tests/e2e.js`, then `python3 tools/build.py` to point `docs/` back at the real API.
 5. Commit and push `docs/` (GitHub Pages redeploys in about a minute). If the Worker changed: double-click `deploy.command` in the `mahjong-cloudflare` folder on the Mac. If a branded app changed: copy `pages/` there and double-click `pages-deploy.command`.
@@ -60,7 +60,7 @@ Phone browser ──► GitHub Pages PWA (docs/index.html: Preact UI + scoring e
 
 ## Rules as implemented
 
-Default values follow the common references (Hong Kong 3 faan to win with the half-spicy table, Singapore 1 tai and cap 5 with animals and instant bonus points, Riichi with full fu/han and uma/oka, Taiwanese base 30 + 10 per tai with dealer streak tai, MCR 81 fan ticked by hand, custom points). Hong Kong, Singapore and Taiwanese pattern values are editable per game; Riichi and MCR follow their published standards. Liability (包) is a manual pick. Details and the engine model are in the header comments of `src/engine.js`.
+Every pattern in every rule system is read from the tiles — including all 81 Chinese Official fan with their "not counted with" implications (knitted hands, shifted chows/pungs, waits, chicken hand). Only things the tiles cannot show (last tile, robbing a kong, kong replacement, heavenly/earthly) are one-tap chips. Pattern values (Hong Kong, Singapore, Taiwanese) can be changed when setting up a table or later from Rules and values. Default values follow the common references (Hong Kong 3 faan to win with the half-spicy table and seven pairs at 4 faan, Singapore 1 tai and cap 5 with animals and instant bonus points, Riichi with full fu/han and uma/oka, Taiwanese base 30 + 10 per tai with dealer streak tai, MCR 81 fan, custom points). Hong Kong, Singapore and Taiwanese pattern values are editable per game; Riichi and MCR follow their published standards. Liability (包) is a manual pick. Details and the engine model are in the header comments of `src/engine.js`.
 
 ## Roadmap
 
